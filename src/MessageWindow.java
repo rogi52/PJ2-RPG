@@ -49,29 +49,10 @@ public class MessageWindow extends Component {
 		addMessageStatic(msg, false);
 	}
 
-	// arrange() は CommandWindow と同じ.
-	// 文字の読み込み, 整頓を一つのクラスにまとめると良さそう.
-	String mark1  = "がぎぐげごガギグゲゴざじずぜぞザジズゼゾだぢづでどダヂヅデドばびぶべぼバビブベボ";
-	String trans1 = "かきくけこカキクケコさしすせそサシスセソたちつてとタチツテトはひふへほハヒフヘホ";
-	String mark2  = "ぱぴぷぺぽパピプペポ";
-	String trans2 = "はひふへほハヒフヘホ";
-	String arrange(String msg) {
-		String res = "";
-		for(int i = 0, pos = -1; i < msg.length(); i++) {
-			char c = msg.charAt(i);
-			if((pos = mark1.indexOf(c)) != -1)
-				res += trans1.charAt(pos) + "゛";
-			else if((pos = mark2.indexOf(c)) != -1)
-				res += trans2.charAt(pos) + "゜";
-			else
-				res += c;
-		}
-		return res;
-	}
 
 	void addMessageDynamic(String msg, boolean newLine) {
 		if(newLine) buffer += "\n";
-		msg = arrange(msg);
+		msg = Moji.arrange(msg);
 		for(int i = 0; i < msg.length(); i++) {
 			buffer += msg.charAt(i);
 			repaint();
@@ -81,7 +62,7 @@ public class MessageWindow extends Component {
 
 	void addMessageStatic(String msg, boolean newLine) {
 		if(newLine) buffer += "\n";
-		buffer += arrange(msg);
+		buffer += Moji.arrange(msg);
 		repaint();
 	}
 
@@ -100,7 +81,8 @@ public class MessageWindow extends Component {
 			if(c == '\n') { if(w!=0) { h++; w=0; } continue; }
 			if(c == ' ') { w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; } continue; }
 			try {
-				BufferedImage I = ImageIO.read(new File("/Applications/Eclipse_4.8.0.app/Contents/workspace/PJ2/文字/" + c + ".png"));
+				//BufferedImage I = ImageIO.read(new File("/Applications/Eclipse_4.8.0.app/Contents/workspace/PJ2/文字/" + c + ".png"));
+				BufferedImage I = ImageIO.read(new File("./文字/" + c + ".png"));
 				g.drawImage(I.getScaledInstance(CHARACTER_SIZE, CHARACTER_SIZE, Image.SCALE_DEFAULT), START_X + OFFSET + w * CHARACTER_SIZE, START_Y + OFFSET + h * CHARACTER_SIZE, null);
 			} catch (IOException e) { System.out.println("error : " + c); }
 			w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; }
