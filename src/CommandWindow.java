@@ -12,18 +12,6 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-/*
- * 現状同じウィンドウに描画している.
- * しかし、A(in 1) -> B(in 2) -> C(in 2) の遷移を実装したい
- * A = 攻撃、防御、スキル
- * B = 具体的な攻撃名
- * C = 攻撃を与える敵
- *
- * A のコマンドの数は 4 程度(?)
- * B のコマンドの数は 24 程度あるので、複数ページを遷移できる必要がある。
- * C のコマンドの数は 4 程度
- */
-
 public class CommandWindow extends Component implements KeyListener {
 
 	int START_X = 0, START_Y = 0;
@@ -54,7 +42,7 @@ public class CommandWindow extends Component implements KeyListener {
 			from.add("ニゲル"); to.add(ESC);
 		}
 
-		CommandWindow cs = new CommandWindow(from, to, 50, 50, 50, 10);
+		CommandWindow cs = new CommandWindow(from, to);
 		frame.add(cs);
 		frame.addKeyListener(cs);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,11 +58,13 @@ public class CommandWindow extends Component implements KeyListener {
 	ArrayList<String> from = new ArrayList<>();
 	ArrayList<ArrayList<String>> to = new ArrayList<>();
 	ArrayList<String> cmds = new ArrayList<>();
+	ArrayList<String> enemy = new ArrayList<>();
+
 	CommandWindow(ArrayList<String> from, ArrayList<ArrayList<String>> to) {
-		for(int i = 0; i < from.size(); i++) from.set(i, arrange(from.get(i)));
+		for(int i = 0; i < from.size(); i++) from.set(i, Moji.arrange(from.get(i)));
 		for(int i = 0; i < to.size(); i++) {
 			ArrayList<String> v = to.get(i);
-			for(int j = 0; j < v.size(); j++) v.set(j, arrange(v.get(j)));
+			for(int j = 0; j < v.size(); j++) v.set(j, Moji.arrange(v.get(j)));
 		}
 		this.from = from;
 		this.to = to;
@@ -86,10 +76,10 @@ public class CommandWindow extends Component implements KeyListener {
 		this.START_Y = START_Y;
 		this.CHARACTER_SIZE = CHARACTER_SIZE;
 		this.CHARACTER_NUM_WIDTH = CHARACTER_NUM_WIDTH;
-		for(int i = 0; i < from.size(); i++) from.set(i, arrange(from.get(i)));
+		for(int i = 0; i < from.size(); i++) from.set(i, Moji.arrange(from.get(i)));
 		for(int i = 0; i < to.size(); i++) {
 			ArrayList<String> v = to.get(i);
-			for(int j = 0; j < v.size(); j++) v.set(j, arrange(v.get(j)));
+			for(int j = 0; j < v.size(); j++) v.set(j, Moji.arrange(v.get(j)));
 		}
 		this.from = from;
 		this.to = to;
@@ -117,24 +107,6 @@ public class CommandWindow extends Component implements KeyListener {
 			h++; w=1;
 		}
 		CHARACTER_NUM_HEIGHT = this.cmds.size();
-	}
-
-	String mark1  = "がぎぐげごガギグゲゴざじずぜぞザジズゼゾだぢづでどダヂヅデドばびぶべぼバビブベボ";
-	String trans1 = "かきくけこカキクケコさしすせそサシスセソたちつてとタチツテトはひふへほハヒフヘホ";
-	String mark2  = "ぱぴぷぺぽパピプペポ";
-	String trans2 = "はひふへほハヒフヘホ";
-	String arrange(String cmd) {
-		String res = "";
-		for(int i = 0, pos = -1; i < cmd.length(); i++) {
-			char c = cmd.charAt(i);
-			if((pos = mark1.indexOf(c)) != -1)
-				res += trans1.charAt(pos) + "゛";
-			else if((pos = mark2.indexOf(c)) != -1)
-				res += trans2.charAt(pos) + "゜";
-			else
-				res += c;
-		}
-		return res;
 	}
 
 	public void paint(Graphics g) {
