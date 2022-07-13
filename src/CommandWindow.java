@@ -19,7 +19,7 @@ public class CommandWindow extends Component implements KeyListener {
 
 	int START_X = 0, START_Y = 0;
 	int CHARACTER_NUM_HEIGHT = 5;
-	int CHARACTER_NUM_WIDTH = 10;
+	int CHARACTER_NUM_WIDTH = 0;
 	int CHARACTER_SIZE = 32;
 	int OFFSET = 5;
 
@@ -52,6 +52,9 @@ public class CommandWindow extends Component implements KeyListener {
 		frame.setVisible(true);
 
 		String option = cs.getOption();
+		System.out.println(option);
+
+		option = cs.getOption();
 		System.out.println(option);
 	}
 
@@ -97,11 +100,10 @@ public class CommandWindow extends Component implements KeyListener {
 		update(from);
 	}
 
-	CommandWindow(ArrayList<String> from, ArrayList<ArrayList<String>> to, int START_X, int START_Y, int CHARACTER_SIZE, int CHARACTER_NUM_WIDTH) {
+	CommandWindow(ArrayList<String> from, ArrayList<ArrayList<String>> to, int START_X, int START_Y, int CHARACTER_SIZE) {
 		this.START_X = START_X;
 		this.START_Y = START_Y;
 		this.CHARACTER_SIZE = CHARACTER_SIZE;
-		this.CHARACTER_NUM_WIDTH = CHARACTER_NUM_WIDTH;
 		for(int i = 0; i < from.size(); i++) from.set(i, ImageManager.arrange(from.get(i)));
 		for(int i = 0; i < to.size(); i++) {
 			ArrayList<String> v = to.get(i);
@@ -118,7 +120,9 @@ public class CommandWindow extends Component implements KeyListener {
 		hs.clear();
 		ws.clear();
 		int h = 0, w = 1;
+		CHARACTER_NUM_WIDTH = 0;
 		for(String x : this.cmds) {
+			CHARACTER_NUM_WIDTH = Math.max(CHARACTER_NUM_WIDTH, x.length());
 			for(int i = 0; i < x.length(); i++) {
 				try {
 					BufferedImage I = ImageManager.getCharImage(x.charAt(i));
@@ -132,6 +136,7 @@ public class CommandWindow extends Component implements KeyListener {
 			}
 			h++; w=1;
 		}
+		CHARACTER_NUM_WIDTH++;
 		CHARACTER_NUM_HEIGHT = this.cmds.size();
 	}
 
@@ -165,10 +170,10 @@ public class CommandWindow extends Component implements KeyListener {
 			}
 			case KeyEvent.VK_ENTER: {
 				String cmd = cmds.get(selectPos);
+				out.println(cmd);
+				out.flush();
 				int i = from.indexOf(cmd);
 				if(i == -1) {
-					out.println(cmd);
-					out.flush();
 					STATE = FINISH;
 				} else {
 					update(to.get(i));
