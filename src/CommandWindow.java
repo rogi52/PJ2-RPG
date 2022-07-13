@@ -61,10 +61,10 @@ public class CommandWindow extends Component implements KeyListener {
 	ArrayList<String> enemy = new ArrayList<>();
 
 	CommandWindow(ArrayList<String> from, ArrayList<ArrayList<String>> to) {
-		for(int i = 0; i < from.size(); i++) from.set(i, Moji.arrange(from.get(i)));
+		for(int i = 0; i < from.size(); i++) from.set(i, ImageManager.arrange(from.get(i)));
 		for(int i = 0; i < to.size(); i++) {
 			ArrayList<String> v = to.get(i);
-			for(int j = 0; j < v.size(); j++) v.set(j, Moji.arrange(v.get(j)));
+			for(int j = 0; j < v.size(); j++) v.set(j, ImageManager.arrange(v.get(j)));
 		}
 		this.from = from;
 		this.to = to;
@@ -76,10 +76,10 @@ public class CommandWindow extends Component implements KeyListener {
 		this.START_Y = START_Y;
 		this.CHARACTER_SIZE = CHARACTER_SIZE;
 		this.CHARACTER_NUM_WIDTH = CHARACTER_NUM_WIDTH;
-		for(int i = 0; i < from.size(); i++) from.set(i, Moji.arrange(from.get(i)));
+		for(int i = 0; i < from.size(); i++) from.set(i, ImageManager.arrange(from.get(i)));
 		for(int i = 0; i < to.size(); i++) {
 			ArrayList<String> v = to.get(i);
-			for(int j = 0; j < v.size(); j++) v.set(j, Moji.arrange(v.get(j)));
+			for(int j = 0; j < v.size(); j++) v.set(j, ImageManager.arrange(v.get(j)));
 		}
 		this.from = from;
 		this.to = to;
@@ -118,7 +118,7 @@ public class CommandWindow extends Component implements KeyListener {
 		}
 
 		try {
-			BufferedImage arrow = ImageIO.read(new File("/Applications/Eclipse_4.8.0.app/Contents/workspace/PJ2/文字/arrow.png"));
+			BufferedImage arrow = ImageManager.getImage("arrow");
 			g.drawImage(arrow.getScaledInstance(CHARACTER_SIZE, CHARACTER_SIZE, Image.SCALE_DEFAULT), START_X + OFFSET + 0 * CHARACTER_SIZE, START_Y + OFFSET + selectPos * CHARACTER_SIZE, null);
 		} catch (IOException e) {
 			System.out.println("error: arrow");
@@ -145,6 +145,7 @@ public class CommandWindow extends Component implements KeyListener {
 				int i = from.indexOf(cmd);
 				if(i == -1) {
 					System.out.println(cmd);
+					System.exit(0);
 				} else {
 					update(to.get(i));
 					repaint();
