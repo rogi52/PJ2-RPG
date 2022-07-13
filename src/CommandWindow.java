@@ -5,11 +5,14 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class CommandWindow extends Component implements KeyListener {
@@ -47,9 +50,33 @@ public class CommandWindow extends Component implements KeyListener {
 		frame.addKeyListener(cs);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+
+		String option = cs.getOption();
+		System.out.println(option);
+	}
+
+	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	PrintWriter out = new PrintWriter(bos);
+	String getOption() {
+		try {
+			while(true) {
+				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
+				String res = in.readLine();
+				if(res != null) {
+					bos = new ByteArrayOutputStream();
+					out = new PrintWriter(bos);
+					return res;
+				}
+			}
+		} catch (IOException e) {}
+		return "ERROR";
 	}
 
 	int selectPos = 0;
+	final int PENDING = 0;
+	final int FINISH = 1;
+	int STATE = PENDING;
 
 	ArrayList<Image> images = new ArrayList<>();
 	ArrayList<Integer> hs = new ArrayList<>();
@@ -58,7 +85,6 @@ public class CommandWindow extends Component implements KeyListener {
 	ArrayList<String> from = new ArrayList<>();
 	ArrayList<ArrayList<String>> to = new ArrayList<>();
 	ArrayList<String> cmds = new ArrayList<>();
-	ArrayList<String> enemy = new ArrayList<>();
 
 	CommandWindow(ArrayList<String> from, ArrayList<ArrayList<String>> to) {
 		for(int i = 0; i < from.size(); i++) from.set(i, ImageManager.arrange(from.get(i)));
@@ -95,7 +121,7 @@ public class CommandWindow extends Component implements KeyListener {
 		for(String x : this.cmds) {
 			for(int i = 0; i < x.length(); i++) {
 				try {
-					BufferedImage I = ImageIO.read(new File("/Applications/Eclipse_4.8.0.app/Contents/workspace/PJ2/文字/" + x.charAt(i) + ".png"));
+					BufferedImage I = ImageManager.getCharImage(x.charAt(i));
 					images.add(I.getScaledInstance(CHARACTER_SIZE, CHARACTER_SIZE, Image.SCALE_DEFAULT));
 					hs.add(h);
 					ws.add(w);
@@ -110,6 +136,7 @@ public class CommandWindow extends Component implements KeyListener {
 	}
 
 	public void paint(Graphics g) {
+		if(STATE == FINISH) return;
 		g.setColor(Color.BLACK);
 		g.fillRect(START_X, START_Y, CHARACTER_SIZE * CHARACTER_NUM_WIDTH + OFFSET * 2, CHARACTER_SIZE * CHARACTER_NUM_HEIGHT + OFFSET * 2);
 
@@ -130,26 +157,23 @@ public class CommandWindow extends Component implements KeyListener {
 		switch(e.getKeyCode()) {
 			case KeyEvent.VK_DOWN: {
 				selectPos = Math.min(selectPos + 1, cmds.size() - 1);
-				repaint();
-				break;
+				repaint(); break;
 			}
-
 			case KeyEvent.VK_UP: {
 				selectPos = Math.max(selectPos - 1, 0);
-				repaint();
-				break;
+				repaint(); break;
 			}
-
 			case KeyEvent.VK_ENTER: {
 				String cmd = cmds.get(selectPos);
 				int i = from.indexOf(cmd);
 				if(i == -1) {
-					System.out.println(cmd);
-					System.exit(0);
+					out.println(cmd);
+					out.flush();
+					STATE = FINISH;
 				} else {
 					update(to.get(i));
-					repaint();
 				}
+				repaint();
 			}
 		}
 	}
