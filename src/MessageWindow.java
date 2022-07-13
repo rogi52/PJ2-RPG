@@ -3,10 +3,8 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class MessageWindow extends Component {
@@ -46,13 +44,14 @@ public class MessageWindow extends Component {
 		this.CHARACTER_SIZE = CHARACTER_SIZE;
 		this.CHARACTER_NUM_HEIGHT = CHARACTER_NUM_HEIGHT;
 		this.CHARACTER_NUM_WIDTH = CHARACTER_NUM_WIDTH;
-		addMessageStatic(msg, false);
+		addMessageDynamic(msg, false);
+		// addMessageStatic(msg, false);
 	}
 
 
 	void addMessageDynamic(String msg, boolean newLine) {
 		if(newLine) buffer += "\n";
-		msg = Moji.arrange(msg);
+		msg = ImageManager.arrange(msg);
 		for(int i = 0; i < msg.length(); i++) {
 			buffer += msg.charAt(i);
 			repaint();
@@ -62,7 +61,7 @@ public class MessageWindow extends Component {
 
 	void addMessageStatic(String msg, boolean newLine) {
 		if(newLine) buffer += "\n";
-		buffer += Moji.arrange(msg);
+		buffer += ImageManager.arrange(msg);
 		repaint();
 	}
 
@@ -81,8 +80,7 @@ public class MessageWindow extends Component {
 			if(c == '\n') { if(w!=0) { h++; w=0; } continue; }
 			if(c == ' ') { w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; } continue; }
 			try {
-				//BufferedImage I = ImageIO.read(new File("/Applications/Eclipse_4.8.0.app/Contents/workspace/PJ2/文字/" + c + ".png"));
-				BufferedImage I = ImageIO.read(new File("./文字/" + c + ".png"));
+				BufferedImage I = ImageManager.getCharImage(c);
 				g.drawImage(I.getScaledInstance(CHARACTER_SIZE, CHARACTER_SIZE, Image.SCALE_DEFAULT), START_X + OFFSET + w * CHARACTER_SIZE, START_Y + OFFSET + h * CHARACTER_SIZE, null);
 			} catch (IOException e) { System.out.println("error : " + c); }
 			w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; }
