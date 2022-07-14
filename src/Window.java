@@ -583,7 +583,6 @@ class AnimationMove extends Thread{
 							
 							break;
 
-						
 					case 5://ダンジョン選択
 						sel=0;
 						moji="";
