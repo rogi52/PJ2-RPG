@@ -11,7 +11,7 @@ public class ImageManager {
 	static String trans1 = "かきくけこカキクケコさしすせそサシスセソたちつてとタチツテトはひふへほハヒフヘホ";
 	static String mark2  = "ぱぴぷぺぽパピプペポ";
 	static String trans2 = "はひふへほハヒフヘホ";
-	static HashMap<String,BufferedImage> chrbuffer =  new HashMap<>();
+	static HashMap<String,BufferedImage> imgBuffer =  new HashMap<>();
 
 
 	static String arrange(char c) {
@@ -28,21 +28,16 @@ public class ImageManager {
 	}
 
 	/* 文字の画像を取得 */
-
 	static BufferedImage getCharImage(char c) throws IOException {
-		String name=""+c;
-		
-		if(c=='▶')name="arrow";
-		
-		if(chrbuffer.get(name)==null) {
-			chrbuffer.put(name, ImageIO.read(new File("./img/text/" + name + ".png")));
-		}
-		
-		return chrbuffer.get(name);
+		String name = "text/" + c;
+		if(c == '▶') name = "text/arrow";
+		return getImage(name);
 	}
 
 	/* name の画像を取得 */
 	static BufferedImage getImage(String name) throws IOException {
-		return ImageIO.read(new File("./img/" + name + ".png"));
+		if(imgBuffer.get(name) == null)
+			imgBuffer.put(name, ImageIO.read(new File("./img/" + name + ".png")));
+		return imgBuffer.get(name);
 	}
 }
