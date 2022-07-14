@@ -818,13 +818,38 @@ class dCanvas extends Canvas {
 		}
 	}
 	
+	public void drawChr(String str,int x,int y,int width,int ms) {
+		str=ImageManager.arrange(str);
+		int x0=x;
+		
+		for(int i=0;i<str.length();i++) {
+			if(str.charAt(i)=='\n') {
+				x=x0;
+				y+=PL2RPG.BLOCK_SIZE;
+			}else {
+				try {
+					buffer.drawImage(ImageManager.getCharImage(str.charAt(i)),x,y,null);
+					repaint();
+					w.wait(ms);
+				} catch (IOException e) {}
+				
+				if(x+PL2RPG.BLOCK_SIZE>x0+width) {
+					x=x0;
+					y+=PL2RPG.BLOCK_SIZE;
+				}else {
+					x+=PL2RPG.BLOCK_SIZE;
+				}
+			}
+		}
+	}
+	
 	//アイテム取得
 	public void drawDialog1(String str) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
-		drawChr(str,104,104,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr(str,104,104,PL2RPG.MAIN_WIN_X-1-100*2-8,50);
 		
 		drawChr("▶OK",PL2RPG.MAIN_WIN_X-1-100-PL2RPG.BLOCK_SIZE*5,PL2RPG.MAIN_WIN_Y-1-100-PL2RPG.BLOCK_SIZE,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		repaint();
@@ -837,6 +862,7 @@ class dCanvas extends Canvas {
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(50,100,PL2RPG.MAIN_WIN_X-1-50*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		
+		drawChr("ジョブをせんたくしてください。",54+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8,50);
 
 		for(int j=0;j<4;j++) {
 			drawChr("P"+(j+1),54+PL2RPG.BLOCK_SIZE*(2+j*6),104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
@@ -864,7 +890,7 @@ class dCanvas extends Canvas {
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
-		drawChr("いどうさき　を　せんたくしてください。",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr("いどうさき　を　せんたくしてください。",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8,50);
 		
 		drawChr(moji,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		drawChr("▶",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*(2+sel),PL2RPG.MAIN_WIN_X-1-100*2-8);
@@ -877,7 +903,7 @@ class dCanvas extends Canvas {
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
-		drawChr("フロアをいどうしますか？",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr("フロアをいどうしますか？",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8,50);
 		if(is_enter) {
 			drawChr("▶はい",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 			drawChr("　いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
