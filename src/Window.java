@@ -352,7 +352,7 @@ class GameLoop extends Thread{
 					if(bdx==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && bdy==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
-							w.myCanvas.drawMenu1();
+							w.myCanvas.drawMenu1(50);
 							while(w.status==3) {
 								w.wait(33);
 							}
@@ -360,7 +360,7 @@ class GameLoop extends Thread{
 							break;
 						case 2://ジョブ選択
 							menu_x=0;
-							w.myCanvas.drawMenu4(menu_x);
+							w.myCanvas.drawMenu4(menu_x,50);
 							while(w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 							while(w.is_press(KeyEvent.VK_ENTER)==false) {
 								if(w.is_press(KeyEvent.VK_RIGHT)) {
@@ -513,7 +513,7 @@ class AnimationMove extends Thread{
 					switch(myCanvas.en_type[i]) {
 					case 0:
 						is_enter=true;
-						w.myCanvas.drawMenu2(is_enter);
+						w.myCanvas.drawMenu2(is_enter,50);
 						direction2=direction;
 						
 						while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
@@ -585,7 +585,7 @@ class AnimationMove extends Thread{
 							moji+=myCanvas.en_p[i][j]+"\n";
 						}
 						moji+="キャンセル";
-						w.myCanvas.drawMenu3(moji,sel);
+						w.myCanvas.drawMenu3(moji,sel,50);
 						direction2=direction;
 						
 						while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
@@ -848,7 +848,7 @@ class dCanvas extends Canvas {
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(50,100,PL2RPG.MAIN_WIN_X-1-50*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		
-		drawChr("ジョブをせんたくしてください。",54+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
+		drawChr("ジョブをせんたくしてください。",54+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 
 		for(int j=0;j<4;j++) {
 			drawChr("P"+(j+1),54+PL2RPG.BLOCK_SIZE*(2+j*6),104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
