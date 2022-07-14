@@ -564,7 +564,7 @@ class AnimationMove extends Thread{
 						//アイテム取得
 						case 3:
 							if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
-								w.myCanvas.drawDialog1(PL2RPG.ITEM_NAME[Integer.parseInt(w.myCanvas.en_p[i][0])]+"をひろった。");
+								w.myCanvas.drawDialog1(PL2RPG.ITEM_NAME[Integer.parseInt(w.myCanvas.en_p[i][0])]+"をひろった。",50);
 								w.myCanvas.en_type[i]=-1;
 								
 								w.myCanvas.en_used+=w.myCanvas.en_UID[i];
@@ -796,26 +796,7 @@ class dCanvas extends Canvas {
 	}
 	
 	public void drawChr(String str,int x,int y,int width) {
-		str=ImageManager.arrange(str);
-		int x0=x;
-		
-		for(int i=0;i<str.length();i++) {
-			if(str.charAt(i)=='\n') {
-				x=x0;
-				y+=PL2RPG.BLOCK_SIZE;
-			}else {
-				try {
-					buffer.drawImage(ImageManager.getCharImage(str.charAt(i)),x,y,null);
-				} catch (IOException e) {}
-				
-				if(x+PL2RPG.BLOCK_SIZE>x0+width) {
-					x=x0;
-					y+=PL2RPG.BLOCK_SIZE;
-				}else {
-					x+=PL2RPG.BLOCK_SIZE;
-				}
-			}
-		}
+		drawChr(str,x,y,width,0);
 	}
 	
 	public void drawChr(String str,int x,int y,int width,int ms) {
@@ -829,8 +810,10 @@ class dCanvas extends Canvas {
 			}else {
 				try {
 					buffer.drawImage(ImageManager.getCharImage(str.charAt(i)),x,y,null);
-					repaint();
-					w.wait(ms);
+					if(ms>0) {
+						repaint();
+						w.wait(ms);
+					}
 				} catch (IOException e) {}
 				
 				if(x+PL2RPG.BLOCK_SIZE>x0+width) {
@@ -844,12 +827,12 @@ class dCanvas extends Canvas {
 	}
 	
 	//アイテム取得
-	public void drawDialog1(String str) {
+	public void drawDialog1(String str,int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
-		drawChr(str,104,104,PL2RPG.MAIN_WIN_X-1-100*2-8,50);
+		drawChr(str,104,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 		
 		drawChr("▶OK",PL2RPG.MAIN_WIN_X-1-100-PL2RPG.BLOCK_SIZE*5,PL2RPG.MAIN_WIN_Y-1-100-PL2RPG.BLOCK_SIZE,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		repaint();
@@ -857,12 +840,15 @@ class dCanvas extends Canvas {
 
 	//ジョブ選択
 	public void drawMenu4(int x) {
+		drawMenu4(x,0);
+	}
+	public void drawMenu4(int x,int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(47,97,PL2RPG.MAIN_WIN_X-1-47*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(50,100,PL2RPG.MAIN_WIN_X-1-50*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		
-		drawChr("ジョブをせんたくしてください。",54+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8,50);
+		drawChr("ジョブをせんたくしてください。",54+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 
 		for(int j=0;j<4;j++) {
 			drawChr("P"+(j+1),54+PL2RPG.BLOCK_SIZE*(2+j*6),104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
@@ -884,13 +870,15 @@ class dCanvas extends Canvas {
 		repaint();
 	}
 
-	
 	public void drawMenu3(String moji,int sel) {
+		drawMenu3(moji,sel,0);
+	}
+	public void drawMenu3(String moji,int sel,int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
-		drawChr("いどうさき　を　せんたくしてください。",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8,50);
+		drawChr("いどうさき　を　せんたくしてください。",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 		
 		drawChr(moji,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		drawChr("▶",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*(2+sel),PL2RPG.MAIN_WIN_X-1-100*2-8);
@@ -899,11 +887,14 @@ class dCanvas extends Canvas {
 	}
 	
 	public void drawMenu2(boolean is_enter) {
+		drawMenu2(is_enter,0);		
+	}
+	public void drawMenu2(boolean is_enter,int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
-		drawChr("フロアをいどうしますか？",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8,50);
+		drawChr("フロアをいどうしますか？",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 		if(is_enter) {
 			drawChr("▶はい",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 			drawChr("　いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
@@ -917,6 +908,9 @@ class dCanvas extends Canvas {
 
 	//クエスト選択
 	public void drawMenu1() {
+		drawMenu1(0);
+	}
+	public void drawMenu1(int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));

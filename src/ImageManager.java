@@ -1,6 +1,7 @@
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -10,7 +11,7 @@ public class ImageManager {
 	static String trans1 = "かきくけこカキクケコさしすせそサシスセソたちつてとタチツテトはひふへほハヒフヘホ";
 	static String mark2  = "ぱぴぷぺぽパピプペポ";
 	static String trans2 = "はひふへほハヒフヘホ";
-	//static HashMap<String,BufferedImage> chrbuffer =  new HashMap<>();
+	static HashMap<String,BufferedImage> chrbuffer =  new HashMap<>();
 
 
 	static String arrange(char c) {
@@ -32,15 +33,12 @@ public class ImageManager {
 		String name=""+c;
 		
 		if(c=='▶')name="arrow";
-		/*
+		
 		if(chrbuffer.get(name)==null) {
 			chrbuffer.put(name, ImageIO.read(new File("./img/text/" + name + ".png")));
 		}
 		
 		return chrbuffer.get(name);
-		*/
-		
-		return ImageIO.read(new File("./img/text/" + name + ".png"));
 	}
 
 	/* name の画像を取得 */
