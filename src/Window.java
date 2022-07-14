@@ -50,6 +50,7 @@ public class Window extends JFrame implements KeyListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//setSize(PL2RPG.MAIN_WIN_X+16, PL2RPG.MAIN_WIN_Y+39);
 		setBounds(-(PL2RPG.MAIN_WIN_X+14), -(PL2RPG.MAIN_WIN_Y+37),PL2RPG.MAIN_WIN_X+14, PL2RPG.MAIN_WIN_Y+37);
+		System.out.println(getWidth());
 		//setLocationRelativeTo(null);
 		setLayout(null);
 		setResizable(false);
@@ -948,6 +949,12 @@ class dCanvas extends Canvas {
 		
 			map_x=csv_raw.get(1).split(",").length;
 			
+
+			System.out.println(lines);
+			System.out.println(map_y);
+			System.out.println(map_x);
+			System.out.println(entities);
+			
 			map=new int[map_x][map_y];
 			
 			for(int y=0;y<map_y;y++) {
@@ -960,6 +967,7 @@ class dCanvas extends Canvas {
 			
 			csv_arr=csv_raw.get(0).split(",");
 			
+			System.out.println(csv_arr[0]);
 			
 			if(nx==-1) {
 				pos_x=PL2RPG.BLOCK_SIZE*Integer.parseInt(csv_arr[0]);
@@ -977,6 +985,7 @@ class dCanvas extends Canvas {
 				en_x[i]=Integer.parseInt(csv_arr[1]);
 				en_y[i]=Integer.parseInt(csv_arr[2]);
 				en_UID[i]=fname+csv_arr[0]+"L"+Integer.toString(i)+",";
+				System.out.println(en_UID[i]);
 				for(int j=0;j<csv_arr.length-3;j++) {
 					en_p[i][j]=csv_arr[j+3];
 				}
@@ -1122,6 +1131,7 @@ class dCanvas extends Canvas {
 			for(int j=0;j<7;j++) {
 				c=PL2RPG.JOBS[j];
 				for(int i=0;i<4;i++) {
+					System.out.println(PL2RPG.UI_CHR_PATH+"/"+c+".b."+Integer.toString(i+1)+".png");
 					chr[j][0][i]=ImageIO.read(new File(PL2RPG.UI_CHR_PATH+"/"+c+".b."+Integer.toString(i+1)+".png"));
 					chr[j][1][i]=ImageIO.read(new File(PL2RPG.UI_CHR_PATH+"/"+c+".r."+Integer.toString(i+1)+".png"));
 					chr[j][2][i]=ImageIO.read(new File(PL2RPG.UI_CHR_PATH+"/"+c+".f."+Integer.toString(i+1)+".png"));
