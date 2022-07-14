@@ -99,7 +99,7 @@ public class Window extends JFrame implements KeyListener{
 
 		File file1 = new File(PL2RPG.SAVE_PATH);
 		File fileArray1[] = file1.listFiles();
-
+		
 		save_num=fileArray1.length;
 
 		save_list=new String[save_num];
