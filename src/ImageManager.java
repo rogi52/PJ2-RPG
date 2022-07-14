@@ -25,8 +25,13 @@ public class ImageManager {
 	}
 
 	/* 文字の画像を取得 */
+
 	static BufferedImage getCharImage(char c) throws IOException {
-		return ImageIO.read(new File("./img/text/" + c + ".png"));
+		String name=""+c;
+		
+		if(c=='▶')name="arrow";
+		
+		return ImageIO.read(new File("./img/text/" + name + ".png"));
 	}
 
 	/* name の画像を取得 */
