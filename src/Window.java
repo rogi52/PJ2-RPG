@@ -352,7 +352,7 @@ class GameLoop extends Thread{
 					if(bdx==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && bdy==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
-							w.myCanvas.drawMenu1(50);
+							w.myCanvas.drawMenu1(PL2RPG.DIALOG_ANIMATION_TIME);
 							while(w.status==3) {
 								w.wait(33);
 							}
@@ -360,7 +360,7 @@ class GameLoop extends Thread{
 							break;
 						case 2://ジョブ選択
 							menu_x=0;
-							w.myCanvas.drawMenu4(menu_x,50);
+							w.myCanvas.drawMenu4(menu_x,PL2RPG.DIALOG_ANIMATION_TIME);
 							while(w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 							while(w.is_press(KeyEvent.VK_ENTER)==false) {
 								if(w.is_press(KeyEvent.VK_RIGHT)) {
@@ -513,7 +513,7 @@ class AnimationMove extends Thread{
 					switch(myCanvas.en_type[i]) {
 					case 0:
 						is_enter=true;
-						w.myCanvas.drawMenu2(is_enter,50);
+						w.myCanvas.drawMenu2(is_enter,PL2RPG.DIALOG_ANIMATION_TIME);
 						direction2=direction;
 						
 						while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
@@ -564,7 +564,7 @@ class AnimationMove extends Thread{
 						//アイテム取得
 						case 3:
 							if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
-								w.myCanvas.drawDialog1(PL2RPG.ITEM_NAME[Integer.parseInt(w.myCanvas.en_p[i][0])]+"をひろった。",50);
+								w.myCanvas.drawDialog1(PL2RPG.ITEM_NAME[Integer.parseInt(w.myCanvas.en_p[i][0])]+"をひろった。",PL2RPG.DIALOG_ANIMATION_TIME);
 								w.myCanvas.en_type[i]=-1;
 								
 								w.myCanvas.en_used+=w.myCanvas.en_UID[i];
@@ -585,7 +585,7 @@ class AnimationMove extends Thread{
 							moji+=myCanvas.en_p[i][j]+"\n";
 						}
 						moji+="キャンセル";
-						w.myCanvas.drawMenu3(moji,sel,50);
+						w.myCanvas.drawMenu3(moji,sel,PL2RPG.DIALOG_ANIMATION_TIME);
 						direction2=direction;
 						
 						while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);

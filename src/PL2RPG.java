@@ -14,6 +14,7 @@ public class PL2RPG {
 	public static String JOB_NAME[]= {"せんし","ウィッチ","エンチャ","とうぞく","まほせん","アーチャ","ヒーラー"};
 	public static String ITEM_NAME[]= {"ねこ","シュウ゛アイツアーしやく","とら","う","たつ","み","うま"};
 	
+	public static int DIALOG_ANIMATION_TIME=20;
 
 	public static int BLOCK_SIZE=32;
 	public static int MAIN_WIN_X_BOX=30;
