@@ -806,7 +806,7 @@ class dCanvas extends Canvas {
 	}
 	
 	public void drawChr(String str,int x,int y,int width, int ms) {
-		str=Moji.arrange(str);
+		str=ImageManager.arrange(str);
 		int x0=x;
 		
 		for(int i=0;i<str.length();i++) {
@@ -815,7 +815,7 @@ class dCanvas extends Canvas {
 				y+=PL2RPG.BLOCK_SIZE;
 			}else {
 				try {
-					buffer.drawImage(Moji.getImage(str.charAt(i)),x,y,null);
+					buffer.drawImage(ImageManager.getCharImage(str.charAt(i)),x,y,null);
 					if(ms>0) {
 						repaint();
 						w.wait(ms);
