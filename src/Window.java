@@ -9,9 +9,12 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,7 +31,7 @@ public class Window extends JFrame implements KeyListener{
 	public int now_playing_bgm=0;
 	public int walk_bgm=0;
 	public int battle_bgm=0;
-	
+
 
 
 	public int status=-1;
@@ -45,15 +48,13 @@ public class Window extends JFrame implements KeyListener{
 	public AnimationMove ma;
 
 	public int def_dir=1;
-	
+
 	private GameLoop gl;
-	
-	public int job[]= {0,1,2,3};
-	
+
 	private boolean press_up=false,press_dw=false,press_le=false,press_ri=false;
 
 	public MainData m;
-	
+
 	Window(MainData x){
 		super("TEST");
 		m = x;
@@ -76,7 +77,7 @@ public class Window extends JFrame implements KeyListener{
 
 		setVisible(true);
 		myCanvas.init();
-		
+
 		myCanvas.drawLoading();
 
 		setLocationRelativeTo(null);
@@ -93,6 +94,42 @@ public class Window extends JFrame implements KeyListener{
 
 
 
+	}
+
+	boolean load(String fileName) {
+		try {
+			FileInputStream fis=new FileInputStream(PL2RPG.SAVE_PATH+"/"+fileName);
+			ObjectInputStream ois=new ObjectInputStream(fis);
+			m=(MainData)ois.readObject();
+			ois.close();
+			fis.close();
+
+
+			return true;
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		} catch (ClassNotFoundException e) {
+		}
+
+		return false;
+	}
+
+	boolean save(String fileName) {
+		try {
+			FileOutputStream fos=new FileOutputStream(PL2RPG.SAVE_PATH+"/"+fileName);
+			ObjectOutputStream oos=new ObjectOutputStream(fos);
+
+			oos.writeObject(m);
+			oos.close();
+			fos.close();
+
+
+			return true;
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
+
+		return false;
 	}
 
 
@@ -165,7 +202,7 @@ public class Window extends JFrame implements KeyListener{
 		myCanvas.loadMap("home.1.csv",-1,-1);
 
 		status=2;
-		
+
 		gl=new GameLoop(this);
 		gl.start();
 
@@ -177,19 +214,12 @@ public class Window extends JFrame implements KeyListener{
 		Date date = new Date();        
 		String str_date = dateFormat.format(date);
 
-		try {
-			FileOutputStream  fos=new FileOutputStream (PL2RPG.SAVE_PATH+"/"+str_date);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject("ABCDE");
-			oos.close();
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
+		m.newGame();
+		save(str_date);
 
 		return str_date;
 	}
-	
+
 	boolean is_press(int key) {
 		boolean res=false;
 		switch(key) {
@@ -212,13 +242,13 @@ public class Window extends JFrame implements KeyListener{
 
 		return res;
 	}
-	
+
 	void wait(int t) {
 		try {
 			Thread.sleep(t);
 		} catch (InterruptedException e) {}
 	}
-	
+
 	void changeBgm(int id) {
 		bgm[now_playing_bgm].stop();
 		now_playing_bgm=id;
@@ -297,6 +327,7 @@ public class Window extends JFrame implements KeyListener{
 				}
 				if ( key == KeyEvent.VK_ENTER) {
 					load_name=save_list[key_y];
+					load(load_name);
 					drawLob(1);
 				}
 
@@ -304,7 +335,7 @@ public class Window extends JFrame implements KeyListener{
 				if ( key == KeyEvent.VK_ENTER) {
 					status=3;
 				}
-				
+
 			}else if(status==3) {
 				if ( key == KeyEvent.VK_ENTER) {
 					status=2;
@@ -339,12 +370,12 @@ class GameLoop extends Thread{
 		this.w=w;
 		this.myCanvas=w.myCanvas;
 	}
-	
+
 	//操作用ループ
 	public void run(){
 		int direction,view_direction=w.def_dir;
 		while(true) {
-			
+
 			if(w.status==2) {
 				direction=0;
 				if ( w.is_press( KeyEvent.VK_UP) ){
@@ -353,14 +384,14 @@ class GameLoop extends Thread{
 				if ( w.is_press( KeyEvent.VK_DOWN) ){
 					direction=3;
 				}
-	
+
 				if ( w.is_press( KeyEvent.VK_RIGHT) ){
 					direction=2;
 				}
 				if ( w.is_press( KeyEvent.VK_LEFT) ){
 					direction=4;
 				}
-				
+
 				if(direction!=0) {
 					w.ma.move(direction);
 					view_direction=direction;
@@ -372,10 +403,12 @@ class GameLoop extends Thread{
 				if(view_direction==3)bdy+= PL2RPG.BLOCK_SIZE;
 				if(view_direction==2)bdx+= PL2RPG.BLOCK_SIZE;
 				if(view_direction==4)bdx+=-PL2RPG.BLOCK_SIZE;
-				
+
 				for(int i=0;i<myCanvas.entities;i++) {
 					int menu_x=0;
 					int menu_y_max;
+					boolean is_save=true;
+					boolean draw_update=false;
 					if(bdx==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && bdy==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
@@ -392,38 +425,78 @@ class GameLoop extends Thread{
 							w.myCanvas.drawMenu4(menu_x, PL2RPG.DIALOG_ANIMATION_TIME);
 							while(w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 							while(w.is_press(KeyEvent.VK_ENTER)==false) {
+								draw_update=false;
 								if(w.is_press(KeyEvent.VK_RIGHT)) {
 									menu_x++;
 									if(menu_x>3)menu_x=3;
 									while(w.is_press(KeyEvent.VK_RIGHT))w.wait(33);
-									w.myCanvas.drawMenu4(menu_x);
+									draw_update=true;
 								}
 								if(w.is_press(KeyEvent.VK_LEFT)) {
 									menu_x--;
 									if(menu_x<0)menu_x=0;
 									while(w.is_press(KeyEvent.VK_LEFT))w.wait(33);
-									w.myCanvas.drawMenu4(menu_x);
+									draw_update=true;
 								}
 
-								
+
 								menu_y_max=PL2RPG.JOB_NAME.length;
 								if(menu_x!=0)menu_y_max=PL2RPG.JOB_NAME.length+1;
 								
 								if(w.is_press(KeyEvent.VK_DOWN)) {
-									w.job[menu_x]++;
-									if(w.job[menu_x]>=menu_y_max)w.job[menu_x]=menu_y_max-1;
+									w.m.partyJob[menu_x]++;
+									if(w.m.partyJob[menu_x]>=menu_y_max)w.m.partyJob[menu_x]=menu_y_max-1;
 									while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-									w.myCanvas.drawMenu4(menu_x);
+									draw_update=true;
 								}
 								if(w.is_press(KeyEvent.VK_UP)) {
-									w.job[menu_x]--;
-									if(w.job[menu_x]<0)w.job[menu_x]=0;
+									w.m.partyJob[menu_x]--;
+									if(w.m.partyJob[menu_x]<0)w.m.partyJob[menu_x]=0;
 									while(w.is_press(KeyEvent.VK_UP))w.wait(33);
-									w.myCanvas.drawMenu4(menu_x);
+									draw_update=true;
+								}
+								
+								for(int j=1;j<3;j++) {
+									if(w.m.partyJob[j]==PL2RPG.JOB_NAME.length) {
+										for(int k=j+1;k<4;k++) {
+											w.m.partyJob[k]=PL2RPG.JOB_NAME.length;
+										}
+										draw_update=true;
+										break;
+									}
+								}
+
+								
+								if(draw_update)w.myCanvas.drawMenu4(menu_x);
+
+								w.wait(33);
+							}
+							w.ma.update();
+							break;
+							
+						case 6:
+
+							w.se[0].play(0);
+
+							is_save=true;
+							w.myCanvas.drawMenu2(is_save, "セーブしますか？",PL2RPG.DIALOG_ANIMATION_TIME);//5
+
+							while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+							while(w.is_press(KeyEvent.VK_ENTER)==false) {
+								if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
+									is_save=!is_save;
+									while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+									w.myCanvas.drawMenu2(is_save,"セーブしますか？");
 								}
 								w.wait(33);
 							}
 							w.ma.update();
+
+							if(is_save) {
+								w.save(w.load_name);
+							}
+
+
 							break;
 						}
 					}
@@ -445,7 +518,7 @@ class AnimationMove extends Thread{
 	int direction=0;
 	int view_direction;
 	MainData m;
-	
+
 	private boolean update;
 	private boolean force_update=false;
 
@@ -455,11 +528,11 @@ class AnimationMove extends Thread{
 		this.w=w;
 		view_direction=w.def_dir;
 	}
-	
+
 	public void update() {
 		force_update=true;
 	}
-	
+
 
 	public void move(int direction) {
 
@@ -480,7 +553,7 @@ class AnimationMove extends Thread{
 			}else {
 				if(myCanvas.map[blx][bly]<=0)dir_con=0;
 			}
-			
+
 			if(direction!=0) {
 				view_direction=direction;
 				update=true;
@@ -508,7 +581,7 @@ class AnimationMove extends Thread{
 
 
 			if(dir_con>0 && direction!=0) {
-				
+
 				dir_con-=spd;
 				if(dir_con<0)dir_con=0;
 				if(direction==1) {
@@ -523,7 +596,7 @@ class AnimationMove extends Thread{
 				if(direction==4) {
 					myCanvas.pos_x-=spd;
 				}
-				
+
 				if(dir_con==0) {
 					myCanvas.pos_y=(myCanvas.pos_y+8)/32*32;
 					myCanvas.pos_x=(myCanvas.pos_x+8)/32*32;
@@ -532,9 +605,9 @@ class AnimationMove extends Thread{
 				update=true;
 
 			}
-			
-			
-			
+
+
+
 			for(int i=0;i<myCanvas.entities;i++) {
 				if(myCanvas.pos_x==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && myCanvas.pos_y==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 					boolean is_enter=true;
@@ -546,20 +619,20 @@ class AnimationMove extends Thread{
 						w.se[0].play(0);
 
 						is_enter=true;
-						w.myCanvas.drawMenu2(is_enter, PL2RPG.DIALOG_ANIMATION_TIME);
+						w.myCanvas.drawMenu2(is_enter,"フロアをいどうしますか？", PL2RPG.DIALOG_ANIMATION_TIME);
 						direction2=direction;
-						
+
 						while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 						while(w.is_press(KeyEvent.VK_ENTER)==false) {
 							if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
 								is_enter=!is_enter;
 								while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-								w.myCanvas.drawMenu2(is_enter);
+								w.myCanvas.drawMenu2(is_enter,"フロアをいどうしますか？");
 							}
 							w.wait(33);
 						}
 						w.ma.update();
-						
+
 						if(is_enter) {
 							w.def_dir=view_direction;
 							Animation_Select a=new Animation_Select(w.myCanvas,w);
@@ -587,31 +660,31 @@ class AnimationMove extends Thread{
 							if(direction2==2)myCanvas.pos_x-=PL2RPG.BLOCK_SIZE;
 							if(direction2==3)myCanvas.pos_y-=PL2RPG.BLOCK_SIZE;
 							if(direction2==4)myCanvas.pos_x+=PL2RPG.BLOCK_SIZE;
-							
+
 							if(direction2!=0) {
 								view_direction=direction2;
 							}
 						}
 						break;
-						
-						//アイテム取得
-						case 3:
-							w.se[0].play(0);
 
-							if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
-								w.myCanvas.drawDialog1(ItemData.getItem(Integer.parseInt(w.myCanvas.en_p[i][0])).name+"をひろった!", PL2RPG.DIALOG_ANIMATION_TIME);
-								m.plusItem(Integer.parseInt(w.myCanvas.en_p[i][0]));
-								w.myCanvas.en_type[i]=-1;
-								
-								w.myCanvas.en_used+=w.myCanvas.en_UID[i];
-								
-								while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-								while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
-								dir_con=0;
-								w.ma.update();
-							}
-							
-							break;
+						//アイテム取得
+					case 3:
+						w.se[0].play(0);
+
+						if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
+							w.myCanvas.drawDialog1(ItemData.getItem(Integer.parseInt(w.myCanvas.en_p[i][0])).name+"をひろった!", PL2RPG.DIALOG_ANIMATION_TIME);
+							m.plusItem(Integer.parseInt(w.myCanvas.en_p[i][0]));
+							w.myCanvas.en_type[i]=-1;
+
+							w.myCanvas.en_used+=w.myCanvas.en_UID[i];
+
+							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+							while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
+							dir_con=0;
+							w.ma.update();
+						}
+
+						break;
 
 					case 5://ダンジョン選択
 						w.se[0].play(0);
@@ -624,7 +697,7 @@ class AnimationMove extends Thread{
 						moji+="キャンセル";
 						w.myCanvas.drawMenu3(moji,sel, PL2RPG.DIALOG_ANIMATION_TIME);
 						direction2=direction;
-						
+
 						while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 						while(w.is_press(KeyEvent.VK_ENTER)==false) {
 							if(w.is_press(KeyEvent.VK_DOWN)) {
@@ -642,11 +715,11 @@ class AnimationMove extends Thread{
 							w.wait(33);
 						}
 						w.ma.update();
-						
+
 						if(sel<myCanvas.en_pc[i]/4) {
 							//取得済みアイテム、マッチ済み固定マッチング解除
 							w.myCanvas.en_used="";
-							
+
 							w.def_dir=view_direction;
 							Animation_Select a=new Animation_Select(w.myCanvas,w);
 							a.mode(2,-1);
@@ -673,7 +746,7 @@ class AnimationMove extends Thread{
 							if(direction2==2)myCanvas.pos_x-=PL2RPG.BLOCK_SIZE;
 							if(direction2==3)myCanvas.pos_y-=PL2RPG.BLOCK_SIZE;
 							if(direction2==4)myCanvas.pos_x+=PL2RPG.BLOCK_SIZE;
-							
+
 							if(direction2!=0) {
 								view_direction=direction2;
 							}
@@ -681,9 +754,12 @@ class AnimationMove extends Thread{
 						break;
 
 					}
+					
+					//アイテム取得
+
 				}
 			}
-			
+
 
 
 			if( ( update || force_update ) && Animation_Select.on_animate==false && w.status==2) {
@@ -803,14 +879,14 @@ class Animation_Select extends Thread{
 class dCanvas extends Canvas {
 	public int block_num;
 
-	private BufferedImage bg_img,new_img,con_img,new_act_img,con_act_img,con_dis_img,item_img;
+	private BufferedImage bg_img,new_img,con_img,new_act_img,con_act_img,con_dis_img,item_img,save_img;
 	private BufferedImage[] block;
 	private BufferedImage[][][] chr;//キャラ、向き、歩行
-	
+
 
 
 	public int[][] map;
-	
+
 	public int entities;
 	public int en_type[]=new int[512];
 	public int en_x[]=new int[512];
@@ -819,7 +895,7 @@ class dCanvas extends Canvas {
 	public String en_p[][]=new String[512][64];
 	public String en_UID[]=new String[512];
 	public String en_used="";
-	
+
 
 	public int pos_x,pos_y;
 
@@ -833,15 +909,15 @@ class dCanvas extends Canvas {
 		super();
 		this.w=w;
 	}
-	
+
 	public void drawChr(String str, int x, int y, int width) {
 		drawChr(str, x, y, width, 0);
 	}
-	
+
 	public void drawChr(String str,int x,int y,int width, int ms) {
 		str=ImageManager.arrange(str);
 		int x0=x;
-		
+
 		for(int i=0;i<str.length();i++) {
 			if(str.charAt(i)=='\n') {
 				x=x0;
@@ -854,7 +930,7 @@ class dCanvas extends Canvas {
 						w.wait(ms);
 					}
 				} catch (IOException e) {}
-				
+
 				if(x+PL2RPG.BLOCK_SIZE>x0+width) {
 					x=x0;
 					y+=PL2RPG.BLOCK_SIZE;
@@ -864,7 +940,7 @@ class dCanvas extends Canvas {
 			}
 		}
 	}
-	
+
 	//アイテム取得
 	public void drawDialog1(String str, int ms) {
 		buffer.setColor(new Color(255,255,255,255));
@@ -872,7 +948,7 @@ class dCanvas extends Canvas {
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		drawChr(str,104,104,PL2RPG.MAIN_WIN_X-1-100*2-8, ms);
-		
+
 		drawChr("▶OK",PL2RPG.MAIN_WIN_X-1-100-PL2RPG.BLOCK_SIZE*5,PL2RPG.MAIN_WIN_Y-1-100-PL2RPG.BLOCK_SIZE,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		repaint();
 	}
@@ -881,13 +957,13 @@ class dCanvas extends Canvas {
 	public void drawMenu4(int x) {
 		drawMenu4(x, 0);
 	}
-	
+
 	public void drawMenu4(int x, int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(47,97,PL2RPG.MAIN_WIN_X-1-47*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(50,100,PL2RPG.MAIN_WIN_X-1-50*2,PL2RPG.MAIN_WIN_Y-1-100*2);
-		
+
 		drawChr("ジョブをせんたくしてください。",54+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 
 		for(int j=0;j<4;j++) {
@@ -902,8 +978,8 @@ class dCanvas extends Canvas {
 			drawChr("なし",54+PL2RPG.BLOCK_SIZE*(1+j*6),104+PL2RPG.BLOCK_SIZE*(PL2RPG.JOB_NAME.length+3),PL2RPG.MAIN_WIN_X-1-100*2-8);
 		}
 		for(int j=0;j<4;j++) {
-				drawChr("▶",54+PL2RPG.BLOCK_SIZE*j*6,104+PL2RPG.BLOCK_SIZE*(3+w.job[j]),PL2RPG.MAIN_WIN_X-1-100*2-8);				
-				if(j==x)drawChr("▶",54+PL2RPG.BLOCK_SIZE*(1+j*6),104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
+			drawChr("▶",54+PL2RPG.BLOCK_SIZE*j*6,104+PL2RPG.BLOCK_SIZE*(3+w.m.partyJob[j]),PL2RPG.MAIN_WIN_X-1-100*2-8);				
+			if(j==x)drawChr("▶",54+PL2RPG.BLOCK_SIZE*(1+j*6),104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 
 		}
 		repaint();
@@ -912,30 +988,30 @@ class dCanvas extends Canvas {
 	public void drawMenu3(String moji,int sel) {
 		drawMenu3(moji,sel,0);
 	}
-	
+
 	public void drawMenu3(String moji,int sel, int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		drawChr("いどうさき　を　せんたくしてください。",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8, ms);
-		
+
 		drawChr(moji,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		drawChr("▶",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*(2+sel),PL2RPG.MAIN_WIN_X-1-100*2-8);
-		
+
 		repaint();
 	}
-	
-	public void drawMenu2(boolean is_enter) {
-		drawMenu2(is_enter, 0);
+
+	public void drawMenu2(boolean is_enter,String msg) {
+		drawMenu2(is_enter,msg, 0);
 	}
-	
-	public void drawMenu2(boolean is_enter, int ms) {
+
+	public void drawMenu2(boolean is_enter,String msg, int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
-		drawChr("フロアをいどうしますか？",104,104,PL2RPG.MAIN_WIN_X-1-100*2-8, ms);
+		drawChr(msg,104,104,PL2RPG.MAIN_WIN_X-1-100*2-8, ms);
 		if(is_enter) {
 			drawChr("▶はい",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 			drawChr("　いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
@@ -943,7 +1019,7 @@ class dCanvas extends Canvas {
 			drawChr("　はい",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 			drawChr("▶いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);			
 		}
-		
+
 		repaint();
 	}
 	public void drawMenu1() {
@@ -958,7 +1034,7 @@ class dCanvas extends Canvas {
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		repaint();
 	}
-	
+
 
 	public void loadMap(String fname,int nx,int ny) {
 
@@ -966,10 +1042,10 @@ class dCanvas extends Canvas {
 
 		String line;
 		String[] csv_arr;
-		
+
 		ArrayList<String> csv_raw=new ArrayList<>();
 
-		
+
 		int lines=0;
 		int map_x=0,map_y=0;
 		entities=0;
@@ -985,31 +1061,31 @@ class dCanvas extends Canvas {
 			}
 			br.close();
 			entities=lines-map_y-2;
-			
-		
-		
+
+
+
 			map_x=csv_raw.get(1).split(",").length;
-			
+
 
 			//System.out.println(lines);
 			//System.out.println(map_y);
 			//System.out.println(map_x);
 			//System.out.println(entities);
-			
+
 			map=new int[map_x][map_y];
-			
+
 			for(int y=0;y<map_y;y++) {
 				csv_arr=csv_raw.get(1+y).split(",");
 				for(int x=0;x<map_x;x++) {
 					map[x][y]=Integer.parseInt(csv_arr[x]);
 				}
-				
+
 			}
-			
+
 			csv_arr=csv_raw.get(0).split(",");
-			
+
 			//System.out.println(csv_arr[0]);
-			
+
 			if(nx==-1) {
 				pos_x=PL2RPG.BLOCK_SIZE*Integer.parseInt(csv_arr[0]);
 				pos_y=PL2RPG.BLOCK_SIZE*Integer.parseInt(csv_arr[1]);
@@ -1017,17 +1093,17 @@ class dCanvas extends Canvas {
 				pos_x=PL2RPG.BLOCK_SIZE*nx;
 				pos_y=PL2RPG.BLOCK_SIZE*ny;
 			}
-			
+
 			loadBlock(csv_arr[2]);
-			
-			
+
+
 			w.battle_bgm=Integer.parseInt(csv_arr[4]);
 			w.walk_bgm=Integer.parseInt(csv_arr[3]);
-			
+
 			w.changeBgm(w.walk_bgm);
-						
-			
-			
+
+
+
 			for(int i=0;i<entities;i++) {
 				csv_arr=csv_raw.get(map_y+2+i).split(",");
 				en_type[i]=Integer.parseInt(csv_arr[0]);
@@ -1044,7 +1120,7 @@ class dCanvas extends Canvas {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public void blank(int alpht) {
@@ -1065,27 +1141,35 @@ class dCanvas extends Canvas {
 			for(int dx=-1;dx<PL2RPG.MAIN_WIN_X_BOX+1;dx++) {
 				diff_x=posx_1+dx-PL2RPG.MAIN_WIN_X_BOX/2;
 				diff_y=posy_1+dy-PL2RPG.MAIN_WIN_Y_BOX/2;
-								
+
 				if(diff_x>=0 && diff_y >=0 && diff_x<map.length && diff_y<map[0].length) {
 					buffer.drawImage(block[Math.abs(map[diff_x][diff_y])],dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2,null);
 				}
-				
+
 				for(int i=0;i<entities;i++) {
-					if(en_type[i]==3) {
+					switch(en_type[i]) {
+					case 3:
 						if(en_x[i]==diff_x && en_y[i]==diff_y) {
 							if(en_used.indexOf(en_UID[i])==-1)
-							buffer.drawImage(item_img,dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
+								buffer.drawImage(item_img,dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
 						}
+						break;
+					case 6:
+						if(en_x[i]==diff_x && en_y[i]==diff_y) {
+							if(en_used.indexOf(en_UID[i])==-1)
+								buffer.drawImage(save_img,dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
+						}
+						break;
 					}
 				}
 
 			}
 		}
 
-		buffer.drawImage(chr[w.job[0]][view_direction-1][step],PL2RPG.MAIN_WIN_X/2,PL2RPG.MAIN_WIN_Y/2-PL2RPG.BLOCK_SIZE/2,null);
+		buffer.drawImage(chr[w.m.partyJob[0]][view_direction-1][step],PL2RPG.MAIN_WIN_X/2,PL2RPG.MAIN_WIN_Y/2-PL2RPG.BLOCK_SIZE/2,null);
 
 		blank(alpha);
-	
+
 
 		repaint();
 	}
@@ -1148,7 +1232,7 @@ class dCanvas extends Canvas {
 
 		repaint();
 	}
-	
+
 	public void drawLoading() {
 		blank(255);
 		drawChr("Loading...",PL2RPG.BLOCK_SIZE*10,PL2RPG.BLOCK_SIZE*10,PL2RPG.MAIN_WIN_X);
@@ -1167,11 +1251,13 @@ class dCanvas extends Canvas {
 			con_act_img = ImageIO.read(new File(PL2RPG.UI_IMG_PATH+"/continue_act.png"));
 			con_dis_img = ImageIO.read(new File(PL2RPG.UI_IMG_PATH+"/continue_dis.png"));
 			item_img = ImageIO.read(new File(PL2RPG.BLOCK_IMG_PATH+"/item.png"));
+			save_img = ImageIO.read(new File(PL2RPG.BLOCK_IMG_PATH+"/save.png"));
+			
 
 			loadBlock("0.home");
 
 			chr=new BufferedImage[7][4][4];
-			
+
 			String c;
 			for(int j=0;j<7;j++) {
 				c=PL2RPG.JOBS[j];
@@ -1183,14 +1269,14 @@ class dCanvas extends Canvas {
 					chr[j][3][i]=ImageIO.read(new File(PL2RPG.UI_CHR_PATH+"/"+c+".l."+Integer.toString(i+1)+".png"));
 				}
 			}
-			
+
 
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void loadBlock(String pn) {
 		File file1 = new File(PL2RPG.BLOCK_IMG_PATH+"/"+pn);
 		File fileArray1[] = file1.listFiles();

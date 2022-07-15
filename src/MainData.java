@@ -1,10 +1,9 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.Random;
+import java.io.Serializable;
 
-public class MainData{
+public class MainData implements Serializable{
+	static final long serialVersionUID=1;
+
+	
 	boolean[] clearQuestFlug = new boolean[35];
 	int[] itemHas = new int[24];
 	int[] partyJob = new int[4];
@@ -48,6 +47,8 @@ public class MainData{
 		}
 		for(n = 24; n < 35; n++) clearQuestFlug[n] = false;
 	}
+	
+	/*
 	
 	boolean load(String fileName) {
 		int checkSum = 0;
@@ -133,6 +134,7 @@ public class MainData{
 			return false;
 		}
 	}
+	*/
 	
 	void max() {
 		for(int n = 0; n < 4; n++) {
@@ -141,6 +143,7 @@ public class MainData{
 		}
 	}
 	
+	/*
 	boolean save(String fileName) {
 		Random r = new Random();
 		int checkSum = 0;
@@ -202,6 +205,8 @@ public class MainData{
 			System.out.println(e);
 			return false;
 		}
+		
 
 	}
+	*/
 }

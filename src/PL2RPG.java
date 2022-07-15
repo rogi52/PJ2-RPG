@@ -22,9 +22,12 @@ public class PL2RPG {
 		Window w=new Window(m);
 		w.drawStart(false);
 		String PATH=SAVE_PATH+"/"+w.waitSelect();
-		if(!m.load(PATH)) {
+		/*
+		OPEN_PATH=SAVE_PATH+"/"+w.waitSelect();
+		if(!w.load(OPEN_PATH)) {
 			m.newGame();
-			m.save(PATH);
+			w.save(OPEN_PATH);
 		}
+		*/
 	}
 }
