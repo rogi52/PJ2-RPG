@@ -23,6 +23,11 @@ import javax.swing.JFrame;
 
 public class Window extends JFrame implements KeyListener{
 
+	public Sound[] se=new Sound[64];
+	public Sound[] bgm=new Sound[64];
+	public int now_playing_bgm=0;
+	
+
 
 	public int status=-1;
 	public int key_y=0;
@@ -72,7 +77,16 @@ public class Window extends JFrame implements KeyListener{
 		myCanvas.blank(255);
 
 		setLocationRelativeTo(null);
+		
+		for(int i=0;i<1;i++) {
+			se[i]=new Sound("./se/"+i+".wav");
+		}
 
+		for(int i=0;i<2;i++) {
+			bgm[i]=new Sound("./bgm/"+i+".mid");
+		}
+
+		bgm[now_playing_bgm].play(-1);
 
 
 
@@ -355,6 +369,7 @@ class GameLoop extends Thread{
 					if(bdx==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && bdy==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
+							w.se[0].play(0);
 							w.myCanvas.drawMenu1(PL2RPG.DIALOG_ANIMATION_TIME);
 							while(w.status==3) {
 								w.wait(33);
@@ -362,6 +377,7 @@ class GameLoop extends Thread{
 							w.ma.update();
 							break;
 						case 2://ジョブ選択
+							w.se[0].play(0);
 							menu_x=0;
 							w.myCanvas.drawMenu4(menu_x, PL2RPG.DIALOG_ANIMATION_TIME);
 							while(w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
@@ -517,6 +533,8 @@ class AnimationMove extends Thread{
 					String moji;
 					switch(myCanvas.en_type[i]) {
 					case 0:
+						w.se[0].play(0);
+
 						is_enter=true;
 						w.myCanvas.drawMenu2(is_enter, PL2RPG.DIALOG_ANIMATION_TIME);
 						direction2=direction;
@@ -568,6 +586,8 @@ class AnimationMove extends Thread{
 						
 						//アイテム取得
 						case 3:
+							w.se[0].play(0);
+
 							if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
 								w.myCanvas.drawDialog1(ItemData.getItem(Integer.parseInt(w.myCanvas.en_p[i][0])).name+"をひろった!", PL2RPG.DIALOG_ANIMATION_TIME);
 								m.plusItem(Integer.parseInt(w.myCanvas.en_p[i][0]));
@@ -584,6 +604,8 @@ class AnimationMove extends Thread{
 							break;
 
 					case 5://ダンジョン選択
+						w.se[0].play(0);
+
 						sel=0;
 						moji="";
 						for(int j=0;j<myCanvas.en_pc[i];j+=4) {
@@ -774,6 +796,8 @@ class dCanvas extends Canvas {
 	private BufferedImage bg_img,new_img,con_img,new_act_img,con_act_img,con_dis_img,item_img;
 	private BufferedImage[] block;
 	private BufferedImage[][][] chr;//キャラ、向き、歩行
+	
+
 
 	public int[][] map;
 	
@@ -986,6 +1010,11 @@ class dCanvas extends Canvas {
 			
 			loadBlock(csv_arr[2]);
 			
+			
+			w.bgm[w.now_playing_bgm].stop();
+			w.now_playing_bgm=Integer.parseInt(csv_arr[3]);
+			w.bgm[w.now_playing_bgm].play(-1);
+			
 			for(int i=0;i<entities;i++) {
 				csv_arr=csv_raw.get(map_y+2+i).split(",");
 				en_type[i]=Integer.parseInt(csv_arr[0]);
@@ -1144,6 +1173,7 @@ class dCanvas extends Canvas {
 					chr[j][3][i]=ImageIO.read(new File(PL2RPG.UI_CHR_PATH+"/"+c+".l."+Integer.toString(i+1)+".png"));
 				}
 			}
+			
 
 
 		} catch (IOException e) {
