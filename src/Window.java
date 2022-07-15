@@ -26,6 +26,8 @@ public class Window extends JFrame implements KeyListener{
 	public Sound[] se=new Sound[64];
 	public Sound[] bgm=new Sound[64];
 	public int now_playing_bgm=0;
+	public int walk_bgm=0;
+	public int battle_bgm=0;
 	
 
 
@@ -215,6 +217,13 @@ public class Window extends JFrame implements KeyListener{
 		try {
 			Thread.sleep(t);
 		} catch (InterruptedException e) {}
+	}
+	
+	void changeBgm(int id) {
+		bgm[now_playing_bgm].stop();
+		now_playing_bgm=id;
+		bgm[now_playing_bgm].play(-1);
+
 	}
 
 	@Override
@@ -1012,9 +1021,12 @@ class dCanvas extends Canvas {
 			loadBlock(csv_arr[2]);
 			
 			
-			w.bgm[w.now_playing_bgm].stop();
-			w.now_playing_bgm=Integer.parseInt(csv_arr[3]);
-			w.bgm[w.now_playing_bgm].play(-1);
+			w.battle_bgm=Integer.parseInt(csv_arr[4]);
+			w.walk_bgm=Integer.parseInt(csv_arr[3]);
+			
+			w.changeBgm(w.walk_bgm);
+						
+			
 			
 			for(int i=0;i<entities;i++) {
 				csv_arr=csv_raw.get(map_y+2+i).split(",");
