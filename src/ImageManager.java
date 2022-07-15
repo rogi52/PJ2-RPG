@@ -7,8 +7,8 @@ import javax.imageio.ImageIO;
 
 public class ImageManager {
 
-	static String mark1  = "がぎぐげごガギグゲゴざじずぜぞザジズゼゾだぢづでどダヂヅデドばびぶべぼバビブベボ";
-	static String trans1 = "かきくけこカキクケコさしすせそサシスセソたちつてとタチツテトはひふへほハヒフヘホ";
+	static String mark1  = "ヴがぎぐげごガギグゲゴざじずぜぞザジズゼゾだぢづでどダヂヅデドばびぶべぼバビブベボ";
+	static String trans1 = "うかきくけこカキクケコさしすせそサシスセソたちつてとタチツテトはひふへほハヒフヘホ";
 	static String mark2  = "ぱぴぷぺぽパピプペポ";
 	static String trans2 = "はひふへほハヒフヘホ";
 	static HashMap<String,BufferedImage> imgBuffer =  new HashMap<>();
