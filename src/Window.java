@@ -74,10 +74,11 @@ public class Window extends JFrame implements KeyListener{
 
 		setVisible(true);
 		myCanvas.init();
-		myCanvas.blank(255);
+		
+		myCanvas.drawLoading();
 
 		setLocationRelativeTo(null);
-		
+
 		for(int i=0;i<1;i++) {
 			se[i]=new Sound("./se/"+i+".wav");
 		}
@@ -1036,19 +1037,10 @@ class dCanvas extends Canvas {
 
 	public void blank(int alpht) {
 		buffer.setColor(new Color(0,0,0,alpht));
-		buffer.fillRect(0,0,getSize().width-1,getSize().height-1);
+		buffer.fillRect(0,0,getSize().width,getSize().height);
 	}
 
 	public void drawMap(int alpha,int view_direction,int step) {
-
-		/*
-		int rnd;
-		Random r=new Random();
-		for(int i=0;i<PL2RPG.MAIN_WIN_X_BOX*PL2RPG.MAIN_WIN_Y_BOX;i++) {
-			rnd=r.nextInt(block_num);
-			buffer.drawImage(block[rnd],(i%PL2RPG.MAIN_WIN_X_BOX)*PL2RPG.BLOCK_SIZE,(i/PL2RPG.MAIN_WIN_X_BOX)*PL2RPG.BLOCK_SIZE,null);
-		}
-		 */
 
 		int diff_x,diff_y;
 		int posx_1=pos_x/32;
@@ -1142,6 +1134,12 @@ class dCanvas extends Canvas {
 
 		blank(alpha);
 
+		repaint();
+	}
+	
+	public void drawLoading() {
+		blank(255);
+		drawChr("Loading...",PL2RPG.BLOCK_SIZE*10,PL2RPG.BLOCK_SIZE*10,PL2RPG.MAIN_WIN_X);
 		repaint();
 	}
 
