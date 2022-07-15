@@ -14,6 +14,8 @@ public class PL2RPG {
 	public static int MAIN_WIN_X_BOX=30;
 	public static int MAIN_WIN_Y_BOX=20;
 
+	public static float RANDOM_MATCH_PROB=0.1f;
+
 	public static int MAIN_WIN_X=BLOCK_SIZE*MAIN_WIN_X_BOX;
 	public static int MAIN_WIN_Y=BLOCK_SIZE*MAIN_WIN_Y_BOX;
 
@@ -21,7 +23,7 @@ public class PL2RPG {
 		MainData m = new MainData();
 		Window w=new Window(m);
 		w.drawStart(false);
-		String PATH=SAVE_PATH+"/"+w.waitSelect();
+		//String PATH=SAVE_PATH+"/"+w.waitSelect();
 		/*
 		OPEN_PATH=SAVE_PATH+"/"+w.waitSelect();
 		if(!w.load(OPEN_PATH)) {
