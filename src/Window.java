@@ -82,7 +82,7 @@ public class Window extends JFrame implements KeyListener{
 			se[i]=new Sound("./se/"+i+".wav");
 		}
 
-		for(int i=0;i<2;i++) {
+		for(int i=0;i<3;i++) {
 			bgm[i]=new Sound("./bgm/"+i+".mid");
 		}
 
