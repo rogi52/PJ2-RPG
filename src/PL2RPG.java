@@ -23,13 +23,5 @@ public class PL2RPG {
 		MainData m = new MainData();
 		Window w=new Window(m);
 		w.drawStart(false);
-		//String PATH=SAVE_PATH+"/"+w.waitSelect();
-		/*
-		OPEN_PATH=SAVE_PATH+"/"+w.waitSelect();
-		if(!w.load(OPEN_PATH)) {
-			m.newGame();
-			w.save(OPEN_PATH);
-		}
-		*/
 	}
 }
