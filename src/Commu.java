@@ -43,7 +43,7 @@ class BroadCastIP extends Thread{
 		try {
 			my_ip = InetAddress.getLocalHost().getHostAddress();
 			broad_ip=my_ip.substring(0, my_ip.lastIndexOf("."))+".255";
-			InetSocketAddress isAddress = new InetSocketAddress( broad_ip, 18418 );
+			InetSocketAddress isAddress = new InetSocketAddress( broad_ip, 15224 );
 			byte[] buffer = {};
 			packet = new DatagramPacket( buffer, 0, isAddress );
 			ds=new DatagramSocket();
