@@ -48,7 +48,6 @@ public class MessageWindow extends Component {
 		// addMessageStatic(msg, false);
 	}
 
-
 	void addMessageDynamic(String msg, boolean newLine) {
 		if(newLine) buffer += "\n";
 		msg = ImageManager.arrange(msg);
@@ -71,6 +70,9 @@ public class MessageWindow extends Component {
 	}
 
 	public void paint(Graphics g) {
+
+		if(buffer.length() == 0) return;
+
 		g.setColor(Color.BLACK);
 		g.fillRect(START_X,  START_Y,  CHARACTER_SIZE * CHARACTER_NUM_WIDTH + OFFSET * 2,  CHARACTER_SIZE * (CHARACTER_NUM_HEIGHT) + OFFSET * 2);
 
@@ -78,7 +80,7 @@ public class MessageWindow extends Component {
 
 			char c = buffer.charAt(i);
 			if(c == '\n') { if(w!=0) { h++; w=0; } continue; }
-			if(c == ' ') { w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; } continue; }
+			if(c == ' ' || c == ':') { w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; } continue; }
 			try {
 				BufferedImage I = ImageManager.getCharImage(c);
 				g.drawImage(I.getScaledInstance(CHARACTER_SIZE, CHARACTER_SIZE, Image.SCALE_DEFAULT), START_X + OFFSET + w * CHARACTER_SIZE, START_Y + OFFSET + h * CHARACTER_SIZE, null);
