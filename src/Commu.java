@@ -7,9 +7,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 //通信用クラス
-public class Commu {
-
-	
+//このクラスではデータの通信とその解析、保持を行う。
+public class Commu {	
 	public static void main(String[] args) {
 		BroadCastIP c=new BroadCastIP();
 		System.out.println(c.init());

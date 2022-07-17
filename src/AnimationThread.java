@@ -205,12 +205,16 @@ class AnimationMove extends Thread{
 		int walk_timer=0;
 		int step=0;
 		boolean random_match_test=false;
+		boolean any_event_disabled;
+		boolean enemy_match;
 
 		//ゲームループ
 		//描画と判定
 		while(true) {
 			update=false;
 			random_match_test=false;
+			any_event_disabled=false;
+			enemy_match=false;
 			
 			walk_timer++;
 			if(walk_timer>15) {
@@ -258,6 +262,9 @@ class AnimationMove extends Thread{
 					int direction2;
 					int sel=0;
 					String moji;
+					
+					if(any_event_disabled)break;
+					
 					switch(myCanvas.en_type[i]) {
 					case 0:
 						w.se[0].play(0);
@@ -326,6 +333,16 @@ class AnimationMove extends Thread{
 							while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
 							dir_con=0;
 							w.ma.update();
+						}
+
+						break;
+						
+					//固定エンカウント
+					case 4:
+						if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {	
+							any_event_disabled=true;
+							enemy_match=true;
+							w.myCanvas.en_used+=w.myCanvas.en_UID[i];
 						}
 
 						break;
@@ -401,7 +418,11 @@ class AnimationMove extends Thread{
 			}
 			
 			
-			if(random_match_test && w.myCanvas.random_match_enable && Math.random()<PL2RPG.RANDOM_MATCH_PROB) {
+			if(random_match_test && w.myCanvas.random_match_enable && Math.random()<PL2RPG.RANDOM_MATCH_PROB && !any_event_disabled) {
+				enemy_match=true;				
+			}
+			
+			if(enemy_match) {
 				w.changeBgm(-1);
 				w.se[1].play(0);
 				myCanvas.drawMap(0,view_direction,step);
@@ -425,15 +446,13 @@ class AnimationMove extends Thread{
 				a.mode(-1,2);
 				a.start();
 				while(a.fin==false) {
-					try {
-						sleep(33);
-					} catch (InterruptedException e) {}
+					w.wait(33);
 				}
 
 				
 				w.changeBgm(w.walk_bgm);
 				update=true;
-				
+
 			}
 
 
