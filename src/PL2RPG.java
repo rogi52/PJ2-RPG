@@ -3,6 +3,7 @@ public class PL2RPG {
 	public static String UI_IMG_PATH="./img/UI";
 	public static String BLOCK_IMG_PATH="./img/block";
 	public static String UI_CHR_PATH="./img/chr";
+	public static String TEKI_PATH="./img/teki";
 	public static String SE_PATH="./se";
 	public static String MAP_PATH="./map";
 	

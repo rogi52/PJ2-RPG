@@ -14,10 +14,11 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 class dCanvas extends Canvas {
-	public int block_num;
+	public int block_num,teki_num;
 
 	private BufferedImage bg_img,new_img,con_img,new_act_img,con_act_img,con_dis_img,item_img,save_img;
 	private BufferedImage[] block;
+	private BufferedImage[] teki;
 	private BufferedImage[][][] chr;//キャラ、向き、歩行
 
 
@@ -282,6 +283,8 @@ class dCanvas extends Canvas {
 		int posy_1=pos_y/32;
 		int posx_2=pos_x%32;
 		int posy_2=pos_y%32;
+		
+		int int_temp;
 
 		blank(255);
 		for(int dy=-1;dy<PL2RPG.MAIN_WIN_Y_BOX+1;dy++) {
@@ -299,6 +302,15 @@ class dCanvas extends Canvas {
 						if(en_x[i]==diff_x && en_y[i]==diff_y) {
 							if(en_used.indexOf(en_UID[i])==-1)
 								buffer.drawImage(item_img,dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
+						}
+						break;
+					case 4:
+						int_temp=Integer.parseInt(en_p[i][0]);
+						if(int_temp>=0) {
+							if(en_x[i]==diff_x && en_y[i]==diff_y) {
+								if(en_used.indexOf(en_UID[i])==-1)
+									buffer.drawImage(teki[int_temp],dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
+							}
 						}
 						break;
 					case 6:
@@ -420,6 +432,8 @@ class dCanvas extends Canvas {
 			
 
 			loadBlock("0.home");
+			
+			loadTeki();
 
 			chr=new BufferedImage[7][4][4];
 
@@ -441,6 +455,47 @@ class dCanvas extends Canvas {
 			e.printStackTrace();
 		}
 	}
+	
+	public void loadTeki() {
+		File file1 = new File(PL2RPG.TEKI_PATH);
+		File fileArray1[] = file1.listFiles();
+
+		block_num=fileArray1.length;
+
+
+		// ファイルの一覧
+		String path_temp,s,s2;
+		int iden;
+		int max=0;
+		for (File f: fileArray1){
+			if(f.isFile()) {
+				s=f.getName();
+				s2=s.substring(0,s.lastIndexOf('.'));
+				iden=Integer.parseInt(s2.substring(0,s2.lastIndexOf('.')));
+				if(iden>max)max=iden;
+			}
+		}
+
+		teki=new BufferedImage[max+1];
+		teki_num=max+1;
+
+		for (File f: fileArray1){
+			if(f.isFile()) {
+				s=f.getName();
+				s2=s.substring(0,s.lastIndexOf('.'));
+				iden=Integer.parseInt(s2.substring(0,s2.lastIndexOf('.')));
+				//System.out.println(s2.substring(0,s2.lastIndexOf('.')));
+				//System.out.println(s2.substring(1+s2.lastIndexOf('.')));
+				path_temp=PL2RPG.TEKI_PATH+"/"+f.getName();
+				try {
+					teki[iden]=ImageIO.read(new File(path_temp));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 
 	public void loadBlock(String pn) {
 		File file1 = new File(PL2RPG.BLOCK_IMG_PATH+"/"+pn);
