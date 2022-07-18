@@ -275,28 +275,24 @@ public class Window extends JFrame implements KeyListener{
 			break;
 		}
 		if(Animation_Select.on_animate==false && AnimationMove.on_animate==false) {
-			int direction=0;
 			switch(key) {
 			case KeyEvent.VK_UP:
 				key_y--;
-				direction=1;
 				break;
 			case KeyEvent.VK_DOWN:
 				key_y++;
-				direction=3;
 				break;
 			case KeyEvent.VK_RIGHT:
 				key_x++;
-				direction=2;
 				break;
 			case KeyEvent.VK_LEFT:
 				key_x--;
-				direction=4;
 				break;
 			}
 
 
 			if(status==0) {
+				se[0].play(0);
 				key_x%=2;
 				if(key_x<0)key_x+=2;
 
@@ -312,6 +308,7 @@ public class Window extends JFrame implements KeyListener{
 					}
 				}
 			}else if(status==1) {
+				se[0].play(0);
 				key_y%=save_num;
 				if(key_y<0)key_y+=save_num;
 				myCanvas.drawSelect(key_y);
@@ -329,11 +326,13 @@ public class Window extends JFrame implements KeyListener{
 					status=3;
 				}
 
-			}else if(status==3) {
+			}/*else if(status==3) {
+				
 				if ( key == KeyEvent.VK_ENTER) {
 					status=2;
-				}	
-			}
+				}
+				
+			}*/
 		}
 	}
 

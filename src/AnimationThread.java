@@ -51,7 +51,8 @@ class GameLoop extends Thread{
 						case 1://クエスト選択
 							w.se[0].play(0);
 							w.myCanvas.drawMenu1(PL2RPG.DIALOG_ANIMATION_TIME);
-							while(w.status==3) {
+							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+							while(w.is_press(KeyEvent.VK_ENTER)==false) {
 								w.wait(33);
 							}
 							w.ma.update();
@@ -60,7 +61,7 @@ class GameLoop extends Thread{
 							w.se[0].play(0);
 							menu_x=0;
 							w.myCanvas.drawMenu4(menu_x, PL2RPG.DIALOG_ANIMATION_TIME);
-							while(w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+							while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 							while(w.is_press(KeyEvent.VK_ENTER)==false) {
 								draw_update=false;
 								if(w.is_press(KeyEvent.VK_RIGHT)) {
@@ -118,7 +119,7 @@ class GameLoop extends Thread{
 							is_save=true;
 							w.myCanvas.drawMenu2(is_save, "セーブしますか？",PL2RPG.DIALOG_ANIMATION_TIME);//5
 
-							while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+							while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 							while(w.is_press(KeyEvent.VK_ENTER)==false) {
 								if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
 									is_save=!is_save;
@@ -208,8 +209,7 @@ class AnimationMove extends Thread{
 		boolean any_event_disabled;
 		boolean enemy_match;
 
-		//ゲームループ
-		//描画と判定
+		//描画ループ
 		while(true) {
 			update=false;
 			random_match_test=false;
@@ -273,7 +273,7 @@ class AnimationMove extends Thread{
 						w.myCanvas.drawMenu2(is_enter,"フロアをいどうしますか？", PL2RPG.DIALOG_ANIMATION_TIME);
 						direction2=direction;
 
-						while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+						while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 						while(w.is_press(KeyEvent.VK_ENTER)==false) {
 							if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
 								is_enter=!is_enter;
@@ -359,7 +359,7 @@ class AnimationMove extends Thread{
 						w.myCanvas.drawMenu3(moji,sel, PL2RPG.DIALOG_ANIMATION_TIME);
 						direction2=direction;
 
-						while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+						while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 						while(w.is_press(KeyEvent.VK_ENTER)==false) {
 							if(w.is_press(KeyEvent.VK_DOWN)) {
 								sel++;
