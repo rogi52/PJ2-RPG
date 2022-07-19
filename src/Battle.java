@@ -6,10 +6,6 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 
-//未実装メモ
-//攻撃対象設定、ジョブ毎に対象を決める場合
-//アイテム所持の管理
-
 class Battle {
 
 	public static void main(String[] args) {
@@ -104,13 +100,13 @@ class Battle {
 	}
 
 	void changeJobStatus(int i, int job) {
-		Hero[i] = StatusData.callJob(job);
-		/* HP, MP が回復しそう */
+		Hero[i] = StatusData.callJob(job, data.clearQuestFlug);
+		/* HP, MP が回復しそう→ラスボス戦闘時専用の処理で、別の場所でHP,MPを調整している */
 	}
 
 	void setHero() {
 		for(int i = 0; i < 4; i++) {
-			Hero[i] = StatusData.callJob(data.partyJob[i]);
+			Hero[i] = StatusData.callJob(data.partyJob[i], data.clearQuestFlug);
 			Hero[i].HP = data.partyHP[i];
 			Hero[i].MP = data.partyMP[i];
 			window.players[i] = new BattleWindow.Player(Hero[i].Name, Hero[i].HP, Hero[i].MP);
@@ -124,7 +120,7 @@ class Battle {
 			i++;
 		}
 		i++;
-		/* ここまでは何をしている？ */
+		/* ここまでは何をしている？→味方の人数をカウントしている*/
 
 		int m;
 		Enemy = StatusData.callEnemies(enemyUnitID);
@@ -197,11 +193,7 @@ class Battle {
 				stock[n] = new skill();
 				System.out.println(Hero[n].Name + "のターン.");
 				window.println(Hero[n].Name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
-				//for(int m = 0; m < 5; m++) if(buf[m][n] != null) System.out.println("debug:" + buf[m][n].name + " = at" + buf[m][n].turn);
-				//System.out.println("HP:" + Hero[n].HP + "/" + Hero[n].MaxHP + " MP:" + Hero[n].MP + "/" + Hero[n].MaxMP);
-				//System.out.printf("0:もどる, 1:こうげき, 2:ぼうぎょ, 3:スキル =>");
 				/* !もどる選択肢の実装 */
-
 				//selects = s.nextInt() - 1;
 				String option = window.getOption(cmd1, BattleWindow.CMD_LEFT);
 				selects = cmd1_mp.get(option) - 1;
@@ -214,16 +206,6 @@ class Battle {
 				}else if(selects == 0){//攻撃
 					stock[n].name = "こうげき";
 					stock[n].waza = selects;
-					//System.out.printf("0:もどる");
-					/*
-					for(int m = 0; m < 4; m++) {
-						if(Enemy[m].HP > 0) {
-							System.out.printf(", " + (m + 5) + ":" + Enemy[m].Name);
-						}
-					}
-					System.out.printf(" =>");
-					*/
-					//stock[n].target = s.nextInt() - 1;
 					ArrayList<String> cmd3 = new ArrayList<>();
 					HashMap<String,Integer> enemy_hash = new HashMap<>();
 					for(int m = 0; m < 4; m++) {
@@ -248,12 +230,6 @@ class Battle {
 					stock[n].target = 8;
 					stock[n].costMP = 0;
 				}else if(selects == 2){//スキル
-					//String[] skillsName = getSkillName(n);
-					//int[] skillsMP = getSkillMP(n);
-					//System.out.println("0:もどる cost:0");
-					//for(int m = 0; m < 10 && skillsName[m] != null; m++) if(Hero[n].MP > skillsMP[m]) System.out.println((m + 1) + ":" + skillsName[m] + " " + "cost:" + skillsMP[m]);
-					//selects = s.nextInt() - 1;
-
 					ArrayList<String> cmd2 = new ArrayList<>();
 					HashMap<String,Integer> skill_hash = new HashMap<>();
 					String[] skillsName = getSkillName(n);
@@ -265,7 +241,6 @@ class Battle {
 							skill_hash.put(name, m + 1);
 						}
 					selects = skill_hash.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX6)) - 1;
-
 					if(selects == -1) {
 						n--;
 						continue;
@@ -279,18 +254,6 @@ class Battle {
 						}
 					}
 					if(stock[n].target < 0) {
-						/*
-						System.out.printf("0:もどる");
-						for(int m = 0; m < 4; m++) {
-							if(stock[n].target == -1) {
-									if(Enemy[m].HP > 0) System.out.printf(", " + (m + 5) + ":" + Enemy[m].Name);
-							}else {
-								if(Hero[m].HP > 0) System.out.printf(", " + (m + 1) + ":" + Hero[m].Name);
-							}
-						}
-						System.out.printf(" =>");
-						*/
-
 						ArrayList<String> cmd3 = new ArrayList<>();
 						HashMap<String, Integer> hash = new HashMap<>();
 						for(int m = 0; m < 4; m++) {
@@ -308,8 +271,6 @@ class Battle {
 								}
 							}
 						}
-
-						//stock[n].target = s.nextInt() - 1;
 						/* Box8 と Box6 を自動で判定 */
 						stock[n].target = hash.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX6)) - 1;
 						if(stock[n].target == -1) {
@@ -338,7 +299,7 @@ class Battle {
 	}
 
 	public int[] getSkillMP(int n) {//スキルMPを取得する.
-		int[] MPList = new int[10];//一応10にしている
+		int[] MPList = new int[10];
 		for(int m = 0; m < Hero[n].Skill.length; m++) {
 
 			MPList[m] = SkillData.getSkillMP(Hero[n].Skill[m]);
@@ -347,7 +308,7 @@ class Battle {
 	}
 
 	public String[] getSkillName(int n) {//スキル名を取得する.
-		String[] nameList = new String[10];//一応10にしている
+		String[] nameList = new String[10];
 		for(int m = 0; m < Hero[n].Skill.length; m++) {
 			nameList[m] = SkillData.getSkillName(Hero[n].Skill[m]);
 		}
@@ -701,7 +662,7 @@ class Battle {
 		}
 	}
 
-	public void makeBufAction(int n) {//デバフは？とりあえずバフだけ
+	public void makeBufAction(int n) {
 		Random r = new Random();
 		int k = checkBuf(true);
 		boolean[] x = new boolean[4];
@@ -719,7 +680,7 @@ class Battle {
 		if(stock[n + 4].target == -1) stock[n + 4].target = k + 4;
 	}
 
-	public void makeDeBufAction(int n) {//デバフは？とりあえずバフだけ
+	public void makeDeBufAction(int n) {
 		Random r = new Random();
 		int k = checkBuf(false);
 		boolean[] x = new boolean[4];
@@ -942,7 +903,6 @@ class Battle {
 				System.out.println(stock[actOrder[n]].name + "をくりだした!");
 				window.println(stock[actOrder[n]].name + "をくりだした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 			}
-			//
 			if(stock[actOrder[n]].target == 8) stock[actOrder[n]].target = actOrder[n];
 			if(stock[actOrder[n]].target < 4) {
 				if(Hero[stock[actOrder[n]].target].HP == 0) {
@@ -1196,7 +1156,7 @@ class Battle {
             			System.out.printf(Hero[k].Name + "のジョブが");
             			h = (double)Hero[k].HP / (double)Hero[k].MaxHP;
             			m = (double)Hero[k].MP / (double)Hero[k].MaxMP;
-            			Hero[k] = StatusData.callJob(r.nextInt(7));
+            			Hero[k] = StatusData.callJob(r.nextInt(7), data.clearQuestFlug);
             			Hero[k].HP = (int)(h * Hero[k].MaxHP);
             			if(Hero[k].HP == 0) Hero[k].HP++;
             			Hero[k].MP = (int)(m * Hero[k].MaxMP);
@@ -1363,7 +1323,7 @@ class Battle {
 			for(int n = 0; n < 4; n++) {
 				d = 1;
 				if(type[n]) {
-					if(n == 1 && type[n]) {
+					if(n < 2 && type[n]) {
 						if(x) continue;
 						for(int m = 0; m < 10; m++) {
 							if(buf[m][to] != null) if(buf[m][to].pattern == 9) {
@@ -1379,7 +1339,7 @@ class Battle {
 			for(int n = 0; n < 4; n++) {
 				d = 1;
 				if(type[n]) {
-					if(n == 1 && type[n]) {
+					if(n < 2 && type[n]) {
 						if(x) continue;
 						for(int m = 0; m < 5; m++) {
 							if(buf[m][to] != null) if(buf[m][to].pattern == 9) {
@@ -1428,94 +1388,6 @@ class Battle {
 	}
 
 }
-
-class StatusData{
-	static status callJob(int m) {
-		status x = new status();
-		boolean[] type = {false, false, false, false};
-		double[] regi = {1, 1, 1, 1};
-		int[] skill;
-		switch(m) {
-		case 0:
-			skill = new int[3]; skill[0] = 1; skill[1] = 2; skill[2] = 3;
-			type[0] = true; type[2] = true; regi[0] = 0.9; regi[3] = 1.1; x.putStatus1("Warrior", 95, 30, 150, 95, 65, 40); x.putStatus2(35, 35, type, regi, skill, null); break;
-		case 1:
-			skill = new int[6]; skill[0] = 4; skill[1] = 5; skill[2] = 6; skill[3] = 7; skill[4] = 8; skill[5] = 9;
-			type[1] = true; type[3] = true; regi[0] = 1.2; regi[2] = 1.2; regi[3] = 0.9; x.putStatus1("Witch", 90, 100, 105, 80, 40, 60); x.putStatus2(55, 55, type, regi, skill, null); break;
-		case 2:
-			skill = new int[8]; skill[0] = 10; skill[1] = 11; skill[2] = 12; skill[3] = 13; skill[4] = 14; skill[5] = 15; skill[6] = 16; skill[7] = 17;
-			type[1] = true; type[3] = true; x.putStatus1("Enchanter", 80, 85, 60, 20, 45, 30); x.putStatus2(85, 15, type, regi, skill, null); break;
-		case 3:
-			skill = new int[2]; skill[0] = 18; skill[1] = 19;
-			type[0] = true; type[2] = true; regi[0] = 1.1; regi[1] = 1.1; regi[3] = 0.9; x.putStatus1("Thief", 85, 35, 90, 40, 100, 100); x.putStatus2(65, 65, type, regi, skill, null); break;
-		case 4:
-			skill = new int[4]; skill[0] = 20; skill[1] = 21; skill[2] = 22; skill[3] = 23;
-			type[1] = true; type[2] = true; regi[2] = 1.1; regi[3] = 0.9; x.putStatus1("MagicSworder", 95, 70, 110, 100, 50, 55); x.putStatus2(45, 45, type, regi, skill, null); break;
-		case 5:
-			skill = new int[3]; skill[0] = 24; skill[1] = 25; skill[2] = 26;
-			type[0] = true; type[3] = true; regi[0] = 1.2; regi[2] = 0.8; x.putStatus1("Archer", 90, 50, 120, 70, 80, 70); x.putStatus2(25, 25, type, regi, skill, null); break;
-		case 6:
-			skill = new int[7]; skill[0] = 27; skill[1] = 28; skill[2] = 29; skill[3] = 30; skill[4] = 31; skill[5] = 32; skill[6] = 33;
-			type[1] = true; type[2] = true; regi[0] = 1.2; regi[2] = 1.2; regi[3] = 0.8; x.putStatus1("Healer", 80, 90, 30, 50, 70, 75); x.putStatus2(50, 50, type, regi, skill, null); break;
-		case 7:
-			x.putStatus1("null", -1, 0, 0, 0, 0, 0); x.putStatus2(0, 0, null, null, null, null); break;
-		}
-		return x;
-	}
-
-	static statusEnemy[] callEnemies(int enemyUnitID) {
-		/* enemyUnitID から id を取得する */
-		int[][] id = new int[4][];
-		for(int i = 0; i < 4; i++) id[i] = new int[]{1, 1, 1};
-
-		statusEnemy[] x = new statusEnemy[4];
-		for(int i = 0; i < 4; i++) {
-			x[i] = callEnemy(id[i]);
-		}
-		return x;
-	}
-
-	static statusEnemy callEnemy(int[] type) {
-		statusEnemy x = new statusEnemy();
-		/* MobData は インスタンス作っていいの？ */
-		MobData data = new MobData();
-		int type0,type1,type2;
-
-		type0 = type[0];
-
-		/* MobData と Status の互換性を持たせると良い */
-
-		switch(type0) {
-			case 0: { x.putStatus1("null", -1, 0, 0, 0, 0, 0); x.putStatus2(0, 0, null, null, null, null); } break;
-
-			case 1: {
-				if(Math.random() < 0.75) {
-					type1 = type[1];
-				} else {
-					type1 = (int) ( Math.random() * 7.0 );
-					/* ランダムな整数値はRandom.nextInt() を使う方がいい */
-				}
-				type2 = (int) ( Math.random() * 4.0 );
-				x.putStatus1(data.lMob[type1][type2].name, data.lMob[type1][type2].hp, data.lMob[type1][type2].mp, data.lMob[type1][type2].att, data.lMob[type1][type2].def, data.lMob[type1][type2].age, data.lMob[type1][type2].luc); x.putStatus2(data.lMob[type1][type2].effd, data.lMob[type1][type2].effb, data.lMob[type1][type2].type, data.lMob[type1][type2].regi, data.lMob[type1][type2].skill, data.lMob[type1][type2].ai); x.putStatus3(data.lMob[type1][type2].item[0], data.lMob[type1][type2].item[1], data.lMob[type1][type2].item[2]);
-			} break;
-
-			case 2: {
-				type1 = type[1];
-				type2 = type[2];
-				x.putStatus1(data.sMob[type1][type2].name, data.sMob[type1][type2].hp, data.sMob[type1][type2].mp, data.sMob[type1][type2].att, data.sMob[type1][type2].def, data.sMob[type1][type2].age, data.sMob[type1][type2].luc); x.putStatus2(data.sMob[type1][type2].effd, data.sMob[type1][type2].effb, data.sMob[type1][type2].type, data.sMob[type1][type2].regi, data.sMob[type1][type2].skill, data.sMob[type1][type2].ai); x.putStatus3(data.sMob[type1][type2].item[0], data.sMob[type1][type2].item[1], data.sMob[type1][type2].item[2]);
-			} break;
-
-			case 3: {
-				type2 = type[2];
-				x.putStatus1(data.bossMob[type2].name, data.bossMob[type2].hp, data.bossMob[type2].mp, data.bossMob[type2].att, data.bossMob[type2].def, data.bossMob[type2].age, data.bossMob[type2].luc); x.putStatus2(data.bossMob[type2].effd, data.bossMob[type2].effb, data.bossMob[type2].type, data.bossMob[type2].regi, data.bossMob[type2].skill, data.bossMob[type2].ai); x.putStatus3(data.bossMob[type2].item[0], data.bossMob[type2].item[1], data.bossMob[type2].item[2]);
-			} break;
-		}
-
-		return x;
-	}
-}
-
-
 
 class SkillData{
 	static String getSkillName(int n) {

@@ -8,104 +8,104 @@ public class ItemData{
 		item stock = new item();
 		switch(n) {
 		case 1:
-			stock.name = "よわこう";
+			stock.name = "まほうのもと";
 			stock.waza = 0;
 			stock.skill = 1.4;
 			stock.target = -1;
 			break;
 		case 2:
-			stock.name = "attバフ";
+			stock.name = "ちからのたね";
 			stock.waza = 5;
 			stock.skill = 15;
 			stock.target = -2;
 			stock.turn = 2;
 			break;
 		case 3:
-			stock.name = "小範囲";
+			stock.name = "ばくやく";
 			stock.waza = 0;
 			stock.skill = 0.9;
 			stock.target = 10;
 			break;
 		case 4:
-			stock.name = "攻撃バフ";
+			stock.name = "こうげきそう";
 			stock.waza = 2;
 			stock.skill = 0.15;
 			stock.target = -2;
 			stock.turn = 3;
 			break;
 		case 5:
-			stock.name = "防御バフ";
+			stock.name = "まもりそう";
 			stock.waza = 3;
 			stock.skill = 0.1;
 			stock.target = -2;
 			stock.turn = 3;
 			break;
 		case 6:
-			stock.name = "素早さバフ";
+			stock.name = "ときのすな";
 			stock.waza = 4;
 			stock.skill = 0.3;
 			stock.target = -2;
 			stock.turn = 3;
 			break;
 		case 7:
-			stock.name = "攻撃デバフ";
+			stock.name = "こうげきジャマー";
 			stock.waza = 2;
 			stock.skill = -0.1;
 			stock.target = -1;
 			stock.turn = 2;
 			break;
 		case 8:
-			stock.name = "防御デバフ";
+			stock.name = "まもりジャマー";
 			stock.waza = 3;
 			stock.skill = -0.1;
 			stock.target = -1;
 			stock.turn = 2;
 			break;
 		case 9:
-			stock.name = "素早さデバフ";
+			stock.name = "くものいと";
 			stock.waza = 4;
 			stock.skill = -0.15;
 			stock.target = -1;
 			stock.turn = 2;
 			break;
 		case 10:
-			stock.name = "貫通攻撃";
+			stock.name = "ほしくず";
 			stock.waza = 15;
 			stock.skill = 1.1;
 			stock.target = -1;
 			break;
 		case 11:
-			stock.name = "小回復";
+			stock.name = "やくそう";
 			stock.waza = 14;
 			stock.skill = 15;
 			stock.target = -2;
 			break;
 		case 12:
-			stock.name = "全体小回復";
+			stock.name = "ポーション";
 			stock.waza = 14;
 			stock.skill = 8;
 			stock.target = 9;
 			break;
 		case 13:
-			stock.name = "MP回復";
+			stock.name = "まほうすい";
 			stock.waza = 18;
 			stock.skill = 10;
 			stock.target = -2;
-		
+			break;
 		case 21:
-			stock.name = "大攻撃";
+			stock.name = "ダイナマイト";
 			stock.waza = 0;
 			stock.skill = 2.2;
 			stock.target = -1;
 			break;
 		case 22:
-			stock.name = "全体回復";
+			stock.name = "エリクサー";
 			stock.waza = 14;
 			stock.skill = 16;
 			stock.target = 9;
 			break;
 		case 23:
-			stock.name = "攻撃バフ大";
+			stock.name = "きじんやく";
 			stock.waza = 2;
 			stock.skill = 0.3;
 			stock.target = -2;
