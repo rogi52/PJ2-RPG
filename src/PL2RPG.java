@@ -6,6 +6,7 @@ public class PL2RPG {
 	public static String TEKI_PATH="./img/teki";
 	public static String SE_PATH="./se";
 	public static String MAP_PATH="./map";
+	public static String ICON_PATH="./img/icon.png";
 	
 	public static String JOBS[]= {"w","m","m","m","m","m","m"};
 	public static String JOB_NAME[]= {"せんし","ウィッチ","エンチャ","とうぞく","まほせん","アーチャ","ヒーラー"};
@@ -21,8 +22,7 @@ public class PL2RPG {
 	public static int MAIN_WIN_Y=BLOCK_SIZE*MAIN_WIN_Y_BOX;
 
 	public static void main(String[] args) {
-		MainData m = new MainData();
-		Window w=new Window(m);
+		Window w=new Window();
 		w.drawStart(false);
 	}
 }

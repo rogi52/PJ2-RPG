@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 public class Window extends JFrame implements KeyListener{
@@ -44,9 +45,12 @@ public class Window extends JFrame implements KeyListener{
 
 	public MainData m;
 
-	Window(MainData x){
+	Window(){
 		super("TEST");
-		m = x;
+		m = new MainData();
+		
+	    setIconImage(new ImageIcon(PL2RPG.ICON_PATH).getImage());
+	    
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		int win_outer_size_x=PL2RPG.MAIN_WIN_X+14;
 		int win_outer_size_y=PL2RPG.MAIN_WIN_Y+37;
