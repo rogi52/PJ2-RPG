@@ -245,12 +245,14 @@ class dCanvas extends Canvas {
 			loadBlock(csv_arr[2]);
 
 
-			w.battle_bgm=Integer.parseInt(csv_arr[4]);
 			w.walk_bgm=Integer.parseInt(csv_arr[3]);
+			w.battle_bgm=Integer.parseInt(csv_arr[4]);
+			random_match_enable=csv_arr[5].equals("1");
+			w.map_for=Integer.parseInt(csv_arr[6]);
 
 			w.changeBgm(w.walk_bgm);
 			
-			random_match_enable=csv_arr[5].equals("1");
+
 
 
 

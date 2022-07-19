@@ -207,14 +207,17 @@ class AnimationMove extends Thread{
 		int step=0;
 		boolean random_match_test=false;
 		boolean any_event_disabled;
-		boolean enemy_match;
+		int enemy_match;
+		int walk_count=0;
+		int enemy_type;
 
 		//描画ループ
 		while(true) {
 			update=false;
 			random_match_test=false;
 			any_event_disabled=false;
-			enemy_match=false;
+			enemy_match=0;
+			enemy_type=0;
 			
 			walk_timer++;
 			if(walk_timer>15) {
@@ -245,6 +248,8 @@ class AnimationMove extends Thread{
 					myCanvas.pos_y=(myCanvas.pos_y+8)/32*32;
 					myCanvas.pos_x=(myCanvas.pos_x+8)/32*32;
 					random_match_test=true;
+					walk_count++;
+
 				}
 				view_direction=direction;
 				update=true;
@@ -304,6 +309,8 @@ class AnimationMove extends Thread{
 								} catch (InterruptedException e) {}
 							}
 							dir_con=0;
+							walk_count=0;
+
 						}else {
 							//入らないときは動かない
 							dir_con=0;
@@ -341,8 +348,9 @@ class AnimationMove extends Thread{
 					case 4:
 						if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {	
 							any_event_disabled=true;
-							enemy_match=true;
+							enemy_match=2;
 							w.myCanvas.en_used+=w.myCanvas.en_UID[i];
+							enemy_type=Integer.parseInt(w.myCanvas.en_p[i][1]);
 						}
 
 						break;
@@ -400,6 +408,7 @@ class AnimationMove extends Thread{
 								} catch (InterruptedException e) {}
 							}
 							dir_con=0;
+							walk_count=0;
 						}else {
 							//入らないときは動かない
 							dir_con=0;
@@ -416,13 +425,19 @@ class AnimationMove extends Thread{
 					}
 				}
 			}
+
 			
-			
-			if(random_match_test && w.myCanvas.random_match_enable && Math.random()<PL2RPG.RANDOM_MATCH_PROB && !any_event_disabled) {
-				enemy_match=true;				
+			if(random_match_test && w.myCanvas.random_match_enable && Math.random()<PL2RPG.RANDOM_MATCH_PROB*walk_count && !any_event_disabled) {
+				enemy_match=1;
 			}
 			
-			if(enemy_match) {
+			if(enemy_match>0) {
+				walk_count=0;
+				
+				System.out.println("適正："+PL2RPG.JOB_NAME[w.map_for]);
+				System.out.println("種類；"+enemy_type);
+				
+				
 				w.changeBgm(-1);
 				w.se[1].play(0);
 				//myCanvas.drawMap(0,view_direction,step);

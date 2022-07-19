@@ -21,6 +21,7 @@ public class Window extends JFrame implements KeyListener{
 	public int now_playing_bgm=0;
 	public int walk_bgm=0;
 	public int battle_bgm=0;
+	public int map_for=0;
 
 
 
