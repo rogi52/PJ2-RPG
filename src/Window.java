@@ -48,9 +48,10 @@ public class Window extends JFrame implements KeyListener{
 		super("TEST");
 		m = x;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		int win_outer_size_x=PL2RPG.MAIN_WIN_X+14;
+		int win_outer_size_y=PL2RPG.MAIN_WIN_Y+37;
 		//setSize(PL2RPG.MAIN_WIN_X+16, PL2RPG.MAIN_WIN_Y+39);
-		setBounds(-(PL2RPG.MAIN_WIN_X+14), -(PL2RPG.MAIN_WIN_Y+37),PL2RPG.MAIN_WIN_X+14, PL2RPG.MAIN_WIN_Y+37);
-		System.out.println(getWidth());
+		setBounds(-win_outer_size_x, -win_outer_size_y,win_outer_size_x, win_outer_size_y);
 		//setLocationRelativeTo(null);
 		setLayout(null);
 		setResizable(false);
@@ -72,12 +73,6 @@ public class Window extends JFrame implements KeyListener{
 
 
 		setLocationRelativeTo(null);
-
-		/*
-		for(int i=0;i<2;i++) {
-			se[i]=new Sound("./se/"+i+".wav");
-		}
-		*/
 
 		loadSE();
 		loadBGM();
