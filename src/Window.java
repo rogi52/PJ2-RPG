@@ -15,8 +15,8 @@ import javax.swing.JFrame;
 
 public class Window extends JFrame implements KeyListener{
 
-	public Sound[] se=new Sound[64];
-	public Sound[] bgm=new Sound[64];
+	public Sound[] se;
+	public Sound[] bgm;
 	public int now_playing_bgm=0;
 	public int walk_bgm=0;
 	public int battle_bgm=0;
@@ -73,13 +73,14 @@ public class Window extends JFrame implements KeyListener{
 
 		setLocationRelativeTo(null);
 
+		/*
 		for(int i=0;i<2;i++) {
 			se[i]=new Sound("./se/"+i+".wav");
 		}
+		*/
 
-		for(int i=0;i<5;i++) {
-			bgm[i]=new Sound("./bgm/"+i+".mid");
-		}
+		loadSE();
+		loadBGM();
 		
 		al.quit();
 
@@ -355,8 +356,70 @@ public class Window extends JFrame implements KeyListener{
 		case KeyEvent.VK_ENTER:
 			pr_enter=false;
 		}
+	}
+	
+	
+	public void loadSE() {
+		File file1 = new File("./se");
+		File fileArray1[] = file1.listFiles();
 
+		// ファイルの一覧
+		String path_temp,s,s2;
+		int iden;
+		int max=0;
+		for (File f: fileArray1){
+			if(f.isFile()) {
+				s=f.getName();
+				s2=s.substring(0,s.lastIndexOf('.'));
+				iden=Integer.parseInt(s2.substring(0,s2.lastIndexOf('.')));
+				if(iden>max)max=iden;
+			}
+		}
+
+		se=new Sound[max+1];
+
+		for (File f: fileArray1){
+			if(f.isFile()) {
+				s=f.getName();
+				s2=s.substring(0,s.lastIndexOf('.'));
+				iden=Integer.parseInt(s2.substring(0,s2.lastIndexOf('.')));
+				path_temp="./se/"+f.getName();
+				se[iden]=new Sound(path_temp);
+			}
+		}
 	}
 
+	
+	public void loadBGM() {
+		File file1 = new File("./bgm");
+		File fileArray1[] = file1.listFiles();
+
+		// ファイルの一覧
+		String path_temp,s,s2;
+		int iden;
+		int max=0;
+		for (File f: fileArray1){
+			if(f.isFile()) {
+				s=f.getName();
+				s2=s.substring(0,s.lastIndexOf('.'));
+				iden=Integer.parseInt(s2.substring(0,s2.lastIndexOf('.')));
+				if(iden>max)max=iden;
+			}
+		}
+
+		bgm=new Sound[max+1];
+
+		for (File f: fileArray1){
+			if(f.isFile()) {
+				s=f.getName();
+				s2=s.substring(0,s.lastIndexOf('.'));
+				iden=Integer.parseInt(s2.substring(0,s2.lastIndexOf('.')));
+				//System.out.println(s2.substring(0,s2.lastIndexOf('.')));
+				//System.out.println(s2.substring(1+s2.lastIndexOf('.')));
+				path_temp="./bgm/"+f.getName();
+				bgm[iden]=new Sound(path_temp);
+			}
+		}
+	}
 }
 
