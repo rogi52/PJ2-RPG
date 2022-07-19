@@ -17,7 +17,8 @@ public class HeroData {
 				type[2] = true;
 				regi[0] = 0.9;
 				regi[3] = 1.1;
-				x.putCharacter1("Warrior", 95, 30, 150, 95, 65, 40);
+				//x.putCharacter1("Warrior", 95, 30, 150, 95, 65, 40);
+				x.putCharacter1(PL2RPG.JOB_NAME[m], 95, 30, 150, 95, 65, 40);
 				x.putCharacter2(35, 35, type, regi, skill, null);
 			} break;
 
@@ -32,7 +33,8 @@ public class HeroData {
 				regi[0] = 1.2;
 				regi[2] = 1.2;
 				regi[3] = 0.9;
-				x.putCharacter1("Witch", 90, 100, 105, 80, 40, 60);
+				//x.putCharacter1("Witch", 90, 100, 105, 80, 40, 60);
+				x.putCharacter1(PL2RPG.JOB_NAME[m], 90, 100, 105, 80, 40, 60);
 				x.putCharacter2(55, 55, type, regi, skill, null);
 			} break;
 
@@ -44,7 +46,8 @@ public class HeroData {
 
 				type[1] = true;
 				type[3] = true;
-				x.putCharacter1("Enchanter", 80, 85, 60, 20, 45, 30);
+				//x.putCharacter1("Enchanter", 80, 85, 60, 20, 45, 30);
+				x.putCharacter1(PL2RPG.JOB_NAME[m], 80, 85, 60, 20, 45, 30);
 				x.putCharacter2(85, 15, type, regi, skill, null);
 			} break;
 
@@ -59,7 +62,8 @@ public class HeroData {
 				regi[0] = 1.1;
 				regi[1] = 1.1;
 				regi[3] = 0.9;
-				x.putCharacter1("Thief", 85, 35, 90, 40, 100, 100);
+				//x.putCharacter1("Thief", 85, 35, 90, 40, 100, 100);
+				x.putCharacter1(PL2RPG.JOB_NAME[m], 85, 35, 90, 40, 100, 100);
 				x.putCharacter2(65, 65, type, regi, skill, null);
 			} break;
 
@@ -73,7 +77,8 @@ public class HeroData {
 				type[2] = true;
 				regi[2] = 1.1;
 				regi[3] = 0.9;
-				x.putCharacter1("MagicSworder", 95, 70, 110, 100, 50, 55);
+				//x.putCharacter1("MagicSworder", 95, 70, 110, 100, 50, 55);
+				x.putCharacter1(PL2RPG.JOB_NAME[m], 95, 70, 110, 100, 50, 55);
 				x.putCharacter2(45, 45, type, regi, skill, null);
 			} break;
 
@@ -87,7 +92,9 @@ public class HeroData {
 				type[3] = true;
 				regi[0] = 1.2;
 				regi[2] = 0.8;
-				x.putCharacter1("Archer", 90, 50, 120, 70, 80, 70); x.putCharacter2(25, 25, type, regi, skill, null);
+				//x.putCharacter1("Archer", 90, 50, 120, 70, 80, 70);
+				x.putCharacter1(PL2RPG.JOB_NAME[m], 90, 50, 120, 70, 80, 70);
+				x.putCharacter2(25, 25, type, regi, skill, null);
 			} break;
 
 			case 6: {
@@ -101,7 +108,8 @@ public class HeroData {
 				regi[0] = 1.2;
 				regi[2] = 1.2;
 				regi[3] = 0.8;
-				x.putCharacter1("Healer", 80, 90, 30, 50, 70, 75);
+				//x.putCharacter1("Healer", 80, 90, 30, 50, 70, 75);
+				x.putCharacter1(PL2RPG.JOB_NAME[m], 80, 90, 30, 50, 70, 75);
 				x.putCharacter2(50, 50, type, regi, skill, null);
 			} break;
 
