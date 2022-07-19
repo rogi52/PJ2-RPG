@@ -3,7 +3,7 @@ import java.io.Serializable;
 public class MainData implements Serializable{
 	static final long serialVersionUID=1;
 
-	
+	boolean[] bossFlug = new boolean[7];
 	boolean[] clearQuestFlug = new boolean[35];
 	int[] nowQuestNumber = new int[5];
 	int[] nowQuestSituation = new int[5];
@@ -12,11 +12,12 @@ public class MainData implements Serializable{
 	int[] partyHP = new int[4];//セーブデータには入れず、毎回最大HPを入れること
 	int[] partyMP = new int[4];//同上
 	
+	
 	void goalQuest(int n) {
 		clearQuestFlug[n] = true;
 		for(int m = 0; m < 5; m++) {
 			if(nowQuestNumber[m] == n) {
-				if(QuestData.callQuest(nowQuestSituation[m]).type) {
+				if(!QuestData.callQuest(nowQuestSituation[m]).type) {
 					itemHas[QuestData.callQuest(nowQuestSituation[m]).target] -= QuestData.callQuest(nowQuestSituation[m]).count;
 				}
 				nowQuestNumber[m] = -1;
@@ -30,12 +31,17 @@ public class MainData implements Serializable{
 		for(int m = 0; m < 5; m++) {
 			if(nowQuestNumber[m] != -1) {
 				nowQuestNumber[m] = n;
-				if(QuestData.callQuest(nowQuestSituation[m]).type) {
+				if(!QuestData.callQuest(nowQuestSituation[m]).type) {
 					if(QuestData.callQuest(nowQuestSituation[m]).target == n) {
 						nowQuestSituation[m] = itemHas[n];
 					}
 				}else {
 					nowQuestSituation[m] = 0;
+				}
+				if(nowQuestNumber[m] == 50) {
+					for(int k = 0; k < 7; k++) {
+						if(bossFlug[k]) nowQuestSituation[m]++;
+					}
 				}
 			}
 			
@@ -52,10 +58,20 @@ public class MainData implements Serializable{
 		}
 	}
 	
-	void plusItem(int n) {
+	void battle(statusEnemy[] Enemy) {
 		for(int m = 0; m < 5; m++) {
 			if(nowQuestNumber[m] != -1) {
 				if(QuestData.callQuest(nowQuestSituation[m]).type) {
+					//敵情報の確認、一致したらnowQuestSituation[m]を加算
+				}
+			}
+		}
+	}
+	
+	void plusItem(int n) {
+		for(int m = 0; m < 5; m++) {
+			if(nowQuestNumber[m] != -1) {
+				if(!QuestData.callQuest(nowQuestSituation[m]).type) {
 					if(QuestData.callQuest(nowQuestSituation[m]).target == n) {
 						nowQuestSituation[m] = itemHas[n] + 1;
 					}
@@ -69,7 +85,7 @@ public class MainData implements Serializable{
 	void minusItem(int n) {
 		for(int m = 0; m < 5; m++) {
 			if(nowQuestNumber[m] != -1) {
-				if(QuestData.callQuest(nowQuestSituation[m]).type) {
+				if(!QuestData.callQuest(nowQuestSituation[m]).type) {
 					if(QuestData.callQuest(nowQuestSituation[m]).target == n) {
 						nowQuestSituation[m] = itemHas[n] - 1;
 					}
