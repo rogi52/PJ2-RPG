@@ -44,15 +44,51 @@ class GameLoop extends Thread{
 				for(int i=0;i<myCanvas.entities;i++) {
 					int menu_x=0;
 					int menu_y_max;
-					boolean is_save=true;
+					int menu_y_min;
 					boolean draw_update=false;
 					if(bdx==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && bdy==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
 							w.se[0].play(0);
-							w.myCanvas.drawMenu1(PL2RPG.DIALOG_ANIMATION_TIME);
-							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+							
+							menu_y_max=0;
+							menu_y_min=0xFFFF;
+							
+							for(int j=1;j<=50;j++) {
+								if(!w.m.clearQuestFlug[j] && (w.m.clearQuestFlug[QuestData.callQuest(j).target] || QuestData.callQuest(j).target == 0)) {
+									if(j>menu_y_max)menu_y_max=j;
+									if(j<menu_y_min)menu_y_min=j;
+								}
+							}
+							
+							menu_x=menu_y_min;
+							w.myCanvas.drawMenu1(menu_x,PL2RPG.DIALOG_ANIMATION_TIME);
+							
+							while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 							while(w.is_press(KeyEvent.VK_ENTER)==false) {
+								draw_update=false;
+								
+								if(w.is_press(KeyEvent.VK_LEFT)) {
+									if(DialogYesNo("クエストをキャンセルしますか？\nキャンセルするとしんちょくはとりけされます。",true)) {
+										
+									}
+									draw_update=true;
+								}
+								if(w.is_press(KeyEvent.VK_DOWN)) {
+									menu_x++;
+									if(menu_x>menu_y_max)menu_x=menu_y_max;
+									while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+									draw_update=true;
+								}
+								if(w.is_press(KeyEvent.VK_UP)) {
+									menu_x--;
+									if(menu_x<menu_y_min)menu_x=menu_y_min;
+									while(w.is_press(KeyEvent.VK_UP))w.wait(33);
+									draw_update=true;
+								}
+								
+								if(draw_update)w.myCanvas.drawMenu1(menu_x);
+
 								w.wait(33);
 							}
 							w.ma.update();
@@ -116,21 +152,9 @@ class GameLoop extends Thread{
 
 							w.se[0].play(0);
 
-							is_save=true;
-							w.myCanvas.drawMenu2(is_save, "セーブしますか？",PL2RPG.DIALOG_ANIMATION_TIME);//5
-
-							while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-							while(w.is_press(KeyEvent.VK_ENTER)==false) {
-								if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
-									is_save=!is_save;
-									while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-									w.myCanvas.drawMenu2(is_save,"セーブしますか？");
-								}
-								w.wait(33);
-							}
 							w.ma.update();
 
-							if(is_save) {
+							if(DialogYesNo("セーブしますか？",true)) {
 								w.save(w.load_name);
 							}
 
@@ -145,6 +169,25 @@ class GameLoop extends Thread{
 
 			w.wait(33);
 		}
+	}
+	
+	public boolean DialogYesNo(String msg,boolean def) {
+		boolean is_save=def;
+		w.myCanvas.drawMenu2(is_save, msg,PL2RPG.DIALOG_ANIMATION_TIME);//5
+
+		while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+		while(w.is_press(KeyEvent.VK_ENTER)==false) {
+			if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
+				is_save=!is_save;
+				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+				w.myCanvas.drawMenu2(is_save,msg);
+			}
+			w.wait(33);
+		}
+		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+		
+		return is_save;
+
 	}
 }
 

@@ -31,6 +31,7 @@ public class ImageManager {
 	static BufferedImage getCharImage(char c) throws IOException {
 		String name = "text/" + c;
 		if(c == '▶') name = "text/arrow";
+		if(c == '◀') name = "text/arrow2";
 		return getImage(name);
 	}
 

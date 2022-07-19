@@ -161,25 +161,41 @@ class dCanvas extends Canvas {
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		drawChr(msg,104,104,PL2RPG.MAIN_WIN_X-1-100*2-8, ms);
 		if(is_enter) {
-			drawChr("▶はい",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
-			drawChr("　いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
+			drawChr("▶はい",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*5,PL2RPG.MAIN_WIN_X-1-100*2-8);
+			drawChr("　いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*6,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		}else {
-			drawChr("　はい",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
-			drawChr("▶いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);			
+			drawChr("　はい",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*5,PL2RPG.MAIN_WIN_X-1-100*2-8);
+			drawChr("▶いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*6,PL2RPG.MAIN_WIN_X-1-100*2-8);			
 		}
 
 		repaint();
 	}
-	public void drawMenu1() {
-		drawMenu1(0);
+	public void drawMenu1(int ysel) {
+		drawMenu1(ysel,0);
 	}
 
 	//クエスト選択
-	public void drawMenu1(int ms) {
+	public void drawMenu1(int ysel,int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
+		String name="";
+		for(int j=ysel-2;j<=ysel+2;j++) {
+			if(j<=50 && j>=1) {
+				if(!w.m.clearQuestFlug[j] && (w.m.clearQuestFlug[QuestData.callQuest(j).target] || QuestData.callQuest(j).target == 0)) {
+					name+="No."+Integer.toString(j)+" "+QuestData.callQuest(j).title+"\n\n";
+				}
+			}else {
+				name+="\n\n";
+			}
+		}
+		System.out.println(ysel);
+		drawChr("クエストいちらん",104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
+		drawChr(name,104+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
+
+		drawChr("◀　　　　　　　▶",104+PL2RPG.BLOCK_SIZE*14,104+PL2RPG.BLOCK_SIZE*7,PL2RPG.MAIN_WIN_X-1-100*2-8);
+
 		repaint();
 	}
 

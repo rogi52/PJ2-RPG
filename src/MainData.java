@@ -4,7 +4,7 @@ public class MainData implements Serializable{
 	static final long serialVersionUID=1;
 
 	boolean[] bossFlug = new boolean[7];
-	boolean[] clearQuestFlug = new boolean[35];
+	boolean[] clearQuestFlug = new boolean[51];
 	int[] nowQuestNumber = new int[5];
 	int[] nowQuestSituation = new int[5];
 	int[] itemHas = new int[24];
