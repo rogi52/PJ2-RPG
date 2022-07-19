@@ -66,8 +66,10 @@ public class Window extends JFrame implements KeyListener{
 
 		setVisible(true);
 		myCanvas.init();
+		
+		AnimationLoad al=new AnimationLoad(this);
+		al.start();
 
-		myCanvas.drawLoading();
 
 		setLocationRelativeTo(null);
 
@@ -78,6 +80,9 @@ public class Window extends JFrame implements KeyListener{
 		for(int i=0;i<5;i++) {
 			bgm[i]=new Sound("./bgm/"+i+".mid");
 		}
+		
+		al.quit();
+
 
 		bgm[now_playing_bgm].play(-1);
 
@@ -293,8 +298,8 @@ public class Window extends JFrame implements KeyListener{
 
 			if(status==0) {
 				se[0].play(0);
-				key_x%=2;
-				if(key_x<0)key_x+=2;
+				if(key_x<0)key_x=0;
+				if(key_x>1)key_x=1;
 
 				if(save_num==0)key_x=0;
 				myCanvas.drawStart(key_x==0);

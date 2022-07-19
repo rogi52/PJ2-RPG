@@ -20,6 +20,8 @@ class dCanvas extends Canvas {
 	private BufferedImage[] block;
 	private BufferedImage[] teki;
 	private BufferedImage[][][] chr;//キャラ、向き、歩行
+	
+	private int load_che_rand;
 
 
 
@@ -403,13 +405,24 @@ class dCanvas extends Canvas {
 		repaint();
 	}
 
-	public void drawLoading() {
+	public void drawLoading(int step) {
+		int st=step/7;
 		blank(255);
-		drawChr("Loading...",PL2RPG.BLOCK_SIZE*10,PL2RPG.BLOCK_SIZE*10,PL2RPG.MAIN_WIN_X);
+		String msg="Loading";
+		for(int i=0;i<(st%4);i++) {
+			msg+=".";
+		}
+		drawChr(msg,PL2RPG.BLOCK_SIZE*10,PL2RPG.BLOCK_SIZE*9,PL2RPG.MAIN_WIN_X);
+		buffer.drawImage(chr[load_che_rand][1][st%4],(step%256)*4-PL2RPG.BLOCK_SIZE,PL2RPG.BLOCK_SIZE*11,null);
+		
 		repaint();
 	}
 
 	public void init(){
+		
+		load_che_rand=(int)(Math.random()*PL2RPG.JOBS.length);
+		
+		
 		size = getSize();
 		
 		//ダブルバッファ

@@ -425,7 +425,7 @@ class AnimationMove extends Thread{
 			if(enemy_match) {
 				w.changeBgm(-1);
 				w.se[1].play(0);
-				myCanvas.drawMap(0,view_direction,step);
+				//myCanvas.drawMap(0,view_direction,step);
 				for(float ratio=0.f;ratio<0.5f;ratio+=0.05) {
 					w.myCanvas.zoom(ratio,0);
 					w.wait(33);
@@ -571,3 +571,25 @@ class Animation_Select extends Thread{
 }
 
 
+class AnimationLoad extends Thread{
+	Window w;
+	Boolean quit;
+	AnimationLoad(Window w){
+		this.w=w;
+		w.myCanvas.drawLoading(0);
+	}
+	public void quit() {
+		quit=true;
+	}
+	public void run(){
+		quit=false;
+		int step=0;
+		while(!quit) {
+			step++;
+			w.myCanvas.drawLoading(step);
+			w.wait(33);
+		}
+	}
+	
+	
+}
