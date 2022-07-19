@@ -86,6 +86,8 @@ class Battle {
 
 		if(JUDGE == WIN) {
 			window.println("あなたは勝利した", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
+			data.battle(Enemy);
+			//→討伐数処理
 			result = WIN;
 		} else {
 			window.println("あなたは敗北した", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
@@ -1402,21 +1404,21 @@ class SkillData{
 		skill stock = new skill();
 		switch(n) {//以下技はこれ拡張して作成する。なお、targetは-1で相手1人選択, -2で味方1人選択, 8, 9, 10として使用する
 		case 1:
-			stock.name = "小攻撃";
+			stock.name = "ふりおろし";
 			stock.waza = 0;
 			stock.skill = 1.2;
 			stock.target = -1;
 			stock.costMP = 4;
 			break;
 		case 2:
-			stock.name = "中攻撃";
+			stock.name = "スラッシュ";
 			stock.waza = 0;
 			stock.skill = 1.5;
 			stock.target = -1;
 			stock.costMP = 9;
 			break;
 		case 3:
-			stock.name = "attバフ";
+			stock.name = "きあいだめ";
 			stock.waza = 5;
 			stock.skill = 30;
 			stock.target = 8;
@@ -1424,42 +1426,42 @@ class SkillData{
 			stock.turn = 3;
 			break;
 		case 4:
-			stock.name = "小攻撃";
+			stock.name = "ファイア";
 			stock.waza = 0;
 			stock.skill = 1.3;
 			stock.target = -1;
 			stock.costMP = 5;
 			break;
 		case 5:
-			stock.name = "中攻撃";
+			stock.name = "ファイラ";
 			stock.waza = 0;
 			stock.skill = 1.7;
 			stock.target = -1;
 			stock.costMP = 10;
 			break;
 		case 6:
-			stock.name = "大攻撃";
+			stock.name = "ファイガ";
 			stock.waza = 0;
 			stock.skill = 2.2;
 			stock.target = -1;
 			stock.costMP = 18;
 			break;
 		case 7:
-			stock.name = "小範囲";
+			stock.name = "ハキ";
 			stock.waza = 0;
 			stock.skill = 0.8;
 			stock.target = 10;
 			stock.costMP = 10;
 			break;
 		case 8:
-			stock.name = "中範囲";
+			stock.name = "ハキクロス";
 			stock.waza = 0;
 			stock.skill = 1.2;
 			stock.target = 10;
 			stock.costMP = 16;
 			break;
 		case 9:
-			stock.name = "魔法耐性";
+			stock.name = "まほうたて";
 			stock.waza = 9;
 			stock.skill = 0.3;
 			stock.target = 8;
@@ -1467,7 +1469,7 @@ class SkillData{
 			stock.turn = 3;
 			break;
 		case 10:
-			stock.name = "攻撃バフ";
+			stock.name = "ブレイブ";
 			stock.waza = 2;
 			stock.skill = 0.3;
 			stock.target = -2;
@@ -1475,7 +1477,7 @@ class SkillData{
 			stock.turn = 4;
 			break;
 		case 11:
-			stock.name = "防御バフ";
+			stock.name = "バリア";
 			stock.waza = 3;
 			stock.skill = 0.2;
 			stock.target = -2;
@@ -1483,7 +1485,7 @@ class SkillData{
 			stock.turn = 4;
 			break;
 		case 12:
-			stock.name = "素早さバフ";
+			stock.name = "クイック";
 			stock.waza = 4;
 			stock.skill = 0.5;
 			stock.target = -2;
@@ -1491,7 +1493,7 @@ class SkillData{
 			stock.turn = 4;
 			break;
 		case 13:
-			stock.name = "MP節約";
+			stock.name = "MPセーブ";
 			stock.waza = 10;
 			stock.skill = 0.7;
 			stock.target = -2;
@@ -1499,7 +1501,7 @@ class SkillData{
 			stock.turn = 3;
 			break;
 		case 14:
-			stock.name = "攻撃デバフ";
+			stock.name = "ヘナトス";
 			stock.waza = 2;
 			stock.skill = -0.2;
 			stock.target = -1;
@@ -1507,7 +1509,7 @@ class SkillData{
 			stock.turn = 3;
 			break;
 		case 15:
-			stock.name = "防御デバフ";
+			stock.name = "ウィーク";
 			stock.waza = 3;
 			stock.skill = -0.2;
 			stock.target = -1;
@@ -1515,7 +1517,7 @@ class SkillData{
 			stock.turn = 3;
 			break;
 		case 16:
-			stock.name = "素早さデバフ";
+			stock.name = "スロウ";
 			stock.waza = 4;
 			stock.skill = -0.3;
 			stock.target = -1;
@@ -1523,7 +1525,7 @@ class SkillData{
 			stock.turn = 3;
 			break;
 		case 17:
-			stock.name = "範囲全体化";
+			stock.name = "オールアクト";
 			stock.waza = 8;
 			stock.skill = 0;
 			stock.target = 8;
@@ -1531,63 +1533,63 @@ class SkillData{
 			stock.turn = 4;
 			break;
 		case 18:
-			stock.name = "盗む";
+			stock.name = "ぬすむ";
 			stock.waza = 12;
 			stock.skill = 0;
 			stock.target = -1;
 			stock.costMP = 4;
 			break;
 		case 19:
-			stock.name = "使う";
+			stock.name = "つかう";
 			stock.waza = 13;
 			stock.skill = 0;
 			stock.target = 11;
 			stock.costMP = 0;
 			break;
 		case 20:
-			stock.name = "小範囲";
+			stock.name = "クエイク";
 			stock.waza = 0;
 			stock.skill = 0.7;
 			stock.target = 10;
 			stock.costMP = 10;
 			break;
 		case 21:
-			stock.name = "中範囲";
+			stock.name = "クエイラ";
 			stock.waza = 0;
 			stock.skill = 1.1;
 			stock.target = 10;
 			stock.costMP = 16;
 			break;
 		case 22:
-			stock.name = "大攻撃";
+			stock.name = "まじんきり";
 			stock.waza = 0;
 			stock.skill = 2.5;
 			stock.target = -1;
 			stock.costMP = 25;
 			break;
 		case 23:
-			stock.name = "貫通攻撃";
+			stock.name = "カース";
 			stock.waza = 15;
 			stock.skill = 1.2;
 			stock.target = -1;
 			stock.costMP = 12;
 			break;
 		case 24:
-			stock.name = "中攻撃";
+			stock.name = "チャージン";
 			stock.waza = 0;
 			stock.skill = 1.4;
 			stock.target = -1;
 			stock.costMP = 7;
 			break;
 		case 25:
-			stock.name = "小範囲";
+			stock.name = "フルレンジ";
 			stock.waza = 0;
 			stock.skill = 0.6;
 			stock.target = 10;
 			stock.costMP = 8;
 			break;
 		case 26:
-			stock.name = "必中";
+			stock.name = "ひっちゅう";
 			stock.waza = 7;
 			stock.skill = 0;
 			stock.target = 8;
@@ -1595,49 +1597,49 @@ class SkillData{
 			stock.turn = 4;
 			break;
 		case 27:
-			stock.name = "小回復";
+			stock.name = "ヒール";
 			stock.waza = 14;
 			stock.skill = 20;
 			stock.target = -2;
 			stock.costMP = 3;
 			break;
 		case 28:
-			stock.name = "中回復";
+			stock.name = "ヒーラ";
 			stock.waza = 14;
 			stock.skill = 40;
 			stock.target = -2;
 			stock.costMP = 8;
 			break;
 		case 29:
-			stock.name = "大回復";
+			stock.name = "ヒーレスト";
 			stock.waza = 14;
 			stock.skill = 100;
 			stock.target = -2;
 			stock.costMP = 16;
 			break;
 		case 30:
-			stock.name = "全体小回復";
+			stock.name = "メディカ";
 			stock.waza = 14;
 			stock.skill = 20;
 			stock.target = 9;
 			stock.costMP = 11;
 			break;
 		case 31:
-			stock.name = "全体中回復";
+			stock.name = "メディラ";
 			stock.waza = 14;
 			stock.skill = 40;
 			stock.target = 9;
 			stock.costMP = 22;
 			break;
 		case 32:
-			stock.name = "デバフ解除";
+			stock.name = "エスナ";
 			stock.waza = 11;
 			stock.skill = 0;
 			stock.target = -2;
 			stock.costMP = 5;
 			break;
 		case 33:
-			stock.name = "全体デバフ解除";
+			stock.name = "キアル";
 			stock.waza = 11;
 			stock.skill = 0;
 			stock.target = 9;
@@ -1657,7 +1659,7 @@ class SkillData{
 			stock.target = -2;
 			stock.costMP = 3;
 		case 50:
-			stock.name = "防御弱体化";
+			stock.name = "ウィーク";
 			stock.waza = 6;
 			stock.skill = -30;
 			stock.target = 9;
@@ -1665,7 +1667,7 @@ class SkillData{
 			stock.turn = 3;
 			break;
 		case 51:
-			stock.name = "回復";
+			stock.name = "ヒール";
 			stock.waza = 14;
 			stock.skill = 50;
 			stock.target = 10;
@@ -1693,7 +1695,7 @@ class SkillData{
 			stock.costMP = 0;
 			break;
 		case 55:
-			stock.name = "攻撃強化";
+			stock.name = "チャージ";
 			stock.waza = 5;
 			stock.skill = 20;
 			stock.target = 10;
@@ -1701,102 +1703,102 @@ class SkillData{
 			stock.turn = 5;
 			break;
 		case 56:
-			stock.name = "ジョブチェンジ";
+			stock.name = "ジョブン";
 			stock.waza = 17;
 			stock.skill = 100;
 			stock.target = 9;
 			stock.costMP = 0;
 			break;
 		case 100:
-			stock.name = "小攻撃";
+			stock.name = "ギラ";
 			stock.waza = 0;
 			stock.skill = 1.2;
 			stock.target = -2;
 			stock.costMP = 5;
 			break;
 		case 101:
-			stock.name = "中攻撃";
+			stock.name = "ヒャダルン";
 			stock.waza = 0;
 			stock.skill = 1.6;
 			stock.target = -2;
 			stock.costMP = 9;
 			break;
 		case 102:
-			stock.name = "大攻撃";
+			stock.name = "トルネド";
 			stock.waza = 0;
 			stock.skill = 2.0;
 			stock.target = -2;
 			stock.costMP = 17;
 			break;
 		case 103:
-			stock.name = "全体攻撃";
+			stock.name = "ダーク";
 			stock.waza = 0;
 			stock.skill = 0.8;
 			stock.target = -2;
 			stock.costMP = 15;
 			break;
 		case 104:
-			stock.name = "attバフ";
+			stock.name = "アドパワ";
 			stock.waza = 2;
 			stock.skill = 0.3;
 			stock.target = 8;
 			stock.costMP = 5;
 			break;
 		case 105:
-			stock.name = "defバフ";
+			stock.name = "アドディ";
 			stock.waza = 3;
 			stock.skill = 0.2;
 			stock.target = 8;
 			stock.costMP = 5;
 			break;
 		case 106:
-			stock.name = "ageバフ";
+			stock.name = "アドアジ";
 			stock.waza = 4;
 			stock.skill = 0.5;
 			stock.target = 8;
 			stock.costMP = 5;
 			break;
 		case 107:
-			stock.name = "attデバフ";
+			stock.name = "へナトス";
 			stock.waza = 2;
 			stock.skill = -0.3;
 			stock.target = -2;
 			stock.costMP = 5;
 			break;
 		case 108:
-			stock.name = "defデバフ";
+			stock.name = "ウィーク";
 			stock.waza = 3;
 			stock.skill = -0.2;
 			stock.target = -2;
 			stock.costMP = 5;
 			break;
 		case 109:
-			stock.name = "ageデバフ";
+			stock.name = "スロウ";
 			stock.waza = 4;
 			stock.skill = -0.3;
 			stock.target = -2;
 			stock.costMP = 5;
 			break;
 		case 110:
-			stock.name = "デバフ解除";
+			stock.name = "デスペル";
 			stock.waza = 11;
 			stock.skill = 0;
 			stock.target = -2;
 			stock.costMP = 5;
 		case 111:
-			stock.name = "回復";
+			stock.name = "ヒール";
 			stock.waza = 14;
 			stock.skill = 200;
 			stock.target = -1;
 			stock.costMP = 10;
 		case 112:
-			stock.name = "大回復";
+			stock.name = "ヒーレスト";
 			stock.waza = 14;
 			stock.skill = 800;
 			stock.target = -1;
 			stock.costMP = 35;
 		case 113:
-			stock.name = "全体回復";
+			stock.name = "メディラ";
 			stock.waza = 14;
 			stock.skill = 100;
 			stock.target = 10;
