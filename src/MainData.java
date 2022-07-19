@@ -1,7 +1,7 @@
 import java.io.Serializable;
 
-public class MainData implements Serializable {
-	static final long serialVersionUID = 1;
+public class MainData implements Serializable{
+	static final long serialVersionUID=1;
 
 	boolean[] bossFlug = new boolean[7];
 	boolean[] clearQuestFlag = new boolean[51];
