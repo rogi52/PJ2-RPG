@@ -20,7 +20,7 @@ class dCanvas extends Canvas {
 	private BufferedImage[] block;
 	private BufferedImage[] teki;
 	private BufferedImage[][][] chr;//キャラ、向き、歩行
-	
+
 	private int load_che_rand;
 
 
@@ -35,18 +35,18 @@ class dCanvas extends Canvas {
 	public String en_p[][]=new String[512][64];
 	public String en_UID[]=new String[512];
 	public String en_used="";
-	
+
 	public boolean random_match_enable=false;
 
 
 	public int pos_x,pos_y;
 
 	Dimension size;
-	
+
 	//ダブルバッファ
 	Image back;
 	Graphics buffer;
-	
+
 	//拡大縮小バッファ
 	Image back2;
 	Graphics buffer2;
@@ -126,7 +126,7 @@ class dCanvas extends Canvas {
 			drawChr("なし",54+PL2RPG.BLOCK_SIZE*(1+j*6),104+PL2RPG.BLOCK_SIZE*(PL2RPG.JOB_NAME.length+3),PL2RPG.MAIN_WIN_X-1-100*2-8);
 		}
 		for(int j=0;j<4;j++) {
-			drawChr("▶",54+PL2RPG.BLOCK_SIZE*j*6,104+PL2RPG.BLOCK_SIZE*(3+w.m.partyJob[j]),PL2RPG.MAIN_WIN_X-1-100*2-8);				
+			drawChr("▶",54+PL2RPG.BLOCK_SIZE*j*6,104+PL2RPG.BLOCK_SIZE*(3+w.m.partyJob[j]),PL2RPG.MAIN_WIN_X-1-100*2-8);
 			if(j==x)drawChr("▶",54+PL2RPG.BLOCK_SIZE*(1+j*6),104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 
 		}
@@ -165,7 +165,7 @@ class dCanvas extends Canvas {
 			drawChr("　いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*6,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		}else {
 			drawChr("　はい",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*5,PL2RPG.MAIN_WIN_X-1-100*2-8);
-			drawChr("▶いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*6,PL2RPG.MAIN_WIN_X-1-100*2-8);			
+			drawChr("▶いいえ",104+PL2RPG.BLOCK_SIZE,104+PL2RPG.BLOCK_SIZE*6,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		}
 
 		repaint();
@@ -183,8 +183,8 @@ class dCanvas extends Canvas {
 		String name="";
 		for(int j=ysel-2;j<=ysel+2;j++) {
 			if(j<=50 && j>=1) {
-				if(!w.m.clearQuestFlug[j] && (w.m.clearQuestFlug[QuestData.callQuest(j).target] || QuestData.callQuest(j).target == 0)) {
-					name+="No."+Integer.toString(j)+" "+QuestData.callQuest(j).title+"\n\n";
+				if(!w.m.clearQuestFlag[j] && (w.m.clearQuestFlag[QuestData.callQuest(j).target] || QuestData.callQuest(j).target == 0)) {
+					name+="No."+Integer.toString(j)+" "+QuestData.callQuest(j).name+"\n\n";
 				}
 			}else {
 				name+="\n\n";
@@ -267,7 +267,7 @@ class dCanvas extends Canvas {
 			w.map_for=Integer.parseInt(csv_arr[6]);
 
 			w.changeBgm(w.walk_bgm);
-			
+
 
 
 
@@ -303,7 +303,7 @@ class dCanvas extends Canvas {
 		int posy_1=pos_y/32;
 		int posx_2=pos_x%32;
 		int posy_2=pos_y%32;
-		
+
 		int int_temp;
 
 		blank(255);
@@ -321,7 +321,7 @@ class dCanvas extends Canvas {
 					case 3:
 						if(en_x[i]==diff_x && en_y[i]==diff_y) {
 							if(en_used.indexOf(en_UID[i])==-1)
-								buffer.drawImage(item_img,dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
+								buffer.drawImage(item_img,dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);
 						}
 						break;
 					case 4:
@@ -329,14 +329,14 @@ class dCanvas extends Canvas {
 						if(int_temp>=0) {
 							if(en_x[i]==diff_x && en_y[i]==diff_y) {
 								if(en_used.indexOf(en_UID[i])==-1)
-									buffer.drawImage(teki[int_temp],dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
+									buffer.drawImage(teki[int_temp],dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);
 							}
 						}
 						break;
 					case 6:
 						if(en_x[i]==diff_x && en_y[i]==diff_y) {
 							if(en_used.indexOf(en_UID[i])==-1)
-								buffer.drawImage(save_img,dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
+								buffer.drawImage(save_img,dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);
 						}
 						break;
 					}
@@ -351,14 +351,14 @@ class dCanvas extends Canvas {
 
 		repaint();
 	}
-	
+
 	public void zoom(float ratio,int alpha) {
 		int center_y=PL2RPG.MAIN_WIN_Y/2;
 		int center_x=PL2RPG.MAIN_WIN_X/2+PL2RPG.BLOCK_SIZE/2;
-		
+
 		buffer2.drawImage(back,0,0,PL2RPG.MAIN_WIN_X,PL2RPG.MAIN_WIN_Y,(int)(center_x*ratio),(int)(center_y*ratio),(int)(center_x+(PL2RPG.MAIN_WIN_X-center_x)*(1-ratio)),(int)(center_y+(PL2RPG.MAIN_WIN_Y-center_y)*(1-ratio)),this);
 		buffer.drawImage(back2,0,0,null);
-		
+
 		blank(alpha);
 
 		repaint();
@@ -378,7 +378,7 @@ class dCanvas extends Canvas {
 					buffer.setFont(new Font("Yu Gothic UI", Font.BOLD, 23));
 				}else {
 					buffer.setColor(new Color(0,0,0,127));
-					buffer.setFont(new Font("Yu Gothic UI", Font.PLAIN, 19));					
+					buffer.setFont(new Font("Yu Gothic UI", Font.PLAIN, 19));
 				}
 
 				buffer.drawString(w.save_list[i],330, 320+(i-key_y)*25);
@@ -411,10 +411,10 @@ class dCanvas extends Canvas {
 			}
 		}else {
 			buffer.drawImage(new_img,PL2RPG.MAIN_WIN_X/2-128-100,450, null);
-			buffer.drawImage(con_act_img,PL2RPG.MAIN_WIN_X/2+100,450, null);			
+			buffer.drawImage(con_act_img,PL2RPG.MAIN_WIN_X/2+100,450, null);
 		}
 
-		buffer.setFont(new Font("Yu Gothic UI", Font.BOLD, 32));					
+		buffer.setFont(new Font("Yu Gothic UI", Font.BOLD, 32));
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.drawString("Press Enter to Select",330, 550);
 
@@ -432,21 +432,21 @@ class dCanvas extends Canvas {
 		}
 		drawChr(msg,PL2RPG.BLOCK_SIZE*10,PL2RPG.BLOCK_SIZE*9,PL2RPG.MAIN_WIN_X);
 		buffer.drawImage(chr[load_che_rand][1][st%4],(step%256)*4-PL2RPG.BLOCK_SIZE,PL2RPG.BLOCK_SIZE*11,null);
-		
+
 		repaint();
 	}
 
 	public void init(){
-		
+
 		load_che_rand=(int)(Math.random()*PL2RPG.JOBS.length);
-		
-		
+
+
 		size = getSize();
-		
+
 		//ダブルバッファ
 		back =  createImage(size.width, size.height);
 		buffer = back.getGraphics();
-		
+
 		//拡大縮小バッファ
 		back2 =  createImage(size.width, size.height);
 		buffer2 = back2.getGraphics();
@@ -460,10 +460,10 @@ class dCanvas extends Canvas {
 			con_dis_img = ImageIO.read(new File(PL2RPG.UI_IMG_PATH+"/continue_dis.png"));
 			item_img = ImageIO.read(new File(PL2RPG.BLOCK_IMG_PATH+"/item.png"));
 			save_img = ImageIO.read(new File(PL2RPG.BLOCK_IMG_PATH+"/save.png"));
-			
+
 
 			loadBlock("0.home");
-			
+
 			loadTeki();
 
 			chr=new BufferedImage[7][4][4];
@@ -486,7 +486,7 @@ class dCanvas extends Canvas {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void loadTeki() {
 		File file1 = new File(PL2RPG.TEKI_PATH);
 		File fileArray1[] = file1.listFiles();
