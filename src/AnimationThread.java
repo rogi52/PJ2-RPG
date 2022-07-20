@@ -1,5 +1,7 @@
 import java.awt.event.KeyEvent;
 
+import javax.swing.JFrame;
+
 class GameLoop extends Thread{
 	Window w;
 	dCanvas myCanvas;
@@ -553,7 +555,6 @@ class AnimationMove extends Thread{
 				walk_count=0;
 
 				System.out.println("ID："+w.now_dangeon_id);
-				System.out.println("適正："+PL2RPG.JOB_NAME[w.map_for]);
 				System.out.println("種類："+enemy_type);
 
 
@@ -572,9 +573,24 @@ class AnimationMove extends Thread{
 				w.myCanvas.repaint();
 
 				w.changeBgm(w.battle_bgm);
+				
+				//対戦
+				JFrame frame=w;//new JFrame();
 
+				int dungeonID=w.now_dangeon_id; //(0-6?)
+				int enemyUnitID=enemy_type; //(MobData に定数を記載. MINION, BOSS_1ST_FLOOR など)
+				Battle battle = new Battle(w.m, dungeonID, enemyUnitID);
+				frame.add(battle.window);
+				frame.addKeyListener(battle.window);
 
-				w.wait(5000);
+				int result = battle.start();
+
+				frame.remove(battle.window);
+				frame.removeKeyListener(battle.window);
+
+				System.out.println(result);
+
+				//w.wait(5000);
 
 				Animation_Select a=new Animation_Select(w.myCanvas,w);
 				a.mode(-1,2);
