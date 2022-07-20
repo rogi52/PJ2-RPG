@@ -373,6 +373,15 @@ public class Window extends JFrame implements KeyListener{
 		}
 	}
 	
+	public void resetKey() {
+		press_up=false;
+		press_dw=false;
+		press_le=false;
+		press_ri=false;
+		pr_enter=false;
+		press_esc=false;
+	}
+	
 	
 	public void loadSE() {
 		File file1 = new File("./se");
