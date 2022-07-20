@@ -1,149 +1,117 @@
 
 public class ItemData{
 	static String getItemName(int n) {
-		return getItem(n).doc;
+		return getItem(n).name;
 	}
-
-	static Item getItem(int n) {
-		Item item = new Item();
+	
+	static item getItem(int n) {
+		item stock = new item();
 		switch(n) {
-			case 1: {
-				item.name = "まほうのもと";
-				item.doc = "よわこう";
-				item.waza = 0;
-				item.skill = 1.4;
-				item.target = -1;
-			} break;
-
-			case 2: {
-				item.name = "ちからのたね";
-				item.doc = "attバフ";
-				item.waza = 5;
-				item.skill = 15;
-				item.target = -2;
-				item.turn = 2;
-			} break;
-
-			case 3: {
-				item.name = "ばくやく";
-				item.doc = "小範囲";
-				item.waza = 0;
-				item.skill = 0.9;
-				item.target = 10;
-			} break;
-
-			case 4: {
-				item.name = "こうげきそう";
-				item.doc = "攻撃バフ";
-				item.waza = 2;
-				item.skill = 0.15;
-				item.target = -2;
-				item.turn = 3;
-			} break;
-
-			case 5: {
-				item.name = "まもりそう";
-				item.doc = "防御バフ";
-				item.waza = 3;
-				item.skill = 0.1;
-				item.target = -2;
-				item.turn = 3;
-			} break;
-
-			case 6: {
-				item.name = "ときのすな";
-				item.doc = "素早さバフ";
-				item.waza = 4;
-				item.skill = 0.3;
-				item.target = -2;
-				item.turn = 3;
-			} break;
-
-			case 7: {
-				item.name = "こうげきジャマー";
-				item.doc = "攻撃デバフ";
-				item.waza = 2;
-				item.skill = -0.1;
-				item.target = -1;
-				item.turn = 2;
-			} break;
-
-			case 8: {
-				item.name = "まもりジャマー";
-				item.doc = "防御デバフ";
-				item.waza = 3;
-				item.skill = -0.1;
-				item.target = -1;
-				item.turn = 2;
-			} break;
-
-			case 9: {
-				item.name = "くものいと";
-				item.doc = "素早さデバフ";
-				item.waza = 4;
-				item.skill = -0.15;
-				item.target = -1;
-				item.turn = 2;
-			} break;
-
-			case 10: {
-				item.name = "ほしくず";
-				item.doc = "貫通攻撃";
-				item.waza = 15;
-				item.skill = 1.1;
-				item.target = -1;
-			} break;
-
-			case 11: {
-				item.name = "やくそう";
-				item.doc = "小回復";
-				item.waza = 14;
-				item.skill = 15;
-				item.target = -2;
-			} break;
-
-			case 12: {
-				item.name = "ポーション";
-				item.doc = "全体小回復";
-				item.waza = 14;
-				item.skill = 8;
-				item.target = 9;
-			} break;
-
-			case 13: {
-				item.name = "まほうすい";
-				item.doc = "MP回復";
-				item.waza = 18;
-				item.skill = 10;
-				item.target = -2;
-			} break;
-
-			case 21: {
-				item.name = "ダイナマイト";
-				item.doc = "大攻撃";
-				item.waza = 0;
-				item.skill = 2.2;
-				item.target = -1;
-			} break;
-
-			case 22: {
-				item.name = "エリクサー";
-				item.doc = "全体回復";
-				item.waza = 14;
-				item.skill = 16;
-				item.target = 9;
-			} break;
-
-			case 23: {
-				item.name = "きじんやく";
-				item.doc = "攻撃バフ大";
-				item.waza = 2;
-				item.skill = 0.3;
-				item.target = -2;
-				item.turn = 3;
-			} break;
+		case 1:
+			stock.name = "まほうのもと";
+			stock.waza = 0;
+			stock.skill = 1.4;
+			stock.target = -1;
+			break;
+		case 2:
+			stock.name = "ちからのたね";
+			stock.waza = 5;
+			stock.skill = 15;
+			stock.target = -2;
+			stock.turn = 2;
+			break;
+		case 3:
+			stock.name = "ばくやく";
+			stock.waza = 0;
+			stock.skill = 0.9;
+			stock.target = 10;
+			break;
+		case 4:
+			stock.name = "ちからぐさ";
+			stock.waza = 2;
+			stock.skill = 0.15;
+			stock.target = -2;
+			stock.turn = 3;
+			break;
+		case 5:
+			stock.name = "まもりそう";
+			stock.waza = 3;
+			stock.skill = 0.1;
+			stock.target = -2;
+			stock.turn = 3;
+			break;
+		case 6:
+			stock.name = "ときのすな";
+			stock.waza = 4;
+			stock.skill = 0.3;
+			stock.target = -2;
+			stock.turn = 3;
+			break;
+		case 7:
+			stock.name = "ちからぬき";
+			stock.waza = 2;
+			stock.skill = -0.1;
+			stock.target = -1;
+			stock.turn = 2;
+			break;
+		case 8:
+			stock.name = "まもりぬき";
+			stock.waza = 3;
+			stock.skill = -0.1;
+			stock.target = -1;
+			stock.turn = 2;
+			break;
+		case 9:
+			stock.name = "くものいと";
+			stock.waza = 4;
+			stock.skill = -0.15;
+			stock.target = -1;
+			stock.turn = 2;
+			break;
+		case 10:
+			stock.name = "ほしくず";
+			stock.waza = 15;
+			stock.skill = 1.1;
+			stock.target = -1;
+			break;
+		case 11:
+			stock.name = "やくそう";
+			stock.waza = 14;
+			stock.skill = 15;
+			stock.target = -2;
+			break;
+		case 12:
+			stock.name = "ポーション";
+			stock.waza = 14;
+			stock.skill = 8;
+			stock.target = 9;
+			break;
+		case 13:
+			stock.name = "まほうすい";
+			stock.waza = 18;
+			stock.skill = 10;
+			stock.target = -2;
+			break;
+		case 21:
+			stock.name = "TNT";
+			stock.waza = 0;
+			stock.skill = 2.2;
+			stock.target = -1;
+			break;
+		case 22:
+			stock.name = "エリクサー";
+			stock.waza = 14;
+			stock.skill = 16;
+			stock.target = 9;
+			break;
+		case 23:
+			stock.name = "きじんやく";
+			stock.waza = 2;
+			stock.skill = 0.3;
+			stock.target = -2;
+			stock.turn = 3;
+			break;
 		}
-
-		return item;
+		return stock;
 	}
 }
