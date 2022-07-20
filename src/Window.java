@@ -111,6 +111,7 @@ public class Window extends JFrame implements KeyListener{
 	}
 
 	boolean save(String fileName) {
+		m.max();
 		try {
 			FileOutputStream fos=new FileOutputStream(PL2RPG.SAVE_PATH+"/"+fileName);
 			ObjectOutputStream oos=new ObjectOutputStream(fos);
