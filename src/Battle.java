@@ -6,6 +6,10 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 
+//未実装メモ
+//攻撃対象設定、ジョブ毎に対象を決める場合
+//アイテム所持の管理
+
 class Battle {
 
 	public static void main(String[] args) {
@@ -15,8 +19,9 @@ class Battle {
 		data.partyHP  = new int[] {100, 200, 300, 400};
 		data.partyMP  = new int[] { 50, 150, 250, 350};
 
-		int enemyUnitID = 1;
-		Battle battle = new Battle(data, enemyUnitID);
+		int dungeonID = 1;
+		int enemyUnitID = MobData.MINION;
+		Battle battle = new Battle(data, dungeonID, enemyUnitID);
 		JFrame frame = new JFrame("Main Window");
 		frame.setSize(960, 640);
 		frame.add(battle.window);
@@ -24,9 +29,7 @@ class Battle {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
-		battle.start();
-
-		int result = battle.getResult();
+		int result = battle.start();
 		System.out.println(result == 1 ? "WIN" : "LOSE");
 
 		frame.remove(battle.window);
@@ -34,21 +37,40 @@ class Battle {
 		frame.repaint();
 	}
 
-	class buffer{
+	int dungeonID = -1;
+
+	int enemyUnitID = -1;
+
+	/* enemyType の定義は、Mob (or MobData) でするのが綺麗 */
+
+	Battle(MainData data, int dungeonID, int enemyUnitID){
+		this.data = data;
+		this.dungeonID = dungeonID;
+		this.enemyUnitID = enemyUnitID;
+		assert(enemyUnitID == MobData.MINION
+			|| enemyUnitID == MobData.BOSS_1ST_FLOOR
+			|| enemyUnitID == MobData.BOSS_2ND_FLOOR
+			|| enemyUnitID == MobData.BOSS_3RD_FLOOR);
+	}
+
+	class Buffer {
+		String name, doc;
 		double effect;
-		String name;
 		int turn;
 		int pattern;//バフの処理に使用する判別子、0が攻撃、1が防御、2がその他
+		static final int AKT   = 0;
+		static final int DEF   = 1;
+		static final int OTHER = 2;
 	}
 
 	int turns = 1;
-	int[] itemFlug = new int[4];
-	status[] Hero = new status[4];
-	statusEnemy[] Enemy = new statusEnemy[4];
-	skill[] stock = new skill[8];
+	int[] itemFlag = new int[4];
+	Hero[] hero = new Hero[4];
+	Mob[] Enemy = new Mob[4];
+	Skill[] stock = new Skill[8];
 	int[] actOrder = new int[8];
-	buffer[][] buf = new buffer[5][8];
-	boolean lateflug = false;
+	Buffer[][] buf = new Buffer[5][8];
+	boolean lateflag = false;
 
 	MainData data;
 	final int WIN     = +1;
@@ -56,105 +78,92 @@ class Battle {
 	final int LOSE    = -1;
 	int result = PENDING;
 	BattleWindow window = new BattleWindow();
-	int enemyUnitID = -1;
 
-	void start() {
+	/* return result */
+	int start() {
 		setHero();
-		setEnemy(enemyUnitID);
+		setEnemy();
 		int JUDGE = PENDING;
 		while((JUDGE = judgement()) == PENDING){
-			if(Enemy[0].HP >= 0) System.out.println("debug: Enemy1 HP = " + Enemy[0].HP + "/" + Enemy[0].MaxHP);
-			if(Enemy[1].HP >= 0) System.out.println("debug: Enemy2 HP = " + Enemy[1].HP + "/" + Enemy[1].MaxHP);
-			if(Enemy[2].HP >= 0) System.out.println("debug: Enemy3 HP = " + Enemy[2].HP + "/" + Enemy[2].MaxHP);
-			if(Enemy[3].HP >= 0) System.out.println("debug: Enemy4 HP = " + Enemy[3].HP + "/" + Enemy[3].MaxHP);
-			reflesh();
-			selectHero();
+			if(Enemy[0].maxHP >= 0) System.out.println("debug: Enemy1 maxHP = " + Enemy[0].maxHP + "/" + Enemy[0].maxHP);
+			if(Enemy[1].maxHP >= 0) System.out.println("debug: Enemy2 maxHP = " + Enemy[1].maxHP + "/" + Enemy[1].maxHP);
+			if(Enemy[2].maxHP >= 0) System.out.println("debug: Enemy3 maxHP = " + Enemy[2].maxHP + "/" + Enemy[2].maxHP);
+			if(Enemy[3].maxHP >= 0) System.out.println("debug: Enemy4 maxHP = " + Enemy[3].maxHP + "/" + Enemy[3].maxHP);
+			refresh();
+			selecthero();
 			selectEnemy();
 			makeActOrder();
 			doAct();
+			/* doAct() の中で HP, MP を更新する */
 			for(int i = 0; i < 4; i++) {
-				window.players[i].HP = Hero[i].HP;
-				window.players[i].MP = Hero[i].MP;
+				window.players[i].HP = hero[i].curHP;
+				window.players[i].MP = hero[i].curMP;
 			}
 			turns++;
 		}
 
 		for(int i = 0; i < 4; i++) {
-			data.partyHP[i] = Hero[i].HP;
-			data.partyMP[i] = Hero[i].MP;
+			data.partyHP[i] = hero[i].curHP;
+			data.partyMP[i] = hero[i].curMP;
 		}
 
 		if(JUDGE == WIN) {
 			window.println("あなたは勝利した", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
-			data.battle(Enemy);
-			//→討伐数処理
 			result = WIN;
+			data.battle(Enemy);
 		} else {
 			window.println("あなたは敗北した", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
 			result = LOSE;
-			/* 敗北後の処理 */
 		}
+		return result;
 	}
 
-	Battle(MainData data, int enemyUnitID){
-		this.data = data;
-		this.enemyUnitID = enemyUnitID;
-	}
 
-	void changeJobStatus(int i, int job) {
-		Hero[i] = StatusData.callJob(job, data.clearQuestFlug);
-		/* HP, MP が回復しそう→ラスボス戦闘時専用の処理で、別の場所でHP,MPを調整している */
+
+	void changeJobCharacter(int i, int job) {
+		hero[i] = HeroData.callJob(job, data.clearQuestFlag);
 	}
 
 	void setHero() {
 		for(int i = 0; i < 4; i++) {
-			Hero[i] = StatusData.callJob(data.partyJob[i], data.clearQuestFlug);
-			Hero[i].HP = data.partyHP[i];
-			Hero[i].MP = data.partyMP[i];
-			window.players[i] = new BattleWindow.Player(Hero[i].Name, Hero[i].HP, Hero[i].MP);
+			hero[i] = HeroData.callJob(data.partyJob[i], data.clearQuestFlag);
+			hero[i].curHP = data.partyHP[i];
+			hero[i].curMP = data.partyMP[i];
+			window.players[i] = new BattleWindow.Player(hero[i].name, hero[i].curHP, hero[i].curMP);
 		}
 	}
 
-	void setEnemy(int enemyUnitID) {
-		double i = 0;
-		while(i < 3) {
-			if(Hero[(int)i + 1].HP == -1) break;
-			i++;
-		}
-		i++;
-		/* ここまでは何をしている？→味方の人数をカウントしている*/
+	void setEnemy() {
+		Enemy = MobData.callEnemies(dungeonID, enemyUnitID);
 
-		int m;
-		Enemy = StatusData.callEnemies(enemyUnitID);
-		for(m = 0; m < 4; m++) if(Enemy[m].HP == -1) break; /* enemy.exist() を作る */
-		i /= m;
+		double upper = 0;
+		for(int i = 0; i < 4; i++) if(hero[i].isExist()) upper += 1.0;
+		double lower = 0;
+		for(int i = 0; i < 4; i++) if(Enemy[i].isExist()) lower += 1.0;
+		double ratio = upper / lower;
 		window.print("", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
-		for(m = 0; m < 4; m++) if(Enemy[m].HP > 0) {
-			Enemy[m].HP *= i;
-			Enemy[m].MaxHP *= i;
-			Enemy[m].MP *= Math.pow(1.5, i - 1);
-			Enemy[m].MaxMP *= Math.pow(1.5, i - 1);
-			System.out.println(Enemy[m].Name + "があらわれた!!");
-			window.println(Enemy[m].Name + "があらわれた!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+		for(int i = 0; i < 4; i++) if(Enemy[i].isExist()) {
+			Enemy[i].curHP *= ratio;
+			Enemy[i].maxHP *= ratio;
+			Enemy[i].curMP *= Math.pow(1.5, ratio - 1.0);
+			Enemy[i].maxMP *= Math.pow(1.5, ratio - 1.0);
+			System.out.println(Enemy[i].name + "があらわれた!!");
+			window.println(Enemy[i].name + "があらわれた!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 		}
 	}
 
 	int judgement() {
 		int heroCnt = 0, enemyCnt = 0;
 		for(int i = 0; i < 4; i++) {
-			if(Hero[i].HP > 0) heroCnt++;
-			if(Enemy[i].HP > 0) enemyCnt++;
+			if(hero[i].isAlive()) heroCnt++;
+			if(Enemy[i].isAlive()) enemyCnt++;
 		}
 		if(heroCnt  > 0 && enemyCnt == 0) return WIN;
 		if(heroCnt == 0 && enemyCnt  > 0) return LOSE;
 		return PENDING;
 	}
 
-	int getResult() {
-		return result;
-	}
-
-	void reflesh() {//バフ等のターン経過管理
+	void refresh() {//バフ等のターン経過管理
 		for(int m = 0; m < 8; m++){
 			for(int n = 0; n < 5; n++) {
 				if(buf[n][m] != null) {
@@ -183,19 +192,23 @@ class Battle {
 		}
 	}
 
-	public void selectHero() {
+	public void selecthero() {
 		ArrayList<String> cmd1 = new ArrayList<String>(Arrays.asList("もどる", "こうげき", "ぼうぎょ", "スキル"));
 		for(int i = 0; i < cmd1.size(); i++) cmd1.set(i, ImageManager.arrange(cmd1.get(i)));
 		HashMap<String, Integer> cmd1_mp = new HashMap<>();
 		for(int i = 0; i < 4; i++) cmd1_mp.put(cmd1.get(i), i);
 		int selects;
 		for(int n = 0; n < 4; n++) {
-			if(Hero[n].HP > 0){
-				itemFlug[n] = -1;
-				stock[n] = new skill();
-				System.out.println(Hero[n].Name + "のターン.");
-				window.println(Hero[n].Name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
+			if(hero[n].curHP > 0){
+				itemFlag[n] = -1;
+				stock[n] = new Skill();
+				System.out.println(hero[n].name + "のターン.");
+				window.println(hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
+				//for(int m = 0; m < 5; m++) if(buf[m][n] != null) System.out.println("debug:" + buf[m][n].name + " = at" + buf[m][n].turn);
+				//System.out.println("HP:" + hero[n].curHP + "/" + hero[n].maxHP + " MP:" + hero[n].curMP + "/" + hero[n].maxMP);
+				//System.out.printf("0:もどる, 1:こうげき, 2:ぼうぎょ, 3:スキル =>");
 				/* !もどる選択肢の実装 */
+
 				//selects = s.nextInt() - 1;
 				String option = window.getOption(cmd1, BattleWindow.CMD_LEFT);
 				selects = cmd1_mp.get(option) - 1;
@@ -208,11 +221,21 @@ class Battle {
 				}else if(selects == 0){//攻撃
 					stock[n].name = "こうげき";
 					stock[n].waza = selects;
+					//System.out.printf("0:もどる");
+					/*
+					for(int m = 0; m < 4; m++) {
+						if(Enemy[m].curHP > 0) {
+							System.out.printf(", " + (m + 5) + ":" + Enemy[m].name);
+						}
+					}
+					System.out.printf(" =>");
+					*/
+					//stock[n].target = s.nextInt() - 1;
 					ArrayList<String> cmd3 = new ArrayList<>();
 					HashMap<String,Integer> enemy_hash = new HashMap<>();
 					for(int m = 0; m < 4; m++) {
-						if(Enemy[m].HP > 0) {
-							String name = ImageManager.arrange(Enemy[m].Name);
+						if(Enemy[m].curHP > 0) {
+							String name = ImageManager.arrange(Enemy[m].name);
 							cmd3.add(name);
 							enemy_hash.put(name, m + 5);
 						}
@@ -232,22 +255,29 @@ class Battle {
 					stock[n].target = 8;
 					stock[n].costMP = 0;
 				}else if(selects == 2){//スキル
+					//String[] skillsname = getSkillname(n);
+					//int[] skillsMP = getSkillMP(n);
+					//System.out.println("0:もどる cost:0");
+					//for(int m = 0; m < 10 && skillsname[m] != null; m++) if(hero[n].curMP > skillsMP[m]) System.out.println((m + 1) + ":" + skillsname[m] + " " + "cost:" + skillsMP[m]);
+					//selects = s.nextInt() - 1;
+
 					ArrayList<String> cmd2 = new ArrayList<>();
 					HashMap<String,Integer> skill_hash = new HashMap<>();
-					String[] skillsName = getSkillName(n);
+					String[] skillsname = getSkillname(n);
 					int[] skillsMP = getSkillMP(n);
-					for(int m = 0; m < 10 && skillsName[m] != null; m++)
-						if(Hero[n].MP > skillsMP[m]) {
-							String name = ImageManager.arrange(skillsName[m]);
+					for(int m = 0; m < 10 && skillsname[m] != null; m++)
+						if(hero[n].curMP > skillsMP[m]) {
+							String name = ImageManager.arrange(skillsname[m]);
 							cmd2.add(name);
 							skill_hash.put(name, m + 1);
 						}
 					selects = skill_hash.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX6)) - 1;
+
 					if(selects == -1) {
 						n--;
 						continue;
 					}
-					stock[n] = SkillData.getSkill(Hero[n].Skill[selects]);
+					stock[n] = SkillData.getSkill(hero[n].Skill[selects]);
 					if(stock[n].waza == 13) {
 						stock[n] = useItem(n);
 						if(stock[n] == null) {
@@ -256,23 +286,37 @@ class Battle {
 						}
 					}
 					if(stock[n].target < 0) {
+						/*
+						System.out.printf("0:もどる");
+						for(int m = 0; m < 4; m++) {
+							if(stock[n].target == -1) {
+									if(Enemy[m].curHP > 0) System.out.printf(", " + (m + 5) + ":" + Enemy[m].name);
+							}else {
+								if(hero[m].curHP > 0) System.out.printf(", " + (m + 1) + ":" + hero[m].name);
+							}
+						}
+						System.out.printf(" =>");
+						*/
+
 						ArrayList<String> cmd3 = new ArrayList<>();
 						HashMap<String, Integer> hash = new HashMap<>();
 						for(int m = 0; m < 4; m++) {
 							if(stock[n].target == -1) {
-								if(Enemy[m].HP > 0) {
-									String name = Enemy[m].Name;
+								if(Enemy[m].curHP > 0) {
+									String name = Enemy[m].name;
 									cmd3.add(name);
 									hash.put(name, m + 5);
 								}
 							} else {
-								if(Hero[m].HP > 0) {
-									String name = Hero[m].Name;
+								if(hero[m].curHP > 0) {
+									String name = hero[m].name;
 									cmd3.add(name);
 									hash.put(name, m + 1);
 								}
 							}
 						}
+
+						//stock[n].target = s.nextInt() - 1;
 						/* Box8 と Box6 を自動で判定 */
 						stock[n].target = hash.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX6)) - 1;
 						if(stock[n].target == -1) {
@@ -285,34 +329,34 @@ class Battle {
 		}
 	}
 
-	public item useItem(int k) {
+	public Item useItem(int k) {
 		Scanner s = new Scanner(System.in);
 		int m;
 		System.out.println("0:もどる");
 		for(int n = 1; n < 24; n++) {
-			if(data.checkItem(n)) System.out.println(n  + ":"+ ItemData.getItemName(n) + "(" + data.itemHas[n] + ")");
+			if(data.checkItem(n)) System.out.println(n  + ":"+ ItemData.getItemName(n) + "(" + data.itemCnt[n] + ")");
 		}
 		m = s.nextInt();
 		if(m == 0) return null;
 		else {
-			itemFlug[k] = m;
+			itemFlag[k] = m;
 			return ItemData.getItem(m);
 		}
 	}
 
 	public int[] getSkillMP(int n) {//スキルMPを取得する.
-		int[] MPList = new int[10];
-		for(int m = 0; m < Hero[n].Skill.length; m++) {
+		int[] MPList = new int[10];//一応10にしている
+		for(int m = 0; m < hero[n].Skill.length; m++) {
 
-			MPList[m] = SkillData.getSkillMP(Hero[n].Skill[m]);
+			MPList[m] = SkillData.getSkillMP(hero[n].Skill[m]);
 		}
 		return MPList;
 	}
 
-	public String[] getSkillName(int n) {//スキル名を取得する.
-		String[] nameList = new String[10];
-		for(int m = 0; m < Hero[n].Skill.length; m++) {
-			nameList[m] = SkillData.getSkillName(Hero[n].Skill[m]);
+	public String[] getSkillname(int n) {//スキル名を取得する.
+		String[] nameList = new String[10];//一応10にしている
+		for(int m = 0; m < hero[n].Skill.length; m++) {
+			nameList[m] = SkillData.getSkillname(hero[n].Skill[m]);
 		}
 		return nameList;
 	}
@@ -327,12 +371,12 @@ class Battle {
 		case 1:
 			do {
 				m = r.nextInt(4);
-			}while(Hero[m].HP <= 0);
+			}while(hero[m].curHP <= 0);
 			return m;
 		case 2:
 			for(int k = 0; k < 4; k++) {
 				target[k] = k;
-				Count[k] = Hero[k].HP;
+				Count[k] = hero[k].curHP;
 			}
 			for(int k = 0; k < 4; k++) {
 				m = k;
@@ -365,7 +409,7 @@ class Battle {
 		case 3:
 			for(int k = 0; k < 4; k++) {
 				target[k] = k;
-				if(Hero[k].HP > 0) Count[k] = Hero[k].HP;
+				if(hero[k].curHP > 0) Count[k] = hero[k].curHP;
 				else Count[k] = 1000;
 			}
 			for(int k = 0; k < 4; k++) {
@@ -400,7 +444,7 @@ class Battle {
 			for(int k = 0; k < 4; k++) {
 				target[k] = k;
 				Count[k] = 0;
-				if(Hero[k].HP > 0) {
+				if(hero[k].curHP > 0) {
 					for(int l = 0; l < 5; l++) {
 						if(buf[l][k] != null) {
 							if(buf[l][k].effect >= 0) Count[k]++;
@@ -440,7 +484,7 @@ class Battle {
 			for(int k = 0; k < 4; k++) {
 				target[k] = k;
 				Count[k] = 0;
-				if(Hero[k].HP > 0) {
+				if(hero[k].curHP > 0) {
 					for(int l = 0; l < 5; l++) {
 						if(buf[l][k] != null) {
 							if(buf[l][k].effect >= 0) Count[k]++;
@@ -480,7 +524,7 @@ class Battle {
 			for(int k = 0; k < 4; k++) {
 				target[k] = k;
 				Count[k] = 0;
-				if(Hero[k].HP > 0) {
+				if(hero[k].curHP > 0) {
 					for(int l = 0; l < 5; l++) {
 						if(buf[l][k] != null) {
 							if(buf[l][k].effect < 0) Count[k]++;
@@ -520,7 +564,7 @@ class Battle {
 			for(int k = 0; k < 4; k++) {
 				target[k] = k;
 				Count[k] = 0;
-				if(Hero[k].HP > 0) {
+				if(hero[k].curHP > 0) {
 					for(int l = 0; l < 5; l++) {
 						if(buf[l][k] != null) {
 							if(buf[l][k].effect < 0) Count[k]++;
@@ -562,11 +606,11 @@ class Battle {
 		return 0;
 	}
 
-	public skill makeSkill(int n) {
-		skill x = new skill();
+	public Skill makeSkill(int n) {
+		Skill x = new Skill();
 		int[] slot = new int[10];
 		int k = 0;
-		for(int m = 0; m < Enemy[n].Skill.length; m++) if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].MP) if(SkillData.getSkill(Enemy[n].Skill[m]).waza == 0) slot[k++] = m;
+		for(int m = 0; m < Enemy[n].Skill.length; m++) if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].curMP) if(SkillData.getSkill(Enemy[n].Skill[m]).waza == 0) slot[k++] = m;
 		if(k == 0) return makeBufSkill(n);
 		Random r = new Random();
 		k = r.nextInt(k - 1);
@@ -575,9 +619,9 @@ class Battle {
 		return x;
 	}
 
-	public skill makeBuf(int n) {
+	public Skill makeBuf(int n) {
 		for(int m = 0; m < Enemy[n].Skill.length; m++) {
-			if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].MP) {
+			if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].curMP) {
 				if(SkillData.getSkill(Enemy[n].Skill[m]).waza != 0 && SkillData.getSkill(Enemy[n].Skill[m]).skill < 0) {
 					return makeBufSkill(n);
 				}
@@ -586,11 +630,11 @@ class Battle {
 		return makeDeBufSkill(n);
 	}
 
-	public skill makeBufSkill(int n) {
-		skill x = new skill();
+	public Skill makeBufSkill(int n) {
+		Skill x = new Skill();
 		int[] slot = new int[10];
 		int k = 0;
-		for(int m = 0; m < Enemy[n].Skill.length; m++) if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].MP) if(SkillData.getSkill(Enemy[n].Skill[m]).waza != 0 && SkillData.getSkill(Enemy[n].Skill[m]).skill >= 0) slot[k++] = m;
+		for(int m = 0; m < Enemy[n].Skill.length; m++) if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].curMP) if(SkillData.getSkill(Enemy[n].Skill[m]).waza != 0 && SkillData.getSkill(Enemy[n].Skill[m]).skill >= 0) slot[k++] = m;
 		if(k == 0) return makeSkill(n);
 		Random r = new Random();
 		k = r.nextInt(k - 1);
@@ -600,22 +644,22 @@ class Battle {
 				if(x.target == -1) {
 					do{
 						x.target = r.nextInt(4) + 4;
-					}while(Enemy[x.target - 4].HP <= 0);
+					}while(Enemy[x.target - 4].curHP <= 0);
 				}else {
 					do{
 						x.target = r.nextInt(4);
-					}while(Hero[x.target].HP <= 0);
+					}while(hero[x.target].curHP <= 0);
 				}
 			}
 		}
 		return x;
 	}
 
-	public skill makeDeBufSkill(int n) {
-		skill x = new skill();
+	public Skill makeDeBufSkill(int n) {
+		Skill x = new Skill();
 		int[] slot = new int[10];
 		int k = 0;
-		for(int m = 0; m < Enemy[n].Skill.length; m++) if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].MP) if(SkillData.getSkill(Enemy[n].Skill[m]).waza != 0 && SkillData.getSkill(Enemy[n].Skill[m]).skill < 0) slot[k++] = m;
+		for(int m = 0; m < Enemy[n].Skill.length; m++) if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].curMP) if(SkillData.getSkill(Enemy[n].Skill[m]).waza != 0 && SkillData.getSkill(Enemy[n].Skill[m]).skill < 0) slot[k++] = m;
 		if(k == 0) return makeSkill(n);
 		Random r = new Random();
 		k = r.nextInt(k - 1);
@@ -625,11 +669,11 @@ class Battle {
 				if(x.target == -1) {
 					do{
 						x.target = r.nextInt(4);
-					}while(Hero[x.target].HP <= 0);
+					}while(hero[x.target].curHP <= 0);
 				}else {
 					do{
 						x.target = r.nextInt(4);
-					}while(Hero[x.target].HP <= 0);
+					}while(hero[x.target].curHP <= 0);
 				}
 			}
 		}
@@ -656,7 +700,7 @@ class Battle {
 		}else {
 			do {
 				m = r.nextInt(4);
-			}while(Hero[m].HP <= 0);
+			}while(hero[m].curHP <= 0);
 			stock[n + 4].name = "こうげき";
 			stock[n + 4].target = makeTarget(n);
 			stock[n + 4].skill = 1;
@@ -664,7 +708,7 @@ class Battle {
 		}
 	}
 
-	public void makeBufAction(int n) {
+	public void makeBufAction(int n) {//デバフは？とりあえずバフだけ
 		Random r = new Random();
 		int k = checkBuf(true);
 		boolean[] x = new boolean[4];
@@ -682,7 +726,7 @@ class Battle {
 		if(stock[n + 4].target == -1) stock[n + 4].target = k + 4;
 	}
 
-	public void makeDeBufAction(int n) {
+	public void makeDeBufAction(int n) {//デバフは？とりあえずバフだけ
 		Random r = new Random();
 		int k = checkBuf(false);
 		boolean[] x = new boolean[4];
@@ -701,52 +745,52 @@ class Battle {
 	}
 
 	public int checkBuf(boolean enemy) {
-		boolean[] flug = new boolean[4];
+		boolean[] flag = new boolean[4];
 		for(int n = 0; n < 4; n++) {
-			flug[n] = false;
+			flag[n] = false;
 			for(int m = 0; m < 5; m++) {
 				if(enemy) {
 					if(buf[m][n + 4] != null) if(buf[m][n + 4].effect >= 0) {
-						flug[n] = true;
+						flag[n] = true;
 						break;
 					}
 				}else {
 					if(buf[m][n] != null) if(buf[m][n].effect < 0) {
-						flug[n] = true;
+						flag[n] = true;
 						break;
 					}
 				}
 			}
 		}
 		int n = 0;
-		if(!flug[0]) n += 1;
-		if(!flug[1]) n += 2;
-		if(!flug[2]) n += 4;
-		if(!flug[3]) n += 8;
+		if(!flag[0]) n += 1;
+		if(!flag[1]) n += 2;
+		if(!flag[2]) n += 4;
+		if(!flag[3]) n += 8;
 		return n;
 	}
 
 	public int checkMP(int m) {
-		boolean flugAtt = false;
-		boolean flugBuf = false;
-		boolean flugDebuf = false;
+		boolean flagAtt = false;
+		boolean flagBuf = false;
+		boolean flagDebuf = false;
 		for(int n = 0; n < Enemy[m].Skill.length; n++) {
-			if(SkillData.getSkillMP(Enemy[m].Skill[n]) <= Enemy[m].MP) {
-				if(SkillData.getSkill(Enemy[m].Skill[n]).waza == 0) flugAtt = true;
+			if(SkillData.getSkillMP(Enemy[m].Skill[n]) <= Enemy[m].curMP) {
+				if(SkillData.getSkill(Enemy[m].Skill[n]).waza == 0) flagAtt = true;
 				else if(SkillData.getSkill(Enemy[m].Skill[n]).waza > 2 && SkillData.getSkill(Enemy[m].Skill[n]).waza < 7) {
-					if(SkillData.getSkill(Enemy[m].Skill[n]).skill >= 0) flugBuf = true;
-					else flugDebuf = true;
+					if(SkillData.getSkill(Enemy[m].Skill[n]).skill >= 0) flagBuf = true;
+					else flagDebuf = true;
 				}
 			}
 		}
 		int k;
-		if(flugAtt) k = 3;
+		if(flagAtt) k = 3;
 		else k = -1;
-		if(flugBuf) {
-			if(flugDebuf) return k + 3;
+		if(flagBuf) {
+			if(flagDebuf) return k + 3;
 			else return k + 1;
 		}else {
-			if(flugDebuf) return k + 2;
+			if(flagDebuf) return k + 2;
 			else return k;
 		}
 	}
@@ -754,8 +798,8 @@ class Battle {
 	public void selectEnemy() {
 		Random r = new Random();
 		for(int n = 0; n < 4; n++) {
-			if(Enemy[n].HP > 0){
-				stock[n+4] = new skill();
+			if(Enemy[n].curHP > 0){
+				stock[n+4] = new Skill();
 				switch(Enemy[n].AIpattern[0]) {
 				case 1: makeAction(n, 5, 0); break;
 				case 2: makeAction(n, 7, 0); break;
@@ -795,7 +839,7 @@ class Battle {
 						else SkillData.getSkill(52);
 						break;
 					case 4:
-						if(Enemy[1].HP > 0 && Enemy[2].HP > 0) stock[n + 4] = SkillData.getSkill(55);
+						if(Enemy[1].curHP > 0 && Enemy[2].curHP > 0) stock[n + 4] = SkillData.getSkill(55);
 						else stock[n + 4] = SkillData.getSkill(54);
 						break;
 					case 5:
@@ -816,7 +860,7 @@ class Battle {
 						break;
 					case 0:
 						stock[n + 4] = SkillData.getSkill(56);
-						lateflug = true;
+						lateflag = true;
 						break;
 					}
 					if(stock[n + 4].target == -2) stock[n + 4].target = makeTarget(n);
@@ -831,8 +875,8 @@ class Battle {
 		int max, part;
 		double eff = 1;
 		for(int n = 0; n < 4; n++) {
-			if(Hero[n].HP > 0) {
-				speeds[n] = (int)((double)Hero[n].Age * ((R.nextDouble() - 0.5) * 0.4 + 1));
+			if(hero[n].curHP > 0) {
+				speeds[n] = (int)((double)hero[n].AGE * ((R.nextDouble() - 0.5) * 0.4 + 1));
 				for(int m = 0; m < 5; m++) {
 					if(buf[m][n] != null) if(buf[m][n].pattern == 4) eff *= (1 + buf[m][n].effect);
 				}
@@ -842,8 +886,8 @@ class Battle {
 			else speeds[n] = -1;
 		}
 		for(int n = 0; n < 4; n++) {
-			if(Enemy[n].HP > 0) {
-				speeds[n + 4] = (int)((double)Enemy[n].Age * ((R.nextDouble() - 0.5) * 0.4 + 1));
+			if(Enemy[n].curHP > 0) {
+				speeds[n + 4] = (int)((double)Enemy[n].AGE * ((R.nextDouble() - 0.5) * 0.4 + 1));
 				for(int m = 0; m < 5; m++) {
 					if(buf[m][n + 4] != null) if(buf[m][n + 4].pattern == 4) eff *= (1 + buf[m][n + 4].effect);
 				}
@@ -852,7 +896,7 @@ class Battle {
 			}
 			else speeds[n + 4] = -1;
 		}
-		if(lateflug) {
+		if(lateflag) {
 			speeds[4] = 0;
 		}
 		for(int n = 0; n < 8; n++) {
@@ -876,27 +920,27 @@ class Battle {
 
 	public void doAct() {
 		int damage;
-		boolean flug = false;
+		boolean flag = false;
 		boolean x = false;//あまり使い道がない、貫通攻撃用
 		Random r = new Random();
 		for(int n = 0; n < 8 && actOrder[n] != -1; n++) {
-			flug = false;
+			flag = false;
 			x = false;
 			if(actOrder[n] < 4) {
-				if(Hero[actOrder[n]].HP == 0) flug = true;
+				if(hero[actOrder[n]].curHP == 0) flag = true;
 				else {
-					System.out.printf(Hero[actOrder[n]].Name + "は");
-					window.print(Hero[actOrder[n]].Name + "は", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
+					System.out.printf(hero[actOrder[n]].name + "は");
+					window.print(hero[actOrder[n]].name + "は", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
 				}
 			}
 			else {
-				if(Enemy[actOrder[n] - 4].HP == 0) flug = true;
+				if(Enemy[actOrder[n] - 4].curHP == 0) flag = true;
 				else{
-					System.out.printf(Enemy[actOrder[n] - 4].Name + "は");
-					window.print(Enemy[actOrder[n] - 4].Name + "は", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
+					System.out.printf(Enemy[actOrder[n] - 4].name + "は");
+					window.print(Enemy[actOrder[n] - 4].name + "は", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
 				}
 			}
-			if(flug) continue;
+			if(flag) continue;
 			if(stock[actOrder[n]].waza == 1) {
 				System.out.println("ぼうぎょした!");
 				window.println("ぼうぎょした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
@@ -905,15 +949,16 @@ class Battle {
 				System.out.println(stock[actOrder[n]].name + "をくりだした!");
 				window.println(stock[actOrder[n]].name + "をくりだした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 			}
+			//
 			if(stock[actOrder[n]].target == 8) stock[actOrder[n]].target = actOrder[n];
 			if(stock[actOrder[n]].target < 4) {
-				if(Hero[stock[actOrder[n]].target].HP == 0) {
+				if(hero[stock[actOrder[n]].target].curHP == 0) {
 					System.out.println("しかしあいてがいなかった!");
 					window.println("しかしあいてがいなかった!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 					continue;
 				}
 			}else if(stock[actOrder[n]].target < 8) {
-				if(Enemy[stock[actOrder[n]].target - 4].HP == 0) {
+				if(Enemy[stock[actOrder[n]].target - 4].curHP == 0) {
 					System.out.println("しかしあいてがいなかった!");
 					window.println("しかしあいてがいなかった!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 					continue;
@@ -926,77 +971,77 @@ class Battle {
 						if(!avoid(actOrder[n], stock[actOrder[n]].target)) {
 							damage = calcDamage(stock[actOrder[n]].target, actOrder[n], x);
 							if(actOrder[n] < 4) {
-								if(r.nextInt(100) < Hero[actOrder[n]].Luc / 10) {
+								if(r.nextInt(100) < hero[actOrder[n]].LUC / 10) {
 									System.out.println("かいしんのいちげき!!");
 									window.println("かいしんのいちげき!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 									damage *= 1.5;
 								}
 
 							}else {
-								if(r.nextInt(100) < Enemy[actOrder[n] - 4].Luc / 10) {
+								if(r.nextInt(100) < Enemy[actOrder[n] - 4].LUC / 10) {
 									System.out.println("かいしんのいちげき!!");
 									window.println("かいしんのいちげき!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 									damage *= 1.5;
 								}
 							}
 							if(stock[actOrder[n]].target < 4) {
-								System.out.println(Hero[stock[actOrder[n]].target].Name + "に");
-								window.println(Hero[stock[actOrder[n]].target].Name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+								System.out.println(hero[stock[actOrder[n]].target].name + "に");
+								window.println(hero[stock[actOrder[n]].target].name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							}
 							else {
-								System.out.println(Enemy[stock[actOrder[n]].target - 4].Name + "に");
-								window.println(Enemy[stock[actOrder[n]].target - 4].Name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+								System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "に");
+								window.println(Enemy[stock[actOrder[n]].target - 4].name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							}
 
 							System.out.println(damage + "のダメージ!");
 							window.println(damage + "のダメージ!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							if(!changeHP(damage, stock[actOrder[n]].target)){
 								if(stock[actOrder[n]].target < 4) {
-									System.out.println(Hero[stock[actOrder[n]].target].Name + "はちからつきた");
-									window.println(Hero[stock[actOrder[n]].target].Name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+									System.out.println(hero[stock[actOrder[n]].target].name + "はちからつきた");
+									window.println(hero[stock[actOrder[n]].target].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 								}
 								else {
-									System.out.println(Enemy[stock[actOrder[n]].target - 4].Name + "はちからつきた");
-									window.println(Enemy[stock[actOrder[n]].target - 4].Name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+									System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "はちからつきた");
+									window.println(Enemy[stock[actOrder[n]].target - 4].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 								}
 								if(judgement() != PENDING) return;
 							}
 						}else {
 							if(stock[actOrder[n]].target < 4) {
-								System.out.println(Hero[stock[actOrder[n]].target].Name + "はかいひした!");
-								window.println(Hero[stock[actOrder[n]].target].Name + "はかいひした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+								System.out.println(hero[stock[actOrder[n]].target].name + "はかいひした!");
+								window.println(hero[stock[actOrder[n]].target].name + "はかいひした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							}
 							else {
-								System.out.println(Enemy[stock[actOrder[n]].target - 4].Name + "はかいひした!");
-								window.println(Enemy[stock[actOrder[n]].target - 4].Name + "はかいひした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+								System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "はかいひした!");
+								window.println(Enemy[stock[actOrder[n]].target - 4].name + "はかいひした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							}
 						}
 					}else {
 						for(int m = 0; m < 4; m++) {
 							if(stock[actOrder[n]].target == 9) {
-								if(Hero[m].HP != 0 && Hero[m].HP != -1) {
-										System.out.println(Hero[m].Name + "に");
-										window.println(Hero[m].Name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+								if(hero[m].curHP != 0 && hero[m].curHP != -1) {
+										System.out.println(hero[m].name + "に");
+										window.println(hero[m].name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										damage = calcDamage(m, actOrder[n], x);
 										System.out.println(damage + "のダメージ!");
 										window.println(damage + "のダメージ!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										if(!changeHP(damage, m)) {
-											System.out.println(Hero[m].Name + "はちからつきた");
-											window.println(Hero[m].Name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+											System.out.println(hero[m].name + "はちからつきた");
+											window.println(hero[m].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										}
 										continue;
 								}
 							}
 							if(stock[actOrder[n]].target == 10) {
-								if(Enemy[m].HP != 0 && Enemy[m].HP != -1) {
-										System.out.println(Enemy[m].Name + "に");
-										window.println(Enemy[m].Name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+								if(Enemy[m].curHP != 0 && Enemy[m].curHP != -1) {
+										System.out.println(Enemy[m].name + "に");
+										window.println(Enemy[m].name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										damage = calcDamage(m + 4, actOrder[n], x);
 										System.out.println(damage + "のダメージ!");
 										window.println(damage + "のダメージ!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										if(!changeHP(damage, m + 4)) {
-											System.out.println(Enemy[m].Name + "はちからつきた");
-											window.println(Enemy[m].Name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+											System.out.println(Enemy[m].name + "はちからつきた");
+											window.println(Enemy[m].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										}
 										continue;
 								}
@@ -1012,11 +1057,11 @@ class Battle {
 				switch(stock[actOrder[n]].waza){
 				case 1:
 					k = makeBufSpace(actOrder[n]);
-					buf[k][actOrder[n]] = new buffer();
+					buf[k][actOrder[n]] = new Buffer();
 					buf[k][actOrder[n]].effect = 0.5;
 					buf[k][actOrder[n]].name = "Defence";
 					buf[k][actOrder[n]].turn = 1;
-					buf[k][actOrder[n]].pattern = 1;
+					buf[k][actOrder[n]].pattern = Buffer.DEF;
 					changeMP(-5, actOrder[n]);
 					break;
 				default:
@@ -1029,65 +1074,65 @@ class Battle {
 					if(actOrder[n] < 4 && (stock[actOrder[n]].target < 4 || stock[actOrder[n]].target == 9)) {
 						if(stock[actOrder[n]].target == 9) {
 							for(int m = 0; m < 4; m++) {
-								if(Hero[m].HP != -1) {
+								if(hero[m].curHP != -1) {
 									k = makeBufSpace(m);
-									buf[k][m] = makeBuf(Hero[m].Buf, stock[actOrder[n]]);
-									System.out.println(Hero[m].Name + "にバフのこうか!");
+									buf[k][m] = makeBuf(hero[m].buf, stock[actOrder[n]]);
+									System.out.println(hero[m].name + "にバフのこうか!");
 								}
 							}
 						}else {
 							k = makeBufSpace(stock[actOrder[n]].target);
-							buf[k][stock[actOrder[n]].target] = makeBuf(Hero[stock[actOrder[n]].target].Buf, stock[actOrder[n]]);
-							System.out.println(Hero[stock[actOrder[n]].target].Name + "にバフのこうか!");
+							buf[k][stock[actOrder[n]].target] = makeBuf(hero[stock[actOrder[n]].target].buf, stock[actOrder[n]]);
+							System.out.println(hero[stock[actOrder[n]].target].name + "にバフのこうか!");
 						}
 					}else if(4 < actOrder[n] && actOrder[n] < 8 && ((4 < stock[actOrder[n]].target && stock[actOrder[n]].target < 4) || stock[actOrder[n]].target == 10)) {
 						if(stock[actOrder[n]].target == 10) {
 							for(int m = 0; m < 4; m++) {
-								if(Enemy[m].HP != -1) {
+								if(Enemy[m].curHP != -1) {
 									k = makeBufSpace(m + 4);
-									buf[k][m + 4] = makeBuf(Enemy[m].Buf, stock[actOrder[n]]);
-									System.out.println(Enemy[m].Name + "にバフのこうか!");
+									buf[k][m + 4] = makeBuf(Enemy[m].buf, stock[actOrder[n]]);
+									System.out.println(Enemy[m].name + "にバフのこうか!");
 								}
 							}
 						}else {
 							k = makeBufSpace(stock[actOrder[n]].target);
-							buf[k][stock[actOrder[n]].target] = makeBuf(Enemy[stock[actOrder[n]].target - 4].Buf, stock[actOrder[n]]);
-							System.out.println(Enemy[stock[actOrder[n]].target - 4].Name + "にバフのこうか!");
+							buf[k][stock[actOrder[n]].target] = makeBuf(Enemy[stock[actOrder[n]].target - 4].buf, stock[actOrder[n]]);
+							System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "にバフのこうか!");
 						}
 					}else {
 						if(stock[actOrder[n]].target == 9 || stock[actOrder[n]].target == 10) {
 							for(int m = 0; m < 4; m++) {
 								if(actOrder[n] < 4) {
-									if(Enemy[m].HP != -1) {
-										if(r.nextInt(100) < (-100 + Enemy[m].DeBuf + Hero[actOrder[n]].Buf)) {
+									if(Enemy[m].curHP != -1) {
+										if(r.nextInt(100) < (-100 + Enemy[m].debuf + hero[actOrder[n]].buf)) {
 											k = makeBufSpace(m + 4);
-											buf[k][m + 4] = makeBuf(Enemy[m].DeBuf, stock[actOrder[n]]);
-											System.out.println(Enemy[m].Name + "にデバフのこうか!");
-										}else System.out.println(Enemy[m].Name + "にはきかなかった!");
+											buf[k][m + 4] = makeBuf(Enemy[m].debuf, stock[actOrder[n]]);
+											System.out.println(Enemy[m].name + "にデバフのこうか!");
+										}else System.out.println(Enemy[m].name + "にはきかなかった!");
 									}
 								}else{
-									if(Hero[m].HP != -1) {
-										if(r.nextInt(100) < (-100 + Hero[m].DeBuf + Enemy[actOrder[n] - 4].Buf)) {
+									if(hero[m].curHP != -1) {
+										if(r.nextInt(100) < (-100 + hero[m].debuf + Enemy[actOrder[n] - 4].buf)) {
 											k = makeBufSpace(m);
-											buf[k][m] = makeBuf(Hero[m].DeBuf, stock[actOrder[n]]);
-											System.out.println(Hero[m].Name + "にデバフのこうか!");
-										}else System.out.println(Hero[m].Name + "にはきかなかった!");
+											buf[k][m] = makeBuf(hero[m].debuf, stock[actOrder[n]]);
+											System.out.println(hero[m].name + "にデバフのこうか!");
+										}else System.out.println(hero[m].name + "にはきかなかった!");
 									}
 								}
 							}
 						}else {
 							if(actOrder[n] < 4) {
-								if(r.nextInt(100) < (-50 + Enemy[stock[actOrder[n]].target - 4].DeBuf + Hero[actOrder[n]].Buf)) {
+								if(r.nextInt(100) < (-50 + Enemy[stock[actOrder[n]].target - 4].debuf + hero[actOrder[n]].buf)) {
 									k = makeBufSpace(stock[actOrder[n]].target);
-									buf[k][stock[actOrder[n]].target] = makeBuf(Enemy[stock[actOrder[n]].target - 4].DeBuf, stock[actOrder[n]]);
-									System.out.println(Enemy[stock[actOrder[n]].target - 4].Name + "にデバフのこうか!");
-								}else System.out.println(Enemy[stock[actOrder[n]].target - 4].Name + "にはきかなかった!");
+									buf[k][stock[actOrder[n]].target] = makeBuf(Enemy[stock[actOrder[n]].target - 4].debuf, stock[actOrder[n]]);
+									System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "にデバフのこうか!");
+								}else System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "にはきかなかった!");
 							}else{
-								if(r.nextInt(100) < (-50 + Hero[stock[actOrder[n]].target].DeBuf + Enemy[actOrder[n]].Buf)) {
+								if(r.nextInt(100) < (-50 + hero[stock[actOrder[n]].target].debuf + Enemy[actOrder[n]].buf)) {
 									k = makeBufSpace(stock[actOrder[n]].target);
-									buf[k][stock[actOrder[n]].target] = makeBuf(Hero[stock[actOrder[n]].target].DeBuf, stock[actOrder[n]]);
-									System.out.println(Hero[stock[actOrder[n]].target].Name + "にデバフのこうか!");
-								}else System.out.println(Hero[stock[actOrder[n]].target].Name + "にはきかなかった!");
+									buf[k][stock[actOrder[n]].target] = makeBuf(hero[stock[actOrder[n]].target].debuf, stock[actOrder[n]]);
+									System.out.println(hero[stock[actOrder[n]].target].name + "にデバフのこうか!");
+								}else System.out.println(hero[stock[actOrder[n]].target].name + "にはきかなかった!");
 							}
 						}
 					}
@@ -1095,16 +1140,16 @@ class Battle {
 				}
             }else if(stock[actOrder[n]].waza == 14) {
             	if(stock[actOrder[n]].target < 8) {
-					if(stock[actOrder[n]].target < 4) System.out.println(Hero[stock[actOrder[n]].target].Name +"は");
-					else System.out.println(Enemy[stock[actOrder[n]].target - 4].Name +"は");
+					if(stock[actOrder[n]].target < 4) System.out.println(hero[stock[actOrder[n]].target].name +"は");
+					else System.out.println(Enemy[stock[actOrder[n]].target - 4].name +"は");
 					damage = calcHeal(stock[actOrder[n]].target, stock[actOrder[n]]);//
 					System.out.println(damage + "かいふくした!");//
 					changeHP(-damage, stock[actOrder[n]].target);//
 				}else {
 					for(int m = 0; m < 4; m++) {
 						if(stock[actOrder[n]].target == 9) {
-							if(Hero[m].HP != 0 && Hero[m].HP != -1) {
-								System.out.println(Hero[m].Name +"は");
+							if(hero[m].curHP != 0 && hero[m].curHP != -1) {
+								System.out.println(hero[m].name +"は");
 								damage = calcHeal(m, stock[actOrder[n]]);
 								System.out.println(damage + "かいふくした!");
 								changeHP(-damage, m);
@@ -1112,8 +1157,8 @@ class Battle {
 							}
 						}
 						if(stock[actOrder[n]].target == 10) {
-							if(Enemy[m].HP != 0 && Enemy[m].HP != -1) {
-								System.out.println(Enemy[m].Name +"は");
+							if(Enemy[m].curHP != 0 && Enemy[m].curHP != -1) {
+								System.out.println(Enemy[m].name +"は");
 								damage = calcHeal(m + 4, stock[actOrder[n]]);
 								System.out.println(damage + "かいふくした!");
 								changeHP(-damage, m + 4);
@@ -1125,68 +1170,68 @@ class Battle {
             }else if(stock[actOrder[n]].waza == 11) {//デバフ解除
             	if(stock[actOrder[n]].target < 8) {
             		if(healDebuf(stock[actOrder[n]].target)) {
-            			if(stock[actOrder[n]].target < 4) System.out.println(Hero[stock[actOrder[n]].target].Name +"のデバフはかいじょされた！");
-            			else System.out.println(Hero[stock[actOrder[n]].target].Name +"のデバフはかいじょされた！");
+            			if(stock[actOrder[n]].target < 4) System.out.println(hero[stock[actOrder[n]].target].name +"のデバフはかいじょされた！");
+            			else System.out.println(hero[stock[actOrder[n]].target].name +"のデバフはかいじょされた！");
             		}
             	}else {
             		for(int m = 0; m < 4; m++) {
             			if(stock[actOrder[n]].target == 9) {
-            				if(healDebuf(m)) System.out.println(Hero[m].Name +"のデバフはかいじょされた！");
+            				if(healDebuf(m)) System.out.println(hero[m].name +"のデバフはかいじょされた！");
             			}else {
-            				if(healDebuf(m + 4)) System.out.println(Enemy[m].Name +"のデバフはかいじょされた！");
+            				if(healDebuf(m + 4)) System.out.println(Enemy[m].name +"のデバフはかいじょされた！");
             			}
 					}
 
 				}
             }else if(stock[actOrder[n]].waza == 12) {
-            	if(!steal(actOrder[n], stock[actOrder[n]].target)) System.out.println(Enemy[stock[actOrder[n]].target - 4].Name +"から" +ItemData.getItemName(addItem(stock[actOrder[n]].target)) + "を盗んだ!");
+            	if(!steal(actOrder[n], stock[actOrder[n]].target)) System.out.println(Enemy[stock[actOrder[n]].target - 4].name +"から" +ItemData.getItemName(addItem(stock[actOrder[n]].target)) + "を盗んだ!");
             	else System.out.println("アイテムはぬすめなかった!");
             }else if(stock[actOrder[n]].waza == 16) {
-            	if(Enemy[1].HP <= 0) {
-            		Enemy[1] = StatusData.callEnemy(new int[] {3, 9, 0});
-            		System.out.println(Enemy[1].Name + "があらわれた!");
+            	if(Enemy[1].curHP <= 0) {
+            		Enemy[1] = MobData.callEnemy(9, MobData.BOSS_3RD_FLOOR);
+            		System.out.println(Enemy[1].name + "があらわれた!");
             	}
-            	if(Enemy[2].HP <= 0) {
-            		Enemy[2] = StatusData.callEnemy(new int[] {3, 9, 0});
-            		System.out.println(Enemy[2].Name + "があらわれた!");
+            	if(Enemy[2].curHP <= 0) {
+            		Enemy[2] = MobData.callEnemy(9, MobData.BOSS_3RD_FLOOR);
+            		System.out.println(Enemy[2].name + "があらわれた!");
             	}
 
             }else if(stock[actOrder[n]].waza == 17) {
             	double h, m;
             	for(int k = 0; k < 4; k++) {
-            		if(Hero[k].HP > 0) {
-            			System.out.printf(Hero[k].Name + "のジョブが");
-            			h = (double)Hero[k].HP / (double)Hero[k].MaxHP;
-            			m = (double)Hero[k].MP / (double)Hero[k].MaxMP;
-            			Hero[k] = StatusData.callJob(r.nextInt(7), data.clearQuestFlug);
-            			Hero[k].HP = (int)(h * Hero[k].MaxHP);
-            			if(Hero[k].HP == 0) Hero[k].HP++;
-            			Hero[k].MP = (int)(m * Hero[k].MaxMP);
-            			if(Hero[k].MP == 0 && m != 0) Hero[k].MP++;
-            			System.out.println(Hero[k].Name + "にかわった!");
+            		if(hero[k].curHP > 0) {
+            			System.out.printf(hero[k].name + "のジョブが");
+            			h = (double)hero[k].curHP / (double)hero[k].maxHP;
+            			m = (double)hero[k].curMP / (double)hero[k].maxMP;
+            			hero[k] = HeroData.callJob(r.nextInt(7), data.clearQuestFlag);
+            			hero[k].curHP = (int)(h * hero[k].maxHP);
+            			if(hero[k].curHP == 0) hero[k].curHP++;
+            			hero[k].curMP = (int)(m * hero[k].maxMP);
+            			if(hero[k].curMP == 0 && m != 0) hero[k].curMP++;
+            			System.out.println(hero[k].name + "にかわった!");
             		}
             	}
-            	lateflug = false;
+            	lateflag = false;
             }else if(stock[actOrder[n]].waza == 18) {
             	if(stock[actOrder[n]].target < 8) {
-					if(stock[actOrder[n]].target < 4) System.out.println(Hero[stock[actOrder[n]].target].Name +"は");
-					else System.out.println(Enemy[stock[actOrder[n]].target - 4].Name +"のMPは");
+					if(stock[actOrder[n]].target < 4) System.out.println(hero[stock[actOrder[n]].target].name +"は");
+					else System.out.println(Enemy[stock[actOrder[n]].target - 4].name +"のMPは");
 					damage = calcHeal(stock[actOrder[n]].target, stock[actOrder[n]]);//
 					System.out.println(damage + "かいふくした!");//
 					changeHP(-damage, stock[actOrder[n]].target);//
 				}else {
 					for(int m = 0; m < 4; m++) {
 						if(stock[actOrder[n]].target == 9) {
-							if(Hero[m].HP != 0 && Hero[m].HP != -1) {
-								System.out.println(Hero[m].Name +"のMPは");
+							if(hero[m].curHP != 0 && hero[m].curHP != -1) {
+								System.out.println(hero[m].name +"のMPは");
 								changeMP(-(int)stock[actOrder[n]].skill, stock[actOrder[n]].target);
 								System.out.println(stock[actOrder[n]].skill + "かいふくした!");
 								continue;
 							}
 						}
 						if(stock[actOrder[n]].target == 10) {
-							if(Enemy[m].HP != 0 && Enemy[m].HP != -1) {
-								System.out.println(Enemy[m].Name +"のMPは");
+							if(Enemy[m].curHP != 0 && Enemy[m].curHP != -1) {
+								System.out.println(Enemy[m].name +"のMPは");
 								damage = calcHeal(m + 4, stock[actOrder[n]]);
 								System.out.println(damage + "かいふくした!");
 								changeHP(-damage, m + 4);
@@ -1204,10 +1249,10 @@ class Battle {
 	public boolean steal(int from, int to) {
 		Random r = new Random();
 		int a, b, n;
-		if(from < 4) a = Hero[from].Luc;
-		else a = Enemy[from - 4].Luc;
-		if(to < 4) b = Hero[to].Luc;
-		else b = Enemy[to - 4].Luc;
+		if(from < 4) a = hero[from].LUC;
+		else a = Enemy[from - 4].LUC;
+		if(to < 4) b = hero[to].LUC;
+		else b = Enemy[to - 4].LUC;
 		b *= 1.5;
 		if(a > b) n = (int)((double)(a / b) * 10 + 80);
 		else n = - (int)Math.pow(5, b / a) + 95;
@@ -1221,20 +1266,20 @@ class Battle {
 		if(r.nextInt(10) < 7) n = 0;
 		else if(r.nextInt(6) < 5) n = 1;
 		else n = 2;
-		data.plusItem(Enemy[to - 4].Item[n]);
-		return Enemy[to - 4].Item[n];
+		data.plusItem(Enemy[to - 4].item[n]);
+		return Enemy[to - 4].item[n];
 	}
 
 	public boolean healDebuf(int n) {
-		boolean flug = false;
+		boolean flag = false;
 		for(int m = 0; m < 5; m++) {
 			if(buf[m][n] != null) if(buf[m][n].effect < 0) {
 				buf[m][n] = null;
-				flug = true;
+				flag = true;
 			}
 		}
-		if(flug) reBuf(n);
-		return flug;
+		if(flag) reBuf(n);
+		return flag;
 	}
 
 	public boolean avoid(int from, int to) {
@@ -1243,10 +1288,10 @@ class Battle {
 		}
 		Random r = new Random();
 		int a, b, n;
-		if(from < 4) a = Hero[from].Luc;
-		else a = Enemy[from - 4].Luc;
-		if(to < 4) b = Hero[to].Luc;
-		else b = Enemy[to - 4].Luc;
+		if(from < 4) a = hero[from].LUC;
+		else a = Enemy[from - 4].LUC;
+		if(to < 4) b = hero[to].LUC;
+		else b = Enemy[to - 4].LUC;
 		if(a > b) n = (int)((double)(a / b) * 10 + 80);
 		else n = - (int)Math.pow(5, b / a) + 95;
 		if(r.nextInt(100) < n) return false;
@@ -1264,9 +1309,9 @@ class Battle {
 		return k;
 	}
 
-	public buffer makeBuf(int eff, skill x) {
+	public Buffer makeBuf(int eff, Skill x) {
 		Random r = new Random();
-		buffer b = new buffer();
+		Buffer b = new Buffer();
 		b.name = x.name;
 		b.turn = x.turn;
 		b.pattern = x.waza;
@@ -1275,11 +1320,11 @@ class Battle {
 		return b;
 	}
 
-	public int calcHeal(int to, skill x) {
+	public int calcHeal(int to, Skill x) {
 		Random r = new Random();
 		int n;
-		if(to >= 4) n = Enemy[to - 4].Buf;
-		else n = Hero[to].Buf;
+		if(to >= 4) n = Enemy[to - 4].buf;
+		else n = hero[to].buf;
 		double d =  0.0001 * n * r.nextInt(20);
 		n = (int)((0.90 + d) * x.skill);
 		return n;
@@ -1307,11 +1352,11 @@ class Battle {
 			}
 		}
 		if(from < 4) {
-			attack = Hero[from].Att + attBuf;
+			attack = hero[from].ATK + attBuf;
 		}
-		else attack = Enemy[from - 4].Att + attBuf;
-		if(to < 4) defence = Hero[to].Def + defBuf;
-		else defence = Enemy[to - 4].Def;
+		else attack = Enemy[from - 4].ATK + attBuf;
+		if(to < 4) defence = hero[to].DEF + defBuf;
+		else defence = Enemy[to - 4].DEF;
 		if(attack >= defence) correction = 0.3 * (2 - Math.pow(defence / attack, 3));
 		else correction = 1 - 0.7 * Math.sqrt(Math.sqrt(defence / attack));
 		damage = stock[from].skill * 0.15 *(3 * correction * attack - 0.2 * defence);
@@ -1319,13 +1364,13 @@ class Battle {
 		if(damage < 0) damage = 0;
 
 		damage *= a * d;
-		if(from < 4) type = Hero[from].AttTypeflug;
-		else type = Enemy[from - 4].AttTypeflug;
+		if(from < 4) type = hero[from].AttTypeflag;
+		else type = Enemy[from - 4].AttTypeflag;
 		if(to < 4) {
 			for(int n = 0; n < 4; n++) {
 				d = 1;
 				if(type[n]) {
-					if(n < 2 && type[n]) {
+					if(n == 1 && type[n]) {
 						if(x) continue;
 						for(int m = 0; m < 10; m++) {
 							if(buf[m][to] != null) if(buf[m][to].pattern == 9) {
@@ -1333,7 +1378,7 @@ class Battle {
 							}
 						}
 					}
-					damage *= d * Hero[to].DType[n];
+					damage *= d * hero[to].DType[n];
 				}
 
 			}
@@ -1341,7 +1386,7 @@ class Battle {
 			for(int n = 0; n < 4; n++) {
 				d = 1;
 				if(type[n]) {
-					if(n < 2 && type[n]) {
+					if(n == 1 && type[n]) {
 						if(x) continue;
 						for(int m = 0; m < 5; m++) {
 							if(buf[m][to] != null) if(buf[m][to].pattern == 9) {
@@ -1356,511 +1401,40 @@ class Battle {
 		return (int)damage;
 	}
 
-	public boolean changeHP(int damage, int n) {
+	static final int HERO = 0;
+	static final int MOB = 0;
+	boolean changeHP(int damage, int n) {
+
 		if(n < 4) {
-			Hero[n].HP -= damage;
-			if(Hero[n].HP < 0) {
-				Hero[n].HP = 0;
+			hero[n].curHP -= damage;
+			if(hero[n].curHP < 0) {
+				hero[n].curHP = 0;
 				return false;
 			}
-			if(Hero[n].HP > Hero[n].MaxHP) Hero[n].HP = Hero[n].MaxHP;
+			if(hero[n].curHP > hero[n].maxHP) hero[n].curHP = hero[n].maxHP;
 		}else {
-			Enemy[n - 4].HP -= damage;
-			if(Enemy[n - 4].HP < 0) {
-				Enemy[n - 4].HP = 0;
+			Enemy[n - 4].curHP -= damage;
+			if(Enemy[n - 4].curHP < 0) {
+				Enemy[n - 4].curHP = 0;
 				return false;
 			}
-			if(Enemy[n - 4].HP > Enemy[n - 4].MaxHP) Enemy[n - 4].HP = Enemy[n - 4].MaxHP;
+			if(Enemy[n - 4].curHP > Enemy[n - 4].maxHP) Enemy[n - 4].curHP = Enemy[n - 4].maxHP;
 		}
 		return true;
 	}
 
 	public void changeMP(int cost, int n) {
 		if(n < 4) {
-			if(itemFlug[n] >= 0) {
-				data.minusItem(itemFlug[n]);
+			if(itemFlag[n] >= 0) {
+				data.minusItem(itemFlag[n]);
 			}
 		}
 		int x = cost;
 		for(int m = 0; m < 5; m++) {
 			if(buf[m][n] != null) if(buf[m][n].pattern == 10) x *= buf[m][n].effect;
 		}
-		if(n < 4) Hero[n].MP = Math.min(Hero[n].MP - x, Hero[n].MaxMP);
-       	else Enemy[n - 4].MP = Math.min(Enemy[n - 4].MP - x, Enemy[n - 4].MaxMP);
+		if(n < 4) hero[n].curMP = Math.min(hero[n].curMP - x, hero[n].maxMP);
+       	else Enemy[n - 4].curMP = Math.min(Enemy[n - 4].curMP - x, Enemy[n - 4].maxMP);
 	}
 
-}
-
-class SkillData{
-	static String getSkillName(int n) {
-		return getSkill(n).name;
-	}
-
-	static int getSkillMP(int n) {
-		return getSkill(n).costMP;
-	}
-
-	static skill getSkill(int n) {
-		skill stock = new skill();
-		switch(n) {//以下技はこれ拡張して作成する。なお、targetは-1で相手1人選択, -2で味方1人選択, 8, 9, 10として使用する
-		case 1:
-			stock.name = "ふりおろし";
-			stock.waza = 0;
-			stock.skill = 1.2;
-			stock.target = -1;
-			stock.costMP = 4;
-			break;
-		case 2:
-			stock.name = "スラッシュ";
-			stock.waza = 0;
-			stock.skill = 1.5;
-			stock.target = -1;
-			stock.costMP = 9;
-			break;
-		case 3:
-			stock.name = "きあいだめ";
-			stock.waza = 5;
-			stock.skill = 30;
-			stock.target = 8;
-			stock.costMP = 5;
-			stock.turn = 3;
-			break;
-		case 4:
-			stock.name = "ファイア";
-			stock.waza = 0;
-			stock.skill = 1.3;
-			stock.target = -1;
-			stock.costMP = 5;
-			break;
-		case 5:
-			stock.name = "ファイラ";
-			stock.waza = 0;
-			stock.skill = 1.7;
-			stock.target = -1;
-			stock.costMP = 10;
-			break;
-		case 6:
-			stock.name = "ファイガ";
-			stock.waza = 0;
-			stock.skill = 2.2;
-			stock.target = -1;
-			stock.costMP = 18;
-			break;
-		case 7:
-			stock.name = "ハキ";
-			stock.waza = 0;
-			stock.skill = 0.8;
-			stock.target = 10;
-			stock.costMP = 10;
-			break;
-		case 8:
-			stock.name = "ハキクロス";
-			stock.waza = 0;
-			stock.skill = 1.2;
-			stock.target = 10;
-			stock.costMP = 16;
-			break;
-		case 9:
-			stock.name = "まほうたて";
-			stock.waza = 9;
-			stock.skill = 0.3;
-			stock.target = 8;
-			stock.costMP = 5;
-			stock.turn = 3;
-			break;
-		case 10:
-			stock.name = "ブレイブ";
-			stock.waza = 2;
-			stock.skill = 0.3;
-			stock.target = -2;
-			stock.costMP = 5;
-			stock.turn = 4;
-			break;
-		case 11:
-			stock.name = "バリア";
-			stock.waza = 3;
-			stock.skill = 0.2;
-			stock.target = -2;
-			stock.costMP = 5;
-			stock.turn = 4;
-			break;
-		case 12:
-			stock.name = "クイック";
-			stock.waza = 4;
-			stock.skill = 0.5;
-			stock.target = -2;
-			stock.costMP = 3;
-			stock.turn = 4;
-			break;
-		case 13:
-			stock.name = "MPセーブ";
-			stock.waza = 10;
-			stock.skill = 0.7;
-			stock.target = -2;
-			stock.costMP = 10;
-			stock.turn = 3;
-			break;
-		case 14:
-			stock.name = "ヘナトス";
-			stock.waza = 2;
-			stock.skill = -0.2;
-			stock.target = -1;
-			stock.costMP = 8;
-			stock.turn = 3;
-			break;
-		case 15:
-			stock.name = "ウィーク";
-			stock.waza = 3;
-			stock.skill = -0.2;
-			stock.target = -1;
-			stock.costMP = 8;
-			stock.turn = 3;
-			break;
-		case 16:
-			stock.name = "スロウ";
-			stock.waza = 4;
-			stock.skill = -0.3;
-			stock.target = -1;
-			stock.costMP = 5;
-			stock.turn = 3;
-			break;
-		case 17:
-			stock.name = "オールアクト";
-			stock.waza = 8;
-			stock.skill = 0;
-			stock.target = 8;
-			stock.costMP = 15;
-			stock.turn = 4;
-			break;
-		case 18:
-			stock.name = "ぬすむ";
-			stock.waza = 12;
-			stock.skill = 0;
-			stock.target = -1;
-			stock.costMP = 4;
-			break;
-		case 19:
-			stock.name = "つかう";
-			stock.waza = 13;
-			stock.skill = 0;
-			stock.target = 11;
-			stock.costMP = 0;
-			break;
-		case 20:
-			stock.name = "クエイク";
-			stock.waza = 0;
-			stock.skill = 0.7;
-			stock.target = 10;
-			stock.costMP = 10;
-			break;
-		case 21:
-			stock.name = "クエイラ";
-			stock.waza = 0;
-			stock.skill = 1.1;
-			stock.target = 10;
-			stock.costMP = 16;
-			break;
-		case 22:
-			stock.name = "まじんきり";
-			stock.waza = 0;
-			stock.skill = 2.5;
-			stock.target = -1;
-			stock.costMP = 25;
-			break;
-		case 23:
-			stock.name = "カース";
-			stock.waza = 15;
-			stock.skill = 1.2;
-			stock.target = -1;
-			stock.costMP = 12;
-			break;
-		case 24:
-			stock.name = "チャージン";
-			stock.waza = 0;
-			stock.skill = 1.4;
-			stock.target = -1;
-			stock.costMP = 7;
-			break;
-		case 25:
-			stock.name = "フルレンジ";
-			stock.waza = 0;
-			stock.skill = 0.6;
-			stock.target = 10;
-			stock.costMP = 8;
-			break;
-		case 26:
-			stock.name = "ひっちゅう";
-			stock.waza = 7;
-			stock.skill = 0;
-			stock.target = 8;
-			stock.costMP = 5;
-			stock.turn = 4;
-			break;
-		case 27:
-			stock.name = "ヒール";
-			stock.waza = 14;
-			stock.skill = 20;
-			stock.target = -2;
-			stock.costMP = 3;
-			break;
-		case 28:
-			stock.name = "ヒーラ";
-			stock.waza = 14;
-			stock.skill = 40;
-			stock.target = -2;
-			stock.costMP = 8;
-			break;
-		case 29:
-			stock.name = "ヒーレスト";
-			stock.waza = 14;
-			stock.skill = 100;
-			stock.target = -2;
-			stock.costMP = 16;
-			break;
-		case 30:
-			stock.name = "メディカ";
-			stock.waza = 14;
-			stock.skill = 20;
-			stock.target = 9;
-			stock.costMP = 11;
-			break;
-		case 31:
-			stock.name = "メディラ";
-			stock.waza = 14;
-			stock.skill = 40;
-			stock.target = 9;
-			stock.costMP = 22;
-			break;
-		case 32:
-			stock.name = "エスナ";
-			stock.waza = 11;
-			stock.skill = 0;
-			stock.target = -2;
-			stock.costMP = 5;
-			break;
-		case 33:
-			stock.name = "キアル";
-			stock.waza = 11;
-			stock.skill = 0;
-			stock.target = 9;
-			stock.costMP = 12;
-			break;
-		case 34:
-			stock.name = "テラファイア";
-			stock.waza = 0;
-			stock.skill = 2.0;
-			stock.target = 9;
-			stock.costMP = 10;
-			break;
-		case 35:
-			stock.name = "ミニファイア";
-			stock.waza = 0;
-			stock.skill = 1.4;
-			stock.target = -2;
-			stock.costMP = 3;
-		case 50:
-			stock.name = "ウィーク";
-			stock.waza = 6;
-			stock.skill = -30;
-			stock.target = 9;
-			stock.costMP = 0;
-			stock.turn = 3;
-			break;
-		case 51:
-			stock.name = "ヒール";
-			stock.waza = 14;
-			stock.skill = 50;
-			stock.target = 10;
-			stock.costMP = 0;
-			break;
-		case 52:
-			stock.name = "ヘルファイア";
-			stock.waza = 0;
-			stock.skill = 2.0;
-			stock.target = 9;
-			stock.costMP = 0;
-			break;
-		case 53:
-			stock.name = "ヘルフォール";
-			stock.waza = 0;
-			stock.skill = 3.0;
-			stock.target = -2;
-			stock.costMP = 0;
-			break;
-		case 54:
-			stock.name = "サモン";
-			stock.waza = 16;
-			stock.skill = 3.0;
-			stock.target = 11;
-			stock.costMP = 0;
-			break;
-		case 55:
-			stock.name = "チャージ";
-			stock.waza = 5;
-			stock.skill = 20;
-			stock.target = 10;
-			stock.costMP = 0;
-			stock.turn = 5;
-			break;
-		case 56:
-			stock.name = "ジョブン";
-			stock.waza = 17;
-			stock.skill = 100;
-			stock.target = 9;
-			stock.costMP = 0;
-			break;
-		case 100:
-			stock.name = "ギラ";
-			stock.waza = 0;
-			stock.skill = 1.2;
-			stock.target = -2;
-			stock.costMP = 5;
-			break;
-		case 101:
-			stock.name = "ヒャダルン";
-			stock.waza = 0;
-			stock.skill = 1.6;
-			stock.target = -2;
-			stock.costMP = 9;
-			break;
-		case 102:
-			stock.name = "トルネド";
-			stock.waza = 0;
-			stock.skill = 2.0;
-			stock.target = -2;
-			stock.costMP = 17;
-			break;
-		case 103:
-			stock.name = "ダーク";
-			stock.waza = 0;
-			stock.skill = 0.8;
-			stock.target = -2;
-			stock.costMP = 15;
-			break;
-		case 104:
-			stock.name = "アドパワ";
-			stock.waza = 2;
-			stock.skill = 0.3;
-			stock.target = 8;
-			stock.costMP = 5;
-			break;
-		case 105:
-			stock.name = "アドディ";
-			stock.waza = 3;
-			stock.skill = 0.2;
-			stock.target = 8;
-			stock.costMP = 5;
-			break;
-		case 106:
-			stock.name = "アドアジ";
-			stock.waza = 4;
-			stock.skill = 0.5;
-			stock.target = 8;
-			stock.costMP = 5;
-			break;
-		case 107:
-			stock.name = "へナトス";
-			stock.waza = 2;
-			stock.skill = -0.3;
-			stock.target = -2;
-			stock.costMP = 5;
-			break;
-		case 108:
-			stock.name = "ウィーク";
-			stock.waza = 3;
-			stock.skill = -0.2;
-			stock.target = -2;
-			stock.costMP = 5;
-			break;
-		case 109:
-			stock.name = "スロウ";
-			stock.waza = 4;
-			stock.skill = -0.3;
-			stock.target = -2;
-			stock.costMP = 5;
-			break;
-		case 110:
-			stock.name = "デスペル";
-			stock.waza = 11;
-			stock.skill = 0;
-			stock.target = -2;
-			stock.costMP = 5;
-		case 111:
-			stock.name = "ヒール";
-			stock.waza = 14;
-			stock.skill = 200;
-			stock.target = -1;
-			stock.costMP = 10;
-		case 112:
-			stock.name = "ヒーレスト";
-			stock.waza = 14;
-			stock.skill = 800;
-			stock.target = -1;
-			stock.costMP = 35;
-		case 113:
-			stock.name = "メディラ";
-			stock.waza = 14;
-			stock.skill = 100;
-			stock.target = 10;
-			stock.costMP = 20;
-		}
-		return stock;
-	}
-}
-
-class item extends skill{
-	String explain;
-	item(){
-		costMP = 0;
-	}
-}
-
-class skill{
-	String name;
-	int waza;//攻撃:0, 防御:1, スキル:2, その他:
-	double skill;//正確にはスキルの攻撃倍率
-	int target; //0-3で味方、4-7で敵、8で対象者、9で味方全体、10で敵全体
-	int costMP;
-	int turn;//バフ時におけるターン数
-}
-
-class statusEnemy extends status{
-	int[] Item = new int[3];
-	void putStatus3(int a, int b, int c) {
-		Item[0] = a;
-		Item[1] = b;
-		Item[2] = c;
-	}
-}
-
-
-class status{
-	String Name;
-	int MaxHP, MaxMP, HP, MP, Att, Def, Age, Luc;
-	int Buf, DeBuf;//Effを分割している
-	boolean[] AttTypeflug = new boolean[4];//自身の攻撃パターン、0が物理trueか1が魔法falseか、3が近距離trueか4が遠距離falseか
-	int[] AIpattern = new int[2]; //CPUが計算する際のパターン、前者が攻撃パターン、後者が攻撃対象
-    double[] DType = new double[4];//耐性属性、最初から順に物理、魔法、近距離、遠距離
-    int[] Skill;//覚えているスキル、この配列にスキル番号を入れていく
-
-    void putStatus1(String name, int hp, int mp, int att, int def, int age, int luc) {
-    	Name = name;
-    	MaxHP = hp;
-    	MaxMP = mp;
-    	HP = hp;
-    	MP = mp;
-    	Att = att;
-    	Def = def;
-    	Age = age;
-    	Luc = luc;
-    }
-
-    void putStatus2(int buf, int debuf, boolean[] atttypeflug, double[] dtype, int[] skill, int[] ai) {
-    	Buf = buf;
-    	DeBuf = debuf;
-    	AttTypeflug = atttypeflug;
-    	DType = dtype;
-    	Skill = skill;
-    	AIpattern = ai;
-    }
 }
