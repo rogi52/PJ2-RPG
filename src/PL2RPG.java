@@ -1,25 +1,25 @@
 public class PL2RPG {
-	public static String SAVE_PATH="./save";
-	public static String UI_IMG_PATH="./img/UI";
-	public static String BLOCK_IMG_PATH="./img/block";
-	public static String UI_CHR_PATH="./img/chr";
-	public static String TEKI_PATH="./img/teki";
-	public static String SE_PATH="./se";
-	public static String MAP_PATH="./map";
-	public static String ICON_PATH="./img/icon.png";
+	public static final String SAVE_PATH="./save";
+	public static final String UI_IMG_PATH="./img/UI";
+	public static final String BLOCK_IMG_PATH="./img/block";
+	public static final String UI_CHR_PATH="./img/chr";
+	public static final String TEKI_PATH="./img/teki";
+	public static final String SE_PATH="./se";
+	public static final String MAP_PATH="./map";
+	public static final String ICON_PATH="./img/icon.png";
 	
-	public static String JOBS[]= {"w","m","m","m","m","m","m"};
-	public static String JOB_NAME[]= {"せんし","ウィッチ","エンチャ","ぬすっと","まほせん","アーチャ","ヒーラー"};
+	public static final String JOBS[]= {"w","m","m","m","m","m","m"};
+	public static final String JOB_NAME[]= {"せんし","ウィッチ","エンチャ","ぬすっと","まほせん","アーチャ","ヒーラー"};
 
-	public static int DIALOG_ANIMATION_TIME=20;
-	public static int BLOCK_SIZE=32;
-	public static int MAIN_WIN_X_BOX=30;
-	public static int MAIN_WIN_Y_BOX=20;
+	public static final int DIALOG_ANIMATION_TIME=20;
+	public static final int BLOCK_SIZE=32;
+	public static final int MAIN_WIN_X_BOX=30;
+	public static final int MAIN_WIN_Y_BOX=20;
 
-	public static float RANDOM_MATCH_PROB=0.001f;
+	public static final float RANDOM_MATCH_PROB=0.001f;
 
-	public static int MAIN_WIN_X=BLOCK_SIZE*MAIN_WIN_X_BOX;
-	public static int MAIN_WIN_Y=BLOCK_SIZE*MAIN_WIN_Y_BOX;
+	public static final int MAIN_WIN_X=BLOCK_SIZE*MAIN_WIN_X_BOX;
+	public static final int MAIN_WIN_Y=BLOCK_SIZE*MAIN_WIN_Y_BOX;
 
 	public static void main(String[] args) {
 		Window w=new Window();
