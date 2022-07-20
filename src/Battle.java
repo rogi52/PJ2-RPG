@@ -4,17 +4,15 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
-import javax.swing.JFrame;
-
 //未実装メモ
 //攻撃対象設定、ジョブ毎に対象を決める場合
 //アイテム所持の管理
 
 class Battle {
-
+/*
 	public static void main(String[] args) {
 		MainData data = new MainData();
-		/* Load Data */
+		Load Data
 		data.partyJob = new int[] {  0,   1,   2,   3};
 		data.partyHP  = new int[] {100, 200, 300, 400};
 		data.partyMP  = new int[] { 50, 150, 250, 350};
@@ -36,6 +34,7 @@ class Battle {
 		frame.removeKeyListener(battle.window);
 		frame.repaint();
 	}
+*/
 
 	int dungeonID = -1;
 
@@ -43,14 +42,17 @@ class Battle {
 
 	/* enemyType の定義は、Mob (or MobData) でするのが綺麗 */
 
-	Battle(MainData data, int dungeonID, int enemyUnitID){
+	Battle(MainData data, int dungeonID, int enemyUnitID, dCanvas myCanvas){
 		this.data = data;
 		this.dungeonID = dungeonID;
 		this.enemyUnitID = enemyUnitID;
+		this.myCanvas = myCanvas;
 		assert(enemyUnitID == MobData.MINION
 			|| enemyUnitID == MobData.BOSS_1ST_FLOOR
 			|| enemyUnitID == MobData.BOSS_2ND_FLOOR
 			|| enemyUnitID == MobData.BOSS_3RD_FLOOR);
+		window = new BattleWindow(myCanvas);
+		setHero();
 	}
 
 	class Buffer {
@@ -77,11 +79,11 @@ class Battle {
 	public static final int PENDING =  0;
 	public static final int LOSE    = -1;
 	int result = PENDING;
-	BattleWindow window = new BattleWindow();
+	BattleWindow window;
+	dCanvas myCanvas;
 
 	/* return result */
 	int start() {
-		setHero();
 		setEnemy();
 		int JUDGE = PENDING;
 		while((JUDGE = judgement()) == PENDING){
