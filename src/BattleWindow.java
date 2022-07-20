@@ -126,7 +126,7 @@ public class BattleWindow implements KeyListener {
 		for(int i = 0; i < str.length(); i++) {
 			mw.buffer += str.charAt(i);
 			repaint();
-			try { Thread.sleep(50); } catch (InterruptedException e) {}
+			try { Thread.sleep(33); } catch (InterruptedException e) {}
 		}
 
 		if(waitEnterKey == WAIT_ENTER_KEY) {
