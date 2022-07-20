@@ -71,7 +71,7 @@ public class MainData implements Serializable{
 		for(int m = 0; m < 5; m++) {
 			if(nowQuestNumber[m] != -1) {
 				if(QuestData.callQuest(nowQuestSituation[m]).type == QuestData.DELIVERY) {
-					if(QuestData.callQuest(nowQuestSituation[m]).target == n) {
+					if(QuestData.callQuest(nowQuestNumber[m]).target == n) {
 						nowQuestSituation[m] = itemCnt[n] + 1;
 					}
 				}
@@ -85,7 +85,7 @@ public class MainData implements Serializable{
 		for(int m = 0; m < 5; m++) {
 			if(nowQuestNumber[m] != -1) {
 				if(QuestData.callQuest(nowQuestSituation[m]).type == QuestData.DELIVERY) {
-					if(QuestData.callQuest(nowQuestSituation[m]).target == n) {
+					if(QuestData.callQuest(nowQuestNumber[m]).target == n) {
 						nowQuestSituation[m] = itemCnt[n] - 1;
 					}
 				}

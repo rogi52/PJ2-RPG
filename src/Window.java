@@ -48,7 +48,7 @@ public class Window extends JFrame implements KeyListener{
 	public MainData m;
 
 	Window(){
-		super("TEST");
+		super("JobMaster");
 		m = new MainData();
 		
 	    setIconImage(new ImageIcon(PL2RPG.ICON_PATH).getImage());
