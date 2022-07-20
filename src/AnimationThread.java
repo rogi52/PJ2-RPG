@@ -552,8 +552,9 @@ class AnimationMove extends Thread{
 			if(enemy_match>0) {
 				walk_count=0;
 
+				System.out.println("ID："+w.now_dangeon_id);
 				System.out.println("適正："+PL2RPG.JOB_NAME[w.map_for]);
-				System.out.println("種類；"+enemy_type);
+				System.out.println("種類："+enemy_type);
 
 
 				w.changeBgm(-1);
