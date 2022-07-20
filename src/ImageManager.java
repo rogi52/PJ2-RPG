@@ -32,6 +32,7 @@ public class ImageManager {
 		String name = "text/" + c;
 		if(c == '!') name = "text/！";
 		if(c == '▶') name = "text/arrow";
+		if(c == '◀') name = "text/arrow2";
 		return getImage(name);
 	}
 

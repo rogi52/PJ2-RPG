@@ -13,7 +13,7 @@ class GameLoop extends Thread{
 		int direction,view_direction=w.def_dir;
 		while(true) {
 
-			if(w.status==2) {
+			if(w.status==2 && Animation_Select.fin==true) {
 				direction=0;
 				if ( w.is_press( KeyEvent.VK_UP) ){
 					direction=1;
@@ -51,42 +51,57 @@ class GameLoop extends Thread{
 						case 1://クエスト選択
 							w.se[0].play(0);
 							
-							w.m.setQuest(1);
-							w.m.goalQuest(1);
-							w.m.setQuest(2);
-							
-							
-							//quest_id_list:0できない 1できる 2やってる 3終わった
-							for(int j=1;j<=50;j++) {
-								if(w.m.clearQuestFlag[j]) {
-									quest_id_list[j]=3;
-								}else if((w.m.clearQuestFlag[QuestData.callQuest(j).flag] || QuestData.callQuest(j).flag == 0)) {
-									quest_id_list[j]=1;
-								}else {
-									quest_id_list[j]=0;									
-								}
-							}
-							
+							if(w.m.nowQuestNumber[0]!=-1)w.m.nowQuestSituation[0]++;
+
+
+							//クエスト完了テスト
 							for(int j=0;j<5;j++) {
-								System.out.println(w.m.nowQuestNumber[j]);
 								if(w.m.nowQuestNumber[j]!=-1) {
-									quest_id_list[w.m.nowQuestNumber[j]]=2;
+									if(w.m.nowQuestSituation[j]>=QuestData.callQuest(w.m.nowQuestNumber[j]).need) {
+										w.se[0].play(0);
+										w.myCanvas.drawDialog1("クエスト　"+QuestData.callQuest(w.m.nowQuestNumber[j]).name+"　をクリアしました！", PL2RPG.DIALOG_ANIMATION_TIME);
+
+										while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
+										while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+										w.se[0].play(0);
+										w.m.goalQuest(w.m.nowQuestNumber[j]);
+									}
 								}
 							}
-							
-							menu_x=0;
+
+							quest_id_list=getQuestStatus();
+
+
+							menu_x=1;
 							w.myCanvas.drawMenu1(menu_x,quest_id_list,PL2RPG.DIALOG_ANIMATION_TIME);
-							
-							while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-							while(w.is_press(KeyEvent.VK_ENTER)==false) {
+
+							while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+							while(w.is_press(KeyEvent.VK_ESCAPE)==false) {
 								draw_update=false;
-								
-								if(w.is_press(KeyEvent.VK_LEFT)) {
+
+								if(w.is_press(KeyEvent.VK_ENTER)) {
+									while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 									w.se[0].play(0);
-									if(DialogYesNo("クエストをキャンセルしますか？\nキャンセルするとしんちょくはとりけされます。",true)) {
-										
+									if(quest_id_list[menu_x]==2) {
+										if(DialogYesNo("クエストをキャンセルしますか？\nキャンセルするとしんちょくはとりけされます。",true)) {
+											w.m.clearQuest(menu_x);
+											quest_id_list=getQuestStatus();
+										}
+										draw_update=true;
+									}else if(quest_id_list[menu_x]==1) {
+										if(quest_id_list[0]>=5) {
+											w.myCanvas.drawDialog1("クエストはさいだい5こまでです。", PL2RPG.DIALOG_ANIMATION_TIME);
+
+											while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
+											while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+											w.se[0].play(0);
+
+										}else {
+											w.m.setQuest(menu_x);
+											quest_id_list=getQuestStatus();
+										}
+										draw_update=true;
 									}
-									draw_update=true;
 								}
 								if(w.is_press(KeyEvent.VK_DOWN)) {
 									w.se[0].play(0);
@@ -102,12 +117,13 @@ class GameLoop extends Thread{
 									while(w.is_press(KeyEvent.VK_UP))w.wait(33);
 									draw_update=true;
 								}
-								
+
 								if(draw_update)w.myCanvas.drawMenu1(menu_x,quest_id_list);
 
 								w.wait(33);
 							}
 							w.se[0].play(0);
+							while(w.is_press(KeyEvent.VK_ESCAPE))w.wait(33);
 
 							w.ma.update();
 							break;
@@ -136,7 +152,7 @@ class GameLoop extends Thread{
 
 								menu_y_max=PL2RPG.JOB_NAME.length;
 								if(menu_x!=0)menu_y_max=PL2RPG.JOB_NAME.length+1;
-								
+
 								if(w.is_press(KeyEvent.VK_DOWN)) {
 									w.se[0].play(0);
 									w.m.partyJob[menu_x]++;
@@ -151,7 +167,7 @@ class GameLoop extends Thread{
 									while(w.is_press(KeyEvent.VK_UP))w.wait(33);
 									draw_update=true;
 								}
-								
+
 								for(int j=1;j<3;j++) {
 									if(w.m.partyJob[j]==PL2RPG.JOB_NAME.length) {
 										for(int k=j+1;k<4;k++) {
@@ -162,7 +178,7 @@ class GameLoop extends Thread{
 									}
 								}
 
-								
+
 								if(draw_update)w.myCanvas.drawMenu4(menu_x);
 
 								w.wait(33);
@@ -171,7 +187,7 @@ class GameLoop extends Thread{
 
 							w.ma.update();
 							break;
-							
+
 						case 6:
 
 							w.se[0].play(0);
@@ -194,7 +210,32 @@ class GameLoop extends Thread{
 			w.wait(33);
 		}
 	}
-	
+
+	public int[] getQuestStatus() {
+		int[] quest_id_list= new int[51];
+		//quest_id_list:0できない 1できる 2やってる 3終わった
+		for(int j=1;j<=50;j++) {
+			if(w.m.clearQuestFlag[j]) {
+				quest_id_list[j]=3;
+			}else if((w.m.clearQuestFlag[QuestData.callQuest(j).flag] || QuestData.callQuest(j).flag == 0)) {
+				quest_id_list[j]=1;
+			}else {
+				quest_id_list[j]=0;									
+			}
+		}
+
+		quest_id_list[0]=0;
+		for(int j=0;j<5;j++) {
+			if(w.m.nowQuestNumber[j]!=-1) {
+				quest_id_list[0]++;
+				quest_id_list[w.m.nowQuestNumber[j]]=2;
+			}
+		}
+
+		return quest_id_list;
+	}
+
+
 	public boolean DialogYesNo(String msg,boolean def) {
 		boolean is_save=def;
 		w.myCanvas.drawMenu2(is_save, msg,PL2RPG.DIALOG_ANIMATION_TIME);//5
@@ -212,7 +253,7 @@ class GameLoop extends Thread{
 		w.se[0].play(0);
 
 		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-		
+
 		return is_save;
 
 	}
@@ -288,7 +329,7 @@ class AnimationMove extends Thread{
 			any_event_disabled=false;
 			enemy_match=0;
 			enemy_type=0;
-			
+
 			walk_timer++;
 			if(walk_timer>15) {
 				update=true;
@@ -332,14 +373,14 @@ class AnimationMove extends Thread{
 				if(myCanvas.pos_x==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && myCanvas.pos_y==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 					//イベント発生時はRANDOMマッチ無効
 					random_match_test=false;
-					
+
 					boolean is_enter=true;
 					int direction2;
 					int sel=0;
 					String moji;
-					
+
 					if(any_event_disabled)break;
-					
+
 					switch(myCanvas.en_type[i]) {
 					case 0:
 						w.se[0].play(0);
@@ -367,7 +408,7 @@ class AnimationMove extends Thread{
 							Animation_Select a=new Animation_Select(w.myCanvas,w);
 							a.mode(2,-1);
 							a.start();
-							while(a.fin==false) {
+							while(Animation_Select.fin==false) {
 								try {
 									sleep(33);
 								} catch (InterruptedException e) {}
@@ -376,7 +417,7 @@ class AnimationMove extends Thread{
 							a=new Animation_Select(w.myCanvas,w);
 							a.mode(-1,2);
 							a.start();
-							while(a.fin==false) {
+							while(Animation_Select.fin==false) {
 								try {
 									sleep(33);
 								} catch (InterruptedException e) {}
@@ -409,15 +450,17 @@ class AnimationMove extends Thread{
 
 							w.myCanvas.en_used+=w.myCanvas.en_UID[i];
 
-							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 							while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
+							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+							w.se[0].play(0);
+
 							dir_con=0;
 							w.ma.update();
 						}
 
 						break;
-						
-					//固定エンカウント
+
+						//固定エンカウント
 					case 4:
 						if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {	
 							any_event_disabled=true;
@@ -470,7 +513,7 @@ class AnimationMove extends Thread{
 							Animation_Select a=new Animation_Select(w.myCanvas,w);
 							a.mode(2,-1);
 							a.start();
-							while(a.fin==false) {
+							while(Animation_Select.fin==false) {
 								try {
 									sleep(33);
 								} catch (InterruptedException e) {}
@@ -479,7 +522,7 @@ class AnimationMove extends Thread{
 							a=new Animation_Select(w.myCanvas,w);
 							a.mode(-1,2);
 							a.start();
-							while(a.fin==false) {
+							while(Animation_Select.fin==false) {
 								try {
 									sleep(33);
 								} catch (InterruptedException e) {}
@@ -503,18 +546,18 @@ class AnimationMove extends Thread{
 				}
 			}
 
-			
+
 			if(random_match_test && w.myCanvas.random_match_enable && Math.random()<PL2RPG.RANDOM_MATCH_PROB*walk_count && !any_event_disabled) {
 				enemy_match=1;
 			}
-			
+
 			if(enemy_match>0) {
 				walk_count=0;
-				
+
 				System.out.println("適正："+PL2RPG.JOB_NAME[w.map_for]);
 				System.out.println("種類；"+enemy_type);
-				
-				
+
+
 				w.changeBgm(-1);
 				w.se[1].play(0);
 				//myCanvas.drawMap(0,view_direction,step);
@@ -528,20 +571,20 @@ class AnimationMove extends Thread{
 				}
 				w.myCanvas.blank(255);
 				w.myCanvas.repaint();
-				
+
 				w.changeBgm(w.battle_bgm);
-				
-				
+
+
 				w.wait(5000);
-				
+
 				Animation_Select a=new Animation_Select(w.myCanvas,w);
 				a.mode(-1,2);
 				a.start();
-				while(a.fin==false) {
+				while(Animation_Select.fin==false) {
 					w.wait(33);
 				}
 
-				
+
 				w.changeBgm(w.walk_bgm);
 				update=true;
 
@@ -570,8 +613,8 @@ class Animation_Select extends Thread{
 	Window w;
 	int a=-1,b=0;
 	int key_x,key_y;
-	public boolean fin;
 	static public boolean on_animate=false;
+	static public boolean fin=true;
 
 	Animation_Select(dCanvas myCanvas,Window w){
 		this.myCanvas=myCanvas;
@@ -682,6 +725,6 @@ class AnimationLoad extends Thread{
 			w.wait(33);
 		}
 	}
-	
-	
+
+
 }

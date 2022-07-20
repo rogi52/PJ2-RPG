@@ -41,8 +41,9 @@ public class Window extends JFrame implements KeyListener{
 	public int def_dir=1;
 
 	private GameLoop gl;
+	public Animation_Select a;
 
-	private boolean press_up=false,press_dw=false,press_le=false,press_ri=false;
+	private boolean press_up=false,press_dw=false,press_le=false,press_ri=false,press_esc=false;
 
 	public MainData m;
 
@@ -170,7 +171,7 @@ public class Window extends JFrame implements KeyListener{
 		}
 
 		//myCanvas.drawStart(save_num==0);
-		Animation_Select a=new Animation_Select(myCanvas,this);
+		a=new Animation_Select(myCanvas,this);
 		if(is_back) {
 			a.mode(1,0);
 		}else {
@@ -183,13 +184,13 @@ public class Window extends JFrame implements KeyListener{
 		status=1;
 		key_y=0;
 
-		Animation_Select a=new Animation_Select(myCanvas,this);
+		a=new Animation_Select(myCanvas,this);
 		a.mode(0,1);
 		a.start();
 	}
 
 	void drawLob(int o) {
-		Animation_Select a=new Animation_Select(myCanvas,this);
+		a=new Animation_Select(myCanvas,this);
 		a.mode(o,2);
 		a.start();
 		ma=new AnimationMove(myCanvas,this, m);
@@ -232,6 +233,9 @@ public class Window extends JFrame implements KeyListener{
 			break;
 		case KeyEvent.VK_ENTER:
 			res = pr_enter;
+			break;
+		case KeyEvent.VK_ESCAPE:
+			res=press_esc;
 			break;
 		}
 
@@ -278,6 +282,9 @@ public class Window extends JFrame implements KeyListener{
 			break;
 		case KeyEvent.VK_ENTER:
 			pr_enter=true;
+			break;
+		case KeyEvent.VK_ESCAPE:
+			press_esc=true;
 			break;
 		}
 		if(Animation_Select.on_animate==false && AnimationMove.on_animate==false) {
@@ -347,14 +354,22 @@ public class Window extends JFrame implements KeyListener{
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_UP:
 			press_up=false;
+			break;
 		case KeyEvent.VK_DOWN:
 			press_dw=false;
+			break;
 		case KeyEvent.VK_LEFT:
 			press_le=false;
+			break;
 		case KeyEvent.VK_RIGHT:
 			press_ri=false;
+			break;
 		case KeyEvent.VK_ENTER:
 			pr_enter=false;
+			break;
+		case KeyEvent.VK_ESCAPE:
+			press_esc=false;
+			break;
 		}
 	}
 	

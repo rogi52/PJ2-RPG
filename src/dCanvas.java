@@ -184,26 +184,35 @@ class dCanvas extends Canvas {
 		
 		for(int j=ysel-2;j<=ysel+2;j++) {
 			if(j<=50 && j>=1) {
-				name+="No."+Integer.toString(j)+" "+QuestData.callQuest(j).name+"\n";
+				
+				//デバッグ用
+				name+="No."+Integer.toString(j)+" ";if(j<10)name+="　";
+
+				name+=QuestData.callQuest(j).name+"\n　";
 				if(quest_list[j]==0) {
-					name+="NG";
+					name+="できません";
 				}else if(quest_list[j]==1) {
-					name+="OK";
+					name+="うける";
 				}else if(quest_list[j]==2){
-					name+="NOW";
+					name+="やめる　　しんちょく　";
+					for(int k=0;k<5;k++) {
+						if(w.m.nowQuestNumber[k]==j) {
+							name+=Integer.toString(w.m.nowQuestSituation[k])+"／"+Integer.toString(QuestData.callQuest(j).need);
+							break;
+						}
+					}
 				}else {
-					name+="Clear";
+					name+="クリア";
 				}
 				name+="\n";
 			}else {
 				name+="\n\n";
 			}
 		}
-		System.out.println(ysel);
-		drawChr("クエストいちらん",104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
-		drawChr(name,104+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
 
-		drawChr("◀　　　　　　　▶",104+PL2RPG.BLOCK_SIZE*14,104+PL2RPG.BLOCK_SIZE*7,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr("クエストいちらん\nENTERでせんたく　ESCでとじる",104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
+		drawChr(name,104+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr("▶",104+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*8,PL2RPG.MAIN_WIN_X-1-100*2-8);
 
 		repaint();
 	}
