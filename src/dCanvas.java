@@ -184,7 +184,7 @@ class dCanvas extends Canvas {
 		
 		for(int j=ysel-2;j<=ysel+2;j++) {
 			if(j<=50 && j>=1) {
-				name+="No."+Integer.toString(j)+" "+QuestData.callQuest(j).title+"\n";
+				name+="No."+Integer.toString(j)+" "+QuestData.callQuest(j).name+"\n";
 				if(quest_list[j]==0) {
 					name+="NG";
 				}else if(quest_list[j]==1) {

@@ -58,9 +58,9 @@ class GameLoop extends Thread{
 							
 							//quest_id_list:0できない 1できる 2やってる 3終わった
 							for(int j=1;j<=50;j++) {
-								if(w.m.clearQuestFlug[j]) {
+								if(w.m.clearQuestFlag[j]) {
 									quest_id_list[j]=3;
-								}else if((w.m.clearQuestFlug[QuestData.callQuest(j).flug] || QuestData.callQuest(j).flug == 0)) {
+								}else if((w.m.clearQuestFlag[QuestData.callQuest(j).flag] || QuestData.callQuest(j).flag == 0)) {
 									quest_id_list[j]=1;
 								}else {
 									quest_id_list[j]=0;									
