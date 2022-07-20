@@ -44,53 +44,71 @@ class GameLoop extends Thread{
 				for(int i=0;i<myCanvas.entities;i++) {
 					int menu_x=0;
 					int menu_y_max;
-					int menu_y_min;
 					boolean draw_update=false;
+					int quest_id_list[]=new int[51];
 					if(bdx==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && bdy==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
 							w.se[0].play(0);
 							
-							menu_y_max=0;
-							menu_y_min=0xFFFF;
+							w.m.setQuest(1);
+							w.m.goalQuest(1);
+							w.m.setQuest(2);
 							
+							
+							//quest_id_list:0できない 1できる 2やってる 3終わった
 							for(int j=1;j<=50;j++) {
-								if(!w.m.clearQuestFlug[j] && (w.m.clearQuestFlug[QuestData.callQuest(j).target] || QuestData.callQuest(j).target == 0)) {
-									if(j>menu_y_max)menu_y_max=j;
-									if(j<menu_y_min)menu_y_min=j;
+								if(w.m.clearQuestFlug[j]) {
+									quest_id_list[j]=3;
+								}else if((w.m.clearQuestFlug[QuestData.callQuest(j).flug] || QuestData.callQuest(j).flug == 0)) {
+									quest_id_list[j]=1;
+								}else {
+									quest_id_list[j]=0;									
 								}
 							}
 							
-							menu_x=menu_y_min;
-							w.myCanvas.drawMenu1(menu_x,PL2RPG.DIALOG_ANIMATION_TIME);
+							for(int j=0;j<5;j++) {
+								System.out.println(w.m.nowQuestNumber[j]);
+								if(w.m.nowQuestNumber[j]!=-1) {
+									quest_id_list[w.m.nowQuestNumber[j]]=2;
+								}
+							}
+							
+							menu_x=0;
+							w.myCanvas.drawMenu1(menu_x,quest_id_list,PL2RPG.DIALOG_ANIMATION_TIME);
 							
 							while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 							while(w.is_press(KeyEvent.VK_ENTER)==false) {
 								draw_update=false;
 								
 								if(w.is_press(KeyEvent.VK_LEFT)) {
+									w.se[0].play(0);
 									if(DialogYesNo("クエストをキャンセルしますか？\nキャンセルするとしんちょくはとりけされます。",true)) {
 										
 									}
 									draw_update=true;
 								}
 								if(w.is_press(KeyEvent.VK_DOWN)) {
+									w.se[0].play(0);
 									menu_x++;
-									if(menu_x>menu_y_max)menu_x=menu_y_max;
+									if(menu_x>=50)menu_x=50;
 									while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 									draw_update=true;
 								}
 								if(w.is_press(KeyEvent.VK_UP)) {
+									w.se[0].play(0);
 									menu_x--;
-									if(menu_x<menu_y_min)menu_x=menu_y_min;
+									if(menu_x<1)menu_x=1;
 									while(w.is_press(KeyEvent.VK_UP))w.wait(33);
 									draw_update=true;
 								}
 								
-								if(draw_update)w.myCanvas.drawMenu1(menu_x);
+								if(draw_update)w.myCanvas.drawMenu1(menu_x,quest_id_list);
 
 								w.wait(33);
 							}
+							w.se[0].play(0);
+
 							w.ma.update();
 							break;
 						case 2://ジョブ選択
@@ -101,12 +119,14 @@ class GameLoop extends Thread{
 							while(w.is_press(KeyEvent.VK_ENTER)==false) {
 								draw_update=false;
 								if(w.is_press(KeyEvent.VK_RIGHT)) {
+									w.se[0].play(0);
 									menu_x++;
 									if(menu_x>3)menu_x=3;
 									while(w.is_press(KeyEvent.VK_RIGHT))w.wait(33);
 									draw_update=true;
 								}
 								if(w.is_press(KeyEvent.VK_LEFT)) {
+									w.se[0].play(0);
 									menu_x--;
 									if(menu_x<0)menu_x=0;
 									while(w.is_press(KeyEvent.VK_LEFT))w.wait(33);
@@ -118,12 +138,14 @@ class GameLoop extends Thread{
 								if(menu_x!=0)menu_y_max=PL2RPG.JOB_NAME.length+1;
 								
 								if(w.is_press(KeyEvent.VK_DOWN)) {
+									w.se[0].play(0);
 									w.m.partyJob[menu_x]++;
 									if(w.m.partyJob[menu_x]>=menu_y_max)w.m.partyJob[menu_x]=menu_y_max-1;
 									while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 									draw_update=true;
 								}
 								if(w.is_press(KeyEvent.VK_UP)) {
+									w.se[0].play(0);
 									w.m.partyJob[menu_x]--;
 									if(w.m.partyJob[menu_x]<0)w.m.partyJob[menu_x]=0;
 									while(w.is_press(KeyEvent.VK_UP))w.wait(33);
@@ -145,6 +167,8 @@ class GameLoop extends Thread{
 
 								w.wait(33);
 							}
+							w.se[0].play(0);
+
 							w.ma.update();
 							break;
 							
@@ -178,12 +202,15 @@ class GameLoop extends Thread{
 		while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 		while(w.is_press(KeyEvent.VK_ENTER)==false) {
 			if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
+				w.se[0].play(0);
 				is_save=!is_save;
 				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 				w.myCanvas.drawMenu2(is_save,msg);
 			}
 			w.wait(33);
 		}
+		w.se[0].play(0);
+
 		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 		
 		return is_save;
@@ -324,12 +351,15 @@ class AnimationMove extends Thread{
 						while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 						while(w.is_press(KeyEvent.VK_ENTER)==false) {
 							if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
+								w.se[0].play(0);
 								is_enter=!is_enter;
 								while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 								w.myCanvas.drawMenu2(is_enter,"フロアをいどうしますか？");
 							}
 							w.wait(33);
 						}
+						w.se[0].play(0);
+
 						w.ma.update();
 
 						if(is_enter) {
@@ -413,12 +443,14 @@ class AnimationMove extends Thread{
 						while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 						while(w.is_press(KeyEvent.VK_ENTER)==false) {
 							if(w.is_press(KeyEvent.VK_DOWN)) {
+								w.se[0].play(0);
 								sel++;
 								if(sel>myCanvas.en_pc[i]/4)sel=myCanvas.en_pc[i]/4;
 								while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 								w.myCanvas.drawMenu3(moji,sel);
 							}
 							if(w.is_press(KeyEvent.VK_UP)) {
+								w.se[0].play(0);
 								sel--;
 								if(sel<0)sel=0;
 								while(w.is_press(KeyEvent.VK_UP))w.wait(33);
@@ -426,6 +458,8 @@ class AnimationMove extends Thread{
 							}
 							w.wait(33);
 						}
+						w.se[0].play(0);
+
 						w.ma.update();
 
 						if(sel<myCanvas.en_pc[i]/4) {

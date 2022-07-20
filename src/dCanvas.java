@@ -170,22 +170,31 @@ class dCanvas extends Canvas {
 
 		repaint();
 	}
-	public void drawMenu1(int ysel) {
-		drawMenu1(ysel,0);
+	public void drawMenu1(int ysel,int[] quest_list) {
+		drawMenu1(ysel,quest_list,0);
 	}
 
 	//クエスト選択
-	public void drawMenu1(int ysel,int ms) {
+	public void drawMenu1(int ysel,int[] quest_list,int ms) {
 		buffer.setColor(new Color(255,255,255,255));
 		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		String name="";
+		
 		for(int j=ysel-2;j<=ysel+2;j++) {
 			if(j<=50 && j>=1) {
-				if(!w.m.clearQuestFlug[j] && (w.m.clearQuestFlug[QuestData.callQuest(j).target] || QuestData.callQuest(j).target == 0)) {
-					name+="No."+Integer.toString(j)+" "+QuestData.callQuest(j).title+"\n\n";
+				name+="No."+Integer.toString(j)+" "+QuestData.callQuest(j).title+"\n";
+				if(quest_list[j]==0) {
+					name+="NG";
+				}else if(quest_list[j]==1) {
+					name+="OK";
+				}else if(quest_list[j]==2){
+					name+="NOW";
+				}else {
+					name+="Clear";
 				}
+				name+="\n";
 			}else {
 				name+="\n\n";
 			}
