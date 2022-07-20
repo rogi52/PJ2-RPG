@@ -172,6 +172,8 @@ class GameLoop extends Thread{
 								w.wait(33);
 							}
 							w.se[0].play(0);
+							
+							w.m.max();
 
 							w.ma.update();
 							break;
