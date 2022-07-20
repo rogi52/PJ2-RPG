@@ -110,11 +110,11 @@ class Battle {
 		}
 
 		if(JUDGE == WIN) {
-			window.println("あなたは勝利した", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
+			window.println("あなたはしょうりした", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
 			result = WIN;
 			data.battle(Enemy);
 		} else {
-			window.println("あなたは敗北した", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
+			window.println("あなたははいぼくした", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
 			result = LOSE;
 		}
 		return result;
@@ -206,12 +206,8 @@ class Battle {
 				stock[n] = new Skill();
 				System.out.println(hero[n].name + "のターン.");
 				window.println(hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
-				//for(int m = 0; m < 5; m++) if(buf[m][n] != null) System.out.println("debug:" + buf[m][n].name + " = at" + buf[m][n].turn);
-				//System.out.println("HP:" + hero[n].curHP + "/" + hero[n].maxHP + " MP:" + hero[n].curMP + "/" + hero[n].maxMP);
-				//System.out.printf("0:もどる, 1:こうげき, 2:ぼうぎょ, 3:スキル =>");
 				/* !もどる選択肢の実装 */
 
-				//selects = s.nextInt() - 1;
 				String option = window.getOption(cmd1, BattleWindow.CMD_LEFT);
 				selects = cmd1_mp.get(option) - 1;
 				System.out.println("DBG : " + option + " " + selects);
@@ -223,16 +219,6 @@ class Battle {
 				}else if(selects == 0){//攻撃
 					stock[n].name = "こうげき";
 					stock[n].waza = selects;
-					//System.out.printf("0:もどる");
-					/*
-					for(int m = 0; m < 4; m++) {
-						if(Enemy[m].curHP > 0) {
-							System.out.printf(", " + (m + 5) + ":" + Enemy[m].name);
-						}
-					}
-					System.out.printf(" =>");
-					*/
-					//stock[n].target = s.nextInt() - 1;
 					ArrayList<String> cmd3 = new ArrayList<>();
 					HashMap<String,Integer> enemy_hash = new HashMap<>();
 					for(int m = 0; m < 4; m++) {
@@ -257,12 +243,6 @@ class Battle {
 					stock[n].target = 8;
 					stock[n].costMP = 0;
 				}else if(selects == 2){//スキル
-					//String[] skillsname = getSkillname(n);
-					//int[] skillsMP = getSkillMP(n);
-					//System.out.println("0:もどる cost:0");
-					//for(int m = 0; m < 10 && skillsname[m] != null; m++) if(hero[n].curMP > skillsMP[m]) System.out.println((m + 1) + ":" + skillsname[m] + " " + "cost:" + skillsMP[m]);
-					//selects = s.nextInt() - 1;
-
 					ArrayList<String> cmd2 = new ArrayList<>();
 					HashMap<String,Integer> skill_hash = new HashMap<>();
 					String[] skillsname = getSkillname(n);
@@ -288,17 +268,6 @@ class Battle {
 						}
 					}
 					if(stock[n].target < 0) {
-						/*
-						System.out.printf("0:もどる");
-						for(int m = 0; m < 4; m++) {
-							if(stock[n].target == -1) {
-									if(Enemy[m].curHP > 0) System.out.printf(", " + (m + 5) + ":" + Enemy[m].name);
-							}else {
-								if(hero[m].curHP > 0) System.out.printf(", " + (m + 1) + ":" + hero[m].name);
-							}
-						}
-						System.out.printf(" =>");
-						*/
 
 						ArrayList<String> cmd3 = new ArrayList<>();
 						HashMap<String, Integer> hash = new HashMap<>();
@@ -317,9 +286,6 @@ class Battle {
 								}
 							}
 						}
-
-						//stock[n].target = s.nextInt() - 1;
-						/* Box8 と Box6 を自動で判定 */
 						stock[n].target = hash.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX6)) - 1;
 						if(stock[n].target == -1) {
 							n--;
@@ -948,8 +914,8 @@ class Battle {
 				window.println("ぼうぎょした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 			}
 			else {
-				System.out.println(stock[actOrder[n]].name + "をくりだした!");
-				window.println(stock[actOrder[n]].name + "をくりだした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+				System.out.println(stock[actOrder[n]].name + "した!");
+				window.println(stock[actOrder[n]].name + "した!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 			}
 			//
 			if(stock[actOrder[n]].target == 8) stock[actOrder[n]].target = actOrder[n];
