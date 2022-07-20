@@ -56,12 +56,7 @@ class GameLoop extends Thread{
 							for(int j=0;j<5;j++) {
 								if(w.m.nowQuestNumber[j]!=-1) {
 									if(w.m.nowQuestSituation[j]>=QuestData.callQuest(w.m.nowQuestNumber[j]).need) {
-										w.se[0].play(0);
-										w.myCanvas.drawDialog1("クエスト　"+QuestData.callQuest(w.m.nowQuestNumber[j]).name+"　をクリアしました！", PL2RPG.DIALOG_ANIMATION_TIME);
-
-										while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
-										while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-										w.se[0].play(0);
+										Dialog("クエスト　"+QuestData.callQuest(w.m.nowQuestNumber[j]).name+"　をクリアしました！");
 										w.m.goalQuest(w.m.nowQuestNumber[j]);
 									}
 								}
@@ -88,12 +83,7 @@ class GameLoop extends Thread{
 										draw_update=true;
 									}else if(quest_id_list[menu_x]==1) {
 										if(quest_id_list[0]>=5) {
-											w.myCanvas.drawDialog1("クエストはさいだい5こまでです。", PL2RPG.DIALOG_ANIMATION_TIME);
-
-											while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
-											while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-											w.se[0].play(0);
-
+											Dialog("クエストはさいだい5こまでです。");
 										}else {
 											w.m.setQuest(menu_x);
 											quest_id_list=getQuestStatus();
@@ -191,9 +181,13 @@ class GameLoop extends Thread{
 							w.se[0].play(0);
 
 							w.ma.update();
+							w.m.max();
+							Dialog("HP　MPをかいふくしました。");
 
 							if(DialogYesNo("セーブしますか？",true)) {
 								w.save(w.load_name);
+								
+								Dialog("セーブしました。");
 							}
 
 
@@ -231,6 +225,14 @@ class GameLoop extends Thread{
 		}
 
 		return quest_id_list;
+	}
+	
+	public void Dialog(String str) {
+		w.myCanvas.drawDialog1(str, PL2RPG.DIALOG_ANIMATION_TIME);
+
+		while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
+		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+		w.se[0].play(0);
 	}
 
 
