@@ -552,6 +552,7 @@ class AnimationMove extends Thread{
 			}
 
 			if(enemy_match>0) {
+				w.status=4;
 				walk_count=0;
 
 				System.out.println("ID："+w.now_dangeon_id);
@@ -602,6 +603,8 @@ class AnimationMove extends Thread{
 
 				w.changeBgm(w.walk_bgm);
 				update=true;
+				w.status=2;
+
 
 			}
 
