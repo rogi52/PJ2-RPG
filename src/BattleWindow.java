@@ -1,4 +1,3 @@
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -11,7 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class BattleWindow extends Component implements KeyListener {
+public class BattleWindow implements KeyListener {
 
 	final int NULL    = 0;
 	final int MESSAGE = 1;
@@ -38,10 +37,11 @@ public class BattleWindow extends Component implements KeyListener {
 	PrintWriter out = new PrintWriter(bos);
 
 	Player[] players = new Player[4];
-	BattleWindow() {}
-	BattleWindow(Player[] players) {
-		this.players = players;
-		for(int i = 0; i < 4; i++) players[i].name = ImageManager.arrange(players[i].name);
+
+	dCanvas myCanvas;
+	BattleWindow(dCanvas myCanvas) {
+		this.myCanvas = myCanvas;
+		mw  = new MessageWindow("", 352, 448, 32, 4, 15, myCanvas);
 	}
 
 	int posLeft = 0;
@@ -110,7 +110,7 @@ public class BattleWindow extends Component implements KeyListener {
 	int cmdArrayPos = 0;
 	int posRightI = 0, posRightJ = 0;
 
-	MessageWindow mw = new MessageWindow("", 352, 448, 32, 4, 15);
+	MessageWindow mw;
 	void println(String str, int newWindow, int waitEnterKey) {
 		print(str + '\n', newWindow, waitEnterKey);
 	}
@@ -124,7 +124,7 @@ public class BattleWindow extends Component implements KeyListener {
 		STATE = MESSAGE;
 		if(newWindow == NEW_WINDOW) mw.buffer = "";
 		for(int i = 0; i < str.length(); i++) {
-			mw.addMessageStatic("" + str.charAt(i), false);
+			mw.buffer += str.charAt(i);
 			repaint();
 			try { Thread.sleep(50); } catch (InterruptedException e) {}
 		}
@@ -151,7 +151,9 @@ public class BattleWindow extends Component implements KeyListener {
 
 	int startX[] = {128, 320, 512, 704};
 
-	public void paint(Graphics g) {
+	void repaint() {
+		Graphics g = myCanvas.buffer;
+
 		/* 背景 */
 		try {
 			BufferedImage background = ImageManager.getImage("battle");
@@ -195,7 +197,7 @@ public class BattleWindow extends Component implements KeyListener {
 		}
 
 		if(STATE == MESSAGE) {
-			mw.paint(g);
+			mw.repaint();
 		}
 
 		if(STATE == COMMAND) {
@@ -235,6 +237,8 @@ public class BattleWindow extends Component implements KeyListener {
 				} catch (IOException e) { System.out.println("Error : arrow"); }
 			}
 		}
+
+		myCanvas.repaint();
 	}
 
 	@Override

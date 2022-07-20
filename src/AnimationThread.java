@@ -1,7 +1,5 @@
 import java.awt.event.KeyEvent;
 
-import javax.swing.JFrame;
-
 class GameLoop extends Thread{
 	Window w;
 	dCanvas myCanvas;
@@ -220,7 +218,7 @@ class GameLoop extends Thread{
 			}else if((w.m.clearQuestFlag[QuestData.callQuest(j).flag] || QuestData.callQuest(j).flag == 0)) {
 				quest_id_list[j]=1;
 			}else {
-				quest_id_list[j]=0;									
+				quest_id_list[j]=0;
 			}
 		}
 
@@ -462,7 +460,7 @@ class AnimationMove extends Thread{
 
 						//固定エンカウント
 					case 4:
-						if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {	
+						if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
 							any_event_disabled=true;
 							enemy_match=2;
 							w.myCanvas.en_used+=w.myCanvas.en_UID[i];
@@ -552,7 +550,6 @@ class AnimationMove extends Thread{
 			}
 
 			if(enemy_match>0) {
-				w.status=4;
 				walk_count=0;
 
 				System.out.println("ID："+w.now_dangeon_id);
@@ -574,22 +571,24 @@ class AnimationMove extends Thread{
 				w.myCanvas.repaint();
 
 				w.changeBgm(w.battle_bgm);
-				
-				//対戦
-				JFrame frame=w;//new JFrame();
 
-				int dungeonID=w.now_dangeon_id; //(0-6?)
-				int enemyUnitID=enemy_type; //(MobData に定数を記載. MINION, BOSS_1ST_FLOOR など)
-				Battle battle = new Battle(w.m, dungeonID, enemyUnitID);
-				frame.add(battle.window);
-				frame.addKeyListener(battle.window);
+				//対戦
+				int dungeonID = w.now_dangeon_id; //(0-6?)
+				int enemyUnitID = enemy_type; //(MobData に定数を記載. MINION, BOSS_1ST_FLOOR など)
+				Battle battle = new Battle(w.m, dungeonID, enemyUnitID, w.myCanvas);
+
+　                             w.resetKey();
+				w.removeKeyListener(w.getKeyListeners()[0]);
+				w.addKeyListener(battle.window);
 
 				int result = battle.start();
 
-				frame.remove(battle.window);
-				frame.removeKeyListener(battle.window);
+				w.removeKeyListener(battle.window);
+				w.addKeyListener(w);
 
 				System.out.println(result);
+				myCanvas.blank(0);
+
 
 				//w.wait(5000);
 
@@ -603,8 +602,6 @@ class AnimationMove extends Thread{
 
 				w.changeBgm(w.walk_bgm);
 				update=true;
-				w.status=2;
-
 
 			}
 

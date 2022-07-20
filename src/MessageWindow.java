@@ -1,31 +1,9 @@
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.JFrame;
-
-public class MessageWindow extends Component {
-
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.setSize(500, 500);
-
-		MessageWindow mw = new MessageWindow("", 10, 10, 40, 5, 10);
-
-		frame.add(mw);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-
-		mw.addMessageDynamic("こんにちは", false);
-		mw.addMessageStatic("よろしくね", false);
-		mw.addMessageDynamic("あたらしいギョウ", true);
-		try { Thread.sleep(1000); } catch (InterruptedException e) {}
-		mw.clear();
-		mw.addMessageDynamic("いただきマス", false);
-	}
+public class MessageWindow {
 
 	String buffer = "";
 	int START_X = 0, START_Y = 0;
@@ -33,18 +11,15 @@ public class MessageWindow extends Component {
 	int CHARACTER_NUM_WIDTH = 10;
 	int CHARACTER_SIZE = 32;
 	int OFFSET = 5;
+	dCanvas myCanvas;
 
-	MessageWindow(String msg) {
-		addMessageStatic(msg, false);
-	}
-
-	MessageWindow(String msg, int START_X, int START_Y, int CHARACTER_SIZE, int CHARACTER_NUM_HEIGHT, int CHARACTER_NUM_WIDTH) {
+	MessageWindow(String msg, int START_X, int START_Y, int CHARACTER_SIZE, int CHARACTER_NUM_HEIGHT, int CHARACTER_NUM_WIDTH, dCanvas myCanvas) {
 		this.START_X = START_X;
 		this.START_Y = START_Y;
 		this.CHARACTER_SIZE = CHARACTER_SIZE;
 		this.CHARACTER_NUM_HEIGHT = CHARACTER_NUM_HEIGHT;
 		this.CHARACTER_NUM_WIDTH = CHARACTER_NUM_WIDTH;
-		addMessageDynamic(msg, false);
+		this.myCanvas = myCanvas;
 		// addMessageStatic(msg, false);
 	}
 
@@ -69,12 +44,12 @@ public class MessageWindow extends Component {
 		repaint();
 	}
 
-	public void paint(Graphics g) {
-
+	void repaint() {
 		if(buffer.length() == 0) return;
+		Graphics g = myCanvas.buffer;
 
-		g.setColor(Color.BLACK);
-		g.fillRect(START_X,  START_Y,  CHARACTER_SIZE * CHARACTER_NUM_WIDTH + OFFSET * 2,  CHARACTER_SIZE * (CHARACTER_NUM_HEIGHT) + OFFSET * 2);
+		//g.setColor(Color.BLACK);
+		//g.fillRect(START_X,  START_Y,  CHARACTER_SIZE * CHARACTER_NUM_WIDTH + OFFSET * 2,  CHARACTER_SIZE * (CHARACTER_NUM_HEIGHT) + OFFSET * 2);
 
 		for(int i = 0, h = 0, w = 0; i < buffer.length(); i++) {
 
@@ -84,6 +59,7 @@ public class MessageWindow extends Component {
 			try {
 				BufferedImage I = ImageManager.getCharImage(c);
 				g.drawImage(I.getScaledInstance(CHARACTER_SIZE, CHARACTER_SIZE, Image.SCALE_DEFAULT), START_X + OFFSET + w * CHARACTER_SIZE, START_Y + OFFSET + h * CHARACTER_SIZE, null);
+				myCanvas.repaint();
 			} catch (IOException e) { System.out.println("error : " + c); }
 			w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; }
 		}
