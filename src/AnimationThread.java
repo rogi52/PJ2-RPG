@@ -50,8 +50,6 @@ class GameLoop extends Thread{
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
 							w.se[0].play(0);
-							
-							if(w.m.nowQuestNumber[0]!=-1)w.m.nowQuestSituation[0]++;
 
 
 							//クエスト完了テスト
