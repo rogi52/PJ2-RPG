@@ -578,6 +578,7 @@ class AnimationMove extends Thread{
 
 				//対戦
 				int dungeonID = w.now_dangeon_id; //(0-6?)
+				if(dungeonID<0)dungeonID=0;
 				int enemyUnitID = enemy_type; //(MobData に定数を記載. MINION, BOSS_1ST_FLOOR など)
 				Battle battle = new Battle(w.m, dungeonID, enemyUnitID, w.myCanvas);
 
