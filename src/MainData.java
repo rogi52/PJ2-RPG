@@ -125,7 +125,7 @@ public class MainData implements Serializable{
 			clearQuestFlag[n] = false;
 			itemCnt[n] = 0;
 		}
-		for(n = 24; n < 35; n++) clearQuestFlag[n] = false;
+		for(n = 24; n < 51; n++) clearQuestFlag[n] = false;
 	}
 
 	void max() {
