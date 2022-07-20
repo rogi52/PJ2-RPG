@@ -73,9 +73,9 @@ class Battle {
 	boolean lateflag = false;
 
 	MainData data;
-	final int WIN     = +1;
-	final int PENDING =  0;
-	final int LOSE    = -1;
+	public static final int WIN     = +1;
+	public static final int PENDING =  0;
+	public static final int LOSE    = -1;
 	int result = PENDING;
 	BattleWindow window = new BattleWindow();
 
