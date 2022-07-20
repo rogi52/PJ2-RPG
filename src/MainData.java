@@ -29,7 +29,7 @@ public class MainData implements Serializable{
 
 	void setQuest(int n) {
 		for(int m = 0; m < 5; m++) {
-			if(nowQuestNumber[m] != -1) {
+			if(nowQuestNumber[m] == -1) {
 				nowQuestNumber[m] = n;
 				if(QuestData.callQuest(nowQuestSituation[m]).type == QuestData.DELIVERY) {
 					if(QuestData.callQuest(nowQuestSituation[m]).target == n) {
