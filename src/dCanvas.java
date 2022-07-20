@@ -79,7 +79,7 @@ class dCanvas extends Canvas {
 					}
 				} catch (IOException e) {}
 
-				if(x+PL2RPG.BLOCK_SIZE>x0+width) {
+				if(x+PL2RPG.BLOCK_SIZE*2>x0+width) {
 					x=x0;
 					y+=PL2RPG.BLOCK_SIZE;
 				}else {
