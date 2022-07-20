@@ -41,6 +41,7 @@ public class MainData implements Serializable{
 						if(bossFlug[k]) nowQuestSituation[m]++;
 					}
 				}
+				break;
 			}
 
 		}
