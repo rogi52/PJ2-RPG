@@ -677,9 +677,7 @@ class AnimationMove extends Thread{
 							a.mode(-1,2);
 							a.start();
 							while(Animation_Select.fin==false) {
-								try {
-									sleep(33);
-								} catch (InterruptedException e) {}
+								w.wait(33);
 							}
 							dir_con=0;
 							walk_count=0;
@@ -744,12 +742,16 @@ class AnimationMove extends Thread{
 				w.resetKey();
 				w.addKeyListener(w);
 
-				System.out.println(result);
+				//System.out.println(result);
 				myCanvas.blank(0);
 
 
-				//w.wait(5000);
 
+				//ここから
+				if(result==-1) {
+					w.load(w.load_name);
+					myCanvas.loadMap("home.1.csv",-1,-1);
+				}
 				Animation_Select a=new Animation_Select(w.myCanvas,w);
 				a.mode(-1,2);
 				a.start();
@@ -759,6 +761,7 @@ class AnimationMove extends Thread{
 
 
 				w.changeBgm(w.walk_bgm);
+				dir_con=0;
 				update=true;
 
 			}
