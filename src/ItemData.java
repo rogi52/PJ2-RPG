@@ -9,7 +9,7 @@ public class ItemData {
 		switch(n) {
 			case 1: {
 				item.name = "まほうのもと";
-				item.doc = "よわこう";
+				item.doc = "たんたいこうげき";
 				item.waza = 0;
 				item.skill = 1.4;
 				item.target = -1;
@@ -17,7 +17,7 @@ public class ItemData {
 
 			case 2: {
 				item.name = "ちからのたね";
-				item.doc = "attバフ";
+				item.doc = "ATTバフ";
 				item.waza = 5;
 				item.skill = 15;
 				item.target = -2;
@@ -26,7 +26,7 @@ public class ItemData {
 
 			case 3: {
 				item.name = "ばくやく";
-				item.doc = "小範囲";
+				item.doc = "はんいこうげき";
 				item.waza = 0;
 				item.skill = 0.9;
 				item.target = 10;
@@ -34,7 +34,7 @@ public class ItemData {
 
 			case 4: {
 				item.name = "ちからぐさ";
-				item.doc = "攻撃バフ";
+				item.doc = "こうげきバフ";
 				item.waza = 2;
 				item.skill = 0.15;
 				item.target = -2;
@@ -43,7 +43,7 @@ public class ItemData {
 
 			case 5: {
 				item.name = "まもりそう";
-				item.doc = "防御バフ";
+				item.doc = "ぼうぎょバフ";
 				item.waza = 3;
 				item.skill = 0.1;
 				item.target = -2;
@@ -52,7 +52,7 @@ public class ItemData {
 
 			case 6: {
 				item.name = "ときのすな";
-				item.doc = "素早さバフ";
+				item.doc = "すばやさバフ";
 				item.waza = 4;
 				item.skill = 0.3;
 				item.target = -2;
@@ -61,7 +61,7 @@ public class ItemData {
 
 			case 7: {
 				item.name = "ちからぬき";
-				item.doc = "攻撃デバフ";
+				item.doc = "こうげきデバフ";
 				item.waza = 2;
 				item.skill = -0.1;
 				item.target = -1;
@@ -70,7 +70,7 @@ public class ItemData {
 
 			case 8: {
 				item.name = "まもりぬき";
-				item.doc = "防御デバフ";
+				item.doc = "ぼうぎょデバフ";
 				item.waza = 3;
 				item.skill = -0.1;
 				item.target = -1;
@@ -79,7 +79,7 @@ public class ItemData {
 
 			case 9: {
 				item.name = "くものいと";
-				item.doc = "素早さデバフ";
+				item.doc = "すばやさデバフ";
 				item.waza = 4;
 				item.skill = -0.15;
 				item.target = -1;
@@ -88,7 +88,7 @@ public class ItemData {
 
 			case 10: {
 				item.name = "ほしくず";
-				item.doc = "貫通攻撃";
+				item.doc = "かんつうこうげき";
 				item.waza = 15;
 				item.skill = 1.1;
 				item.target = -1;
@@ -96,7 +96,7 @@ public class ItemData {
 
 			case 11: {
 				item.name = "やくそう";
-				item.doc = "小回復";
+				item.doc = "たんたいHPかいふく";
 				item.waza = 14;
 				item.skill = 15;
 				item.target = -2;
@@ -104,7 +104,7 @@ public class ItemData {
 
 			case 12: {
 				item.name = "ポーション";
-				item.doc = "全体小回復";
+				item.doc = "はんいHPかいふく";
 				item.waza = 14;
 				item.skill = 8;
 				item.target = 9;
@@ -112,7 +112,7 @@ public class ItemData {
 
 			case 13: {
 				item.name = "まほうすい";
-				item.doc = "MP回復";
+				item.doc = "MPかいふく";
 				item.waza = 18;
 				item.skill = 10;
 				item.target = -2;
@@ -120,7 +120,7 @@ public class ItemData {
 
 			case 21: {
 				item.name = "TNT";
-				item.doc = "大攻撃";
+				item.doc = "たんたいこうげき";
 				item.waza = 0;
 				item.skill = 2.2;
 				item.target = -1;
@@ -128,7 +128,7 @@ public class ItemData {
 
 			case 22: {
 				item.name = "エリクサー";
-				item.doc = "全体回復";
+				item.doc = "はんいデバフかいじょ";
 				item.waza = 14;
 				item.skill = 16;
 				item.target = 9;
@@ -136,7 +136,7 @@ public class ItemData {
 
 			case 23: {
 				item.name = "きじんやく";
-				item.doc = "攻撃バフ大";
+				item.doc = "こうげきバフ";
 				item.waza = 2;
 				item.skill = 0.3;
 				item.target = -2;
