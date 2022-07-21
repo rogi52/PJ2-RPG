@@ -40,4 +40,19 @@ public class MessageWindow {
 			w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; }
 		}
 	}
+
+	int lines() {
+		int h = 0, w = 0;
+		for(int i = 0; i < buffer.length(); i++) {
+			char c = buffer.charAt(i);
+			if(c == '\n') { if(w!=0) { h++; w=0; } continue; }
+			if(c == ' ' || c == ':') { w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; } continue; }
+			w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; }
+		}
+		return h;
+	}
+
+	boolean overFlow() {
+		return CHARACTER_NUM_HEIGHT <= lines();
+	}
 }
