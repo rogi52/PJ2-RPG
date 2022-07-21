@@ -700,8 +700,10 @@ class AnimationMove extends Thread{
 				}
 			}
 
-			if(random_match_test && w.myCanvas.random_match_enable && Math.random()<PL2RPG.RANDOM_MATCH_PROB*walk_count && !any_event_disabled) {
-				enemy_match=1;
+			if(random_match_test) {
+				if( w.myCanvas.random_match_enable && Math.random()<PL2RPG.RANDOM_MATCH_PROB*(walk_count-PL2RPG.RANDOM_MATCH_MIN) && !any_event_disabled ) {
+					enemy_match=1;
+				}
 			}
 
 			if(enemy_match>0) {
