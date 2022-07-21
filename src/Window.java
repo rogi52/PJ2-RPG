@@ -146,11 +146,8 @@ public class Window extends JFrame implements KeyListener{
 		return load_name;
 
 	}
-
-	void drawStart(boolean is_back) {
-		status=0;
-		key_x=1;
-
+	
+	void updateSaveList() {
 		File file1 = new File(PL2RPG.SAVE_PATH);
 		File fileArray1[] = file1.listFiles();
 
@@ -166,6 +163,15 @@ public class Window extends JFrame implements KeyListener{
 			}
 			index++;
 		}
+
+	}
+
+	void drawStart(boolean is_back) {
+		status=0;
+		key_x=1;
+		
+		updateSaveList();
+
 
 		if(save_num==0) {
 			key_x=0;
@@ -304,7 +310,7 @@ public class Window extends JFrame implements KeyListener{
 				break;
 			}
 
-
+			//System.out.println(status);
 			if(status==0) {
 				se[0].play(0);
 				if(key_x<0)key_x=0;
@@ -328,6 +334,10 @@ public class Window extends JFrame implements KeyListener{
 				myCanvas.drawSelect(key_y);
 				if ( key == KeyEvent.VK_ESCAPE) {
 					drawStart(true);
+				}
+				if ( key == KeyEvent.VK_DELETE) {
+					AnimationDelete ad=new AnimationDelete(this);
+					ad.start();
 				}
 				if ( key == KeyEvent.VK_ENTER) {
 					load_name=save_list[key_y];

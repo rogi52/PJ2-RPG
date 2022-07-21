@@ -1,4 +1,7 @@
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 class GameLoop extends Thread{
 	Window w;
@@ -59,7 +62,7 @@ class GameLoop extends Thread{
 							for(int j=0;j<5;j++) {
 								if(w.m.nowQuestNumber[j]!=-1) {
 									if(w.m.nowQuestSituation[j]>=QuestData.callQuest(w.m.nowQuestNumber[j]).need) {
-										Dialog("クエスト　"+QuestData.callQuest(w.m.nowQuestNumber[j]).name+"　をクリアしました！");
+										w.myCanvas.Dialog("クエスト　"+QuestData.callQuest(w.m.nowQuestNumber[j]).name+"　をクリアしました！");
 										w.m.goalQuest(w.m.nowQuestNumber[j]);
 									}
 								}
@@ -79,14 +82,14 @@ class GameLoop extends Thread{
 									while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 									w.se[0].play(0);
 									if(quest_id_list[menu_x]==2) {
-										if(DialogYesNo("クエストをキャンセルしますか？\nキャンセルするとしんちょくはとりけされます。",true)) {
+										if(w.myCanvas.DialogYesNo("クエストをキャンセルしますか？\nキャンセルするとしんちょくはとりけされます。",true)) {
 											w.m.clearQuest(menu_x);
 											quest_id_list=getQuestStatus();
 										}
 										draw_update=true;
 									}else if(quest_id_list[menu_x]==1) {
 										if(quest_id_list[0]>=5) {
-											Dialog("クエストはさいだい5こまでです。");
+											w.myCanvas.Dialog("クエストはさいだい5こまでです。");
 										}else {
 											w.m.setQuest(menu_x);
 											quest_id_list=getQuestStatus();
@@ -189,12 +192,12 @@ class GameLoop extends Thread{
 
 							w.ma.update();
 							w.m.max();
-							Dialog("HP　MPをかいふくしました。");
+							w.myCanvas.Dialog("HP　MPをかいふくしました。");
 
-							if(DialogYesNo("セーブしますか？",true)) {
+							if(w.myCanvas.DialogYesNo("セーブしますか？",true)) {
 								w.save(w.load_name);
 								
-								Dialog("セーブしました。");
+								w.myCanvas.Dialog("セーブしました。");
 							}
 
 
@@ -233,11 +236,11 @@ class GameLoop extends Thread{
 							if(item_num>0) {
 								if(ItemData.getItem(item_list[sel_y]).waza==14 || ItemData.getItem(item_list[sel_y]).waza==18) {
 									if(ItemData.getItem(item_list[sel_y]).target==9) {
-										if(DialogYesNo(ItemData.getItemName(item_list[sel_y])+"をつかいますか？",true)) {
+										if(w.myCanvas.DialogYesNo(ItemData.getItemName(item_list[sel_y])+"をつかいますか？",true)) {
 											if(ItemData.getItem(item_list[sel_y]).waza==14) {
-												Dialog("パーティーのHPがかいふくしました。");
+												w.myCanvas.Dialog("パーティーのHPがかいふくしました。");
 											}else {
-												Dialog("パーティーのMPがかいふくしました。");										
+												w.myCanvas.Dialog("パーティーのMPがかいふくしました。");										
 											}
 											w.m.calcHeal(9, item_list[sel_y]);
 											w.m.minusItem(item_list[sel_y]);
@@ -247,12 +250,12 @@ class GameLoop extends Thread{
 											if(sel_y<0)sel_y=0;
 										}
 									}else {
-										int target=DialogTarget();
+										int target=w.myCanvas.DialogTarget();
 										if(target!=-1) {
 											if(ItemData.getItem(item_list[sel_y]).waza==14) {
-												Dialog(PL2RPG.JOB_NAME[w.m.partyJob[target]]+"のHPがかいふくしました。");
+												w.myCanvas.Dialog(PL2RPG.JOB_NAME[w.m.partyJob[target]]+"のHPがかいふくしました。");
 											}else {
-												Dialog(PL2RPG.JOB_NAME[w.m.partyJob[target]]+"のMPがかいふくしました。");										
+												w.myCanvas.Dialog(PL2RPG.JOB_NAME[w.m.partyJob[target]]+"のMPがかいふくしました。");										
 											}
 											w.m.calcHeal(target, item_list[sel_y]);
 											w.m.minusItem(item_list[sel_y]);
@@ -264,7 +267,7 @@ class GameLoop extends Thread{
 									}
 								}else {
 									
-									Dialog("このアイテムはここではつかえません。");								
+									w.myCanvas.Dialog("このアイテムはここではつかえません。");								
 								}
 								
 								draw_update=true;
@@ -343,74 +346,6 @@ class GameLoop extends Thread{
 		return quest_id_list;
 	}
 	
-	public void Dialog(String str) {
-		w.myCanvas.drawDialog1(str, PL2RPG.DIALOG_ANIMATION_TIME);
-
-		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-		while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
-		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-		w.se[0].play(0);
-	}
-
-
-	public boolean DialogYesNo(String msg,boolean def) {
-		boolean is_save=def;
-		w.myCanvas.drawMenu2(is_save, msg,PL2RPG.DIALOG_ANIMATION_TIME);//5
-
-		while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-		while(w.is_press(KeyEvent.VK_ENTER)==false) {
-			if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
-				w.se[0].play(0);
-				is_save=!is_save;
-				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-				w.myCanvas.drawMenu2(is_save,msg);
-			}
-			w.wait(33);
-		}
-		w.se[0].play(0);
-
-		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-
-		return is_save;
-
-	}
-
-
-	public int DialogTarget() {
-		int ysel=0;
-		int job_num=0;
-		for(int j=0;j<4;j++) {
-			if(PL2RPG.JOB_NAME.length>w.m.partyJob[j]) {
-				job_num++;
-			}
-		}
-		w.myCanvas.drawMenu5(ysel,PL2RPG.DIALOG_ANIMATION_TIME);//5
-
-		while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-		while(w.is_press(KeyEvent.VK_ENTER)==false) {
-			if(w.is_press(KeyEvent.VK_DOWN)) {
-				w.se[0].play(0);
-				ysel++;
-				if(ysel>=job_num)ysel=job_num-1;
-				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-				w.myCanvas.drawMenu5(ysel);
-			}
-			if(w.is_press(KeyEvent.VK_UP)) {
-				w.se[0].play(0);
-				ysel--;
-				if(ysel<-1)ysel=-1;
-				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-				w.myCanvas.drawMenu5(ysel);
-			}
-			w.wait(33);
-		}
-		w.se[0].play(0);
-
-		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-
-		return ysel;
-
-	}
 }
 
 class AnimationMove extends Thread{
@@ -900,4 +835,36 @@ class AnimationLoad extends Thread{
 	}
 
 
+}
+
+class AnimationDelete extends Thread{
+	Window w;
+	int key_y;
+	AnimationDelete(Window w){
+		this.w=w;
+		key_y=w.key_y;
+		w.status=5;
+	}
+
+	public void run(){
+		if(w.myCanvas.DialogYesNo("データを削除すると戻すことはできません。\n本当に削除しますか？", false)) {
+			
+			try {
+				Files.delete(Paths.get(PL2RPG.SAVE_PATH+"/"+w.save_list[key_y]));
+			} catch (IOException e) {}
+			
+			w.updateSaveList();
+			w.key_y=0;
+		}else {
+			w.key_y=key_y;
+		}
+		
+		if(w.save_num==0) {
+			//データ全消しの場合
+			w.drawStart(true);
+		}else {
+			w.myCanvas.drawSelect(w.key_y);
+			w.status=1;
+		}
+	}
 }

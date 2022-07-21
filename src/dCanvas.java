@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -87,6 +88,74 @@ class dCanvas extends Canvas {
 				}
 			}
 		}
+	}
+	
+	public void Dialog(String str) {
+		w.myCanvas.drawDialog1(str, PL2RPG.DIALOG_ANIMATION_TIME);
+
+		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+		while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
+		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+		w.se[0].play(0);
+	}
+
+	public int DialogTarget() {
+		int ysel=0;
+		int job_num=0;
+		for(int j=0;j<4;j++) {
+			if(PL2RPG.JOB_NAME.length>w.m.partyJob[j]) {
+				job_num++;
+			}
+		}
+		w.myCanvas.drawMenu5(ysel,PL2RPG.DIALOG_ANIMATION_TIME);//5
+
+		while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+		while(w.is_press(KeyEvent.VK_ENTER)==false) {
+			if(w.is_press(KeyEvent.VK_DOWN)) {
+				w.se[0].play(0);
+				ysel++;
+				if(ysel>=job_num)ysel=job_num-1;
+				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+				w.myCanvas.drawMenu5(ysel);
+			}
+			if(w.is_press(KeyEvent.VK_UP)) {
+				w.se[0].play(0);
+				ysel--;
+				if(ysel<-1)ysel=-1;
+				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+				w.myCanvas.drawMenu5(ysel);
+			}
+			w.wait(33);
+		}
+		w.se[0].play(0);
+
+		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+
+		return ysel;
+
+	}
+
+	
+	public boolean DialogYesNo(String msg,boolean def) {
+		boolean is_save=def;
+		w.myCanvas.drawMenu2(is_save, msg,PL2RPG.DIALOG_ANIMATION_TIME);//5
+
+		while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+		while(w.is_press(KeyEvent.VK_ENTER)==false) {
+			if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
+				w.se[0].play(0);
+				is_save=!is_save;
+				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+				w.myCanvas.drawMenu2(is_save,msg);
+			}
+			w.wait(33);
+		}
+		w.se[0].play(0);
+
+		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+
+		return is_save;
+
 	}
 
 	//アイテム取得
@@ -512,6 +581,7 @@ class dCanvas extends Canvas {
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.drawString("[Enter] Select",330, 530);
 		buffer.drawString("[ ESC ] Back",330, 570);
+		buffer.drawString("[ Delete ] Delete",330, 610);
 
 		blank(alpha);
 
