@@ -50,6 +50,7 @@ public class BattleWindow implements KeyListener {
 
 
 	String getOption(ArrayList<String> cmds, int windowType) {
+		cmdArrayPos = 0;
 		STATE = COMMAND;
 		CMD_TYPE = windowType;
 		switch(CMD_TYPE) {
@@ -218,6 +219,7 @@ public class BattleWindow implements KeyListener {
 
 			/* コマンド (右) */
 			if(CMD_TYPE == CMD_RIGHT || CMD_TYPE == CMD_RIGHT_BOX6) {
+				assert(0 <= cmdArrayPos && cmdArrayPos < cmdsBox6.size());
 				String[][] box = cmdsBox6.get(cmdArrayPos);
 				for(int i = 0; i < 4; i++) {
 					for(int j = 0; j < 2; j++) {
