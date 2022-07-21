@@ -548,13 +548,17 @@ class AnimationMove extends Thread{
 				}
 			}
 
-
 			if(random_match_test && w.myCanvas.random_match_enable && Math.random()<PL2RPG.RANDOM_MATCH_PROB*walk_count && !any_event_disabled) {
 				enemy_match=1;
 			}
 
-			if(enemy_match>0) {
+			if(enemy_match>0 && 1==2) {
 				walk_count=0;
+				
+				w.m.partyHP[0]=0;
+				w.m.partyHP[1]=0;
+				w.m.partyHP[2]=0;
+				w.m.partyHP[3]=0;
 
 				System.out.println("ID："+w.now_dangeon_id);
 				System.out.println("種類："+enemy_type);
