@@ -200,14 +200,16 @@ class Battle {
 		HashMap<String, Integer> cmd1_mp = new HashMap<>();
 		for(int i = 0; i < 4; i++) cmd1_mp.put(cmd1.get(i), i);
 		int selects;
+		boolean namePrintFlag = true;
 		for(int n = 0; n < 4; n++) {
 			if(hero[n].curHP > 0){
 				itemFlag[n] = -1;
 				stock[n] = new Skill();
-				System.out.println(hero[n].name + "のターン.");
-				window.println(hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
-				/* !もどる選択肢の実装 */
-
+				if(namePrintFlag) {
+					System.out.println(hero[n].name + "のターン.");
+					window.println(hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
+				}
+				namePrintFlag = true;
 				String option = window.getOption(cmd1, BattleWindow.CMD_LEFT);
 				selects = cmd1_mp.get(option) - 1;
 				System.out.println("DBG : " + option + " " + selects);
@@ -248,11 +250,19 @@ class Battle {
 					String[] skillsname = getSkillname(n);
 					int[] skillsMP = getSkillMP(n);
 					for(int m = 0; m < 10 && skillsname[m] != null; m++)
-						if(hero[n].curMP > skillsMP[m]) {
+						if(hero[n].curMP >= skillsMP[m]) {
 							String name = ImageManager.arrange(skillsname[m]);
 							cmd2.add(name);
 							skill_hash.put(name, m + 1);
 						}
+
+					if(skill_hash.size() == 0) {
+						window.println("つかえるスキルがありません", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
+						n--;
+						namePrintFlag = false;
+						continue;
+					}
+
 					selects = skill_hash.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX6)) - 1;
 
 					if(selects == -1) {
@@ -899,6 +909,11 @@ class Battle {
 		boolean x = false;//あまり使い道がない、貫通攻撃用
 		Random r = new Random();
 		for(int n = 0; n < 8 && actOrder[n] != -1; n++) {
+			for(int i = 0; i < 4; i++) {
+				window.players[i].HP = hero[i].curHP;
+				window.players[i].MP = hero[i].curMP;
+			}
+			window.repaint();
 			flag = false;
 			x = false;
 			if(actOrder[n] < 4) {
