@@ -484,7 +484,7 @@ public class MobData {
 		setRegi(1.1,1.0,1.0,0.8);
 		skill[0] = 101; skill[1] = 102; skill[2] = 103; skill[3] = 106;
 		setAI(4,1);
-		bossMob[6].setStatus2(90, 50, attType, regi, skill, ai, 4);
+		
 		item[0] = 21; item[1] = 22; item[2] = 23;
 		bossMob[3].setStatus3(item);
 		
@@ -513,7 +513,7 @@ public class MobData {
 		setRegi(0.9,1.0,1.0,1.0);
 		skill[0] = 105; skill[1] = 107; skill[2] = 111; skill[3] = 112;
 		setAI(4,1);
-		bossMob[6].setStatus2(50, 50, attType, regi, skill, ai, 4);		
+		bossMob[6].setStatus2(50, 50, attType, regi, skill, ai, 4);	
 
 		clear();
 		bossMob[8] = new MobStatus("ドラゴン",300,100,100,80,90,70);
