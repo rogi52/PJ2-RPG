@@ -50,13 +50,13 @@ public class BattleWindow implements KeyListener {
 
 
 	String getOption(ArrayList<String> cmds, int windowType) {
-		posLeft = 0;
 		cmdArrayPos = 0;
 		posRightI = posRightJ = 0;
 		STATE = COMMAND;
 		CMD_TYPE = windowType;
 		switch(CMD_TYPE) {
 			case CMD_LEFT: {
+				posLeft = 0;
 				cmdsLeft.clear();
 				for(int i = 0; i < cmds.size(); i++) cmdsLeft.add(ImageManager.arrange(cmds.get(i)));
 			} break;
@@ -92,6 +92,7 @@ public class BattleWindow implements KeyListener {
 
 		try {
 			while(true) {
+				Thread.sleep(20);
 				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
 				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
 				String res = in.readLine();
@@ -103,7 +104,7 @@ public class BattleWindow implements KeyListener {
 					/* コマンド用のクラス = [name, hash] を作るといいかも */
 				}
 			}
-		} catch (IOException e) {}
+		} catch (IOException | InterruptedException e) {}
 
 		STATE = NULL;
 		CMD_TYPE = NULL;
@@ -118,6 +119,10 @@ public class BattleWindow implements KeyListener {
 		print(str + '\n', newWindow, waitEnterKey);
 	}
 
+	void println(String str) {
+		print(str + '\n', CONTINUE, CONTINUE);
+	}
+
 	public final static int NEW_WINDOW = 0;
 	public final static int WAIT_ENTER_KEY = 1;
 	public final static int CONTINUE = 2;
@@ -128,31 +133,68 @@ public class BattleWindow implements KeyListener {
 		if(newWindow == NEW_WINDOW) mw.buffer = "";
 		for(int i = 0; i < str.length(); i++) {
 			mw.buffer += str.charAt(i);
+			if(mw.overFlow() && str.charAt(i) != '\n') {
+				waitEnterKey();
+				mw.buffer = "";
+				mw.buffer += str.charAt(i);
+			}
 			repaint();
 			try { Thread.sleep(33); } catch (InterruptedException e) {}
 		}
 
-		if(waitEnterKey == WAIT_ENTER_KEY) {
-			try {
-				while(true) {
-					ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-					BufferedReader in = new BufferedReader(new InputStreamReader(bis));
-					String signal = in.readLine();
-					if(signal != null) {
-						bos = new ByteArrayOutputStream();
-						out = new PrintWriter(bos);
-						break;
-					}
-				}
-			} catch (IOException e) {}
-		}
+		//repaint();
 
-		/* 途中で ENTER が押された場合 */
+		if(waitEnterKey == WAIT_ENTER_KEY) waitEnterKey();
 
 		STATE = NULL;
 	}
 
+	void waitEnterKey() {
+		STATE = MESSAGE;
+		try {
+			while(true) {
+				Thread.sleep(20);
+				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
+				String signal = in.readLine();
+				if(signal != null) {
+					bos = new ByteArrayOutputStream();
+					out = new PrintWriter(bos);
+					break;
+				}
+			}
+		} catch (IOException | InterruptedException e) {}
+		STATE = NULL;
+	}
+
 	int startX[] = {128, 320, 512, 704};
+
+	void repaintHPMP(int i) {
+		Graphics g = myCanvas.buffer;
+		try {
+			String num = players[i].HP.toString();
+			while(num.length() < 3) num = ' ' + num;
+			for(int j = 0; j < 3; j++) {
+				if(num.charAt(j) != ' ') {
+					BufferedImage image = ImageManager.getCharImage(num.charAt(j));
+					g.drawImage(image, startX[i] + (j + 1) * 32, 96, null);
+				}
+			}
+		} catch (IOException e) { System.out.println("Error : HP"); }
+
+		try {
+			String num = players[i].MP.toString();
+			while(num.length() < 3) num = ' ' + num;
+			for(int j = 0; j < 3; j++) {
+				if(num.charAt(j) != ' ') {
+					BufferedImage image = ImageManager.getCharImage(num.charAt(j));
+					g.drawImage(image, startX[i] + (j + 1) * 32, 128, null);
+				}
+			}
+		} catch (IOException e) { System.out.println("Error : MP"); }
+
+		myCanvas.repaint();
+	}
 
 	void repaint() {
 		Graphics g = myCanvas.buffer;
@@ -303,14 +345,15 @@ public class BattleWindow implements KeyListener {
 						} break;
 
 						case KeyEvent.VK_ENTER: {
+							if(cmdsBox6.size() <= cmdArrayPos) return;
 							String cmd = cmdsBox6.get(cmdArrayPos)[posRightI][posRightJ];
 							posRightI = 0;
 							posRightJ = 0;
 							if(cmd.equals("LEFT")) {
-								cmdArrayPos--;
+								cmdArrayPos = Math.max(0, cmdArrayPos - 1);
 								repaint();
 							} else if(cmd.equals("RIGHT")) {
-								cmdArrayPos++;
+								cmdArrayPos = Math.min(cmdsBox6.size() - 1, cmdArrayPos + 1);
 								repaint();
 							} else {
 								cmdArrayPos = 0;
