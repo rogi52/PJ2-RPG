@@ -50,7 +50,7 @@ public class ImageManager{
 		buffer2 = back2.getGraphics();
 		
 		buffer.setColor(new Color(255,255,255,255));
-		buffer.setFont(new Font("Yu Gothic UI", Font.PLAIN, 13));
+		buffer.setFont(new Font("Yu Gothic UI", Font.BOLD, 13));
 		buffer.drawString(""+c,0,size-1);
 		
 		buffer2.drawImage(back,0,0,28,28,null);
