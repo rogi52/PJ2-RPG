@@ -47,10 +47,10 @@ class Battle {
 		this.dungeonID = dungeonID;
 		this.enemyUnitID = enemyUnitID;
 		this.myCanvas = myCanvas;
-		assert(enemyUnitID == MobData.MINION
-			|| enemyUnitID == MobData.BOSS_1ST_FLOOR
-			|| enemyUnitID == MobData.BOSS_2ND_FLOOR
-			|| enemyUnitID == MobData.BOSS_3RD_FLOOR);
+		assert(enemyUnitID == MobSummon.MINION
+			|| enemyUnitID == MobSummon.BOSS_1ST_FLOOR
+			|| enemyUnitID == MobSummon.BOSS_2ND_FLOOR
+			|| enemyUnitID == MobSummon.BOSS_3RD_FLOOR);
 		window = new BattleWindow(myCanvas);
 		setHero();
 	}
@@ -136,7 +136,7 @@ class Battle {
 	}
 
 	void setEnemy() {
-		Enemy = MobData.callEnemies(dungeonID, enemyUnitID);
+		Enemy = MobSummon.callEnemies(dungeonID, enemyUnitID);
 
 		double upper = 0;
 		for(int i = 0; i < 4; i++) if(hero[i].isExist()) upper += 1.0;
@@ -578,10 +578,15 @@ class Battle {
 		Skill x = new Skill();
 		int[] slot = new int[10];
 		int k = 0;
-		for(int m = 0; m < Enemy[n].Skill.length; m++) if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].curMP) if(SkillData.getSkill(Enemy[n].Skill[m]).waza == 0) slot[k++] = m;
+		for(int m = 0; m < Enemy[n].Skill.length; m++) {
+			if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].curMP) {
+				if(SkillData.getSkill(Enemy[n].Skill[m]).waza == 0) slot[k++] = m;
+			}
+		}
 		if(k == 0) return makeBufSkill(n);
 		Random r = new Random();
-		k = r.nextInt(k - 1);
+		if(k != 1) k = r.nextInt(k - 1);
+		else k = 0;
 		x = SkillData.getSkill(Enemy[n].Skill[k]);
 		if(x.target < 0) x.target = makeTarget(n);
 		return x;
@@ -605,7 +610,8 @@ class Battle {
 		for(int m = 0; m < Enemy[n].Skill.length; m++) if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].curMP) if(SkillData.getSkill(Enemy[n].Skill[m]).waza != 0 && SkillData.getSkill(Enemy[n].Skill[m]).skill >= 0) slot[k++] = m;
 		if(k == 0) return makeSkill(n);
 		Random r = new Random();
-		k = r.nextInt(k - 1);
+		if(k != 1) k = r.nextInt(k - 1);
+		else k = 0;
 		x = SkillData.getSkill(Enemy[n].Skill[k]);
 		if(x.target < 0) {
 			for(int m = 0; m < 4; m++) {
@@ -630,7 +636,8 @@ class Battle {
 		for(int m = 0; m < Enemy[n].Skill.length; m++) if(SkillData.getSkillMP(Enemy[n].Skill[m]) <= Enemy[n].curMP) if(SkillData.getSkill(Enemy[n].Skill[m]).waza != 0 && SkillData.getSkill(Enemy[n].Skill[m]).skill < 0) slot[k++] = m;
 		if(k == 0) return makeSkill(n);
 		Random r = new Random();
-		k = r.nextInt(k - 1);
+		if(k != 1) k = r.nextInt(k - 1);
+		else k = 0;
 		x = SkillData.getSkill(Enemy[n].Skill[k]);
 		if(x.target < 0) {
 			for(int m = 0; m < 4; m++) {
@@ -898,24 +905,24 @@ class Battle {
 				if(hero[actOrder[n]].curHP == 0) flag = true;
 				else {
 					System.out.printf(hero[actOrder[n]].name + "は");
-					window.print(hero[actOrder[n]].name + "は", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
+					window.print(hero[actOrder[n]].name, BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
 				}
 			}
 			else {
 				if(Enemy[actOrder[n] - 4].curHP == 0) flag = true;
 				else{
 					System.out.printf(Enemy[actOrder[n] - 4].name + "は");
-					window.print(Enemy[actOrder[n] - 4].name + "は", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
+					window.print(Enemy[actOrder[n] - 4].name, BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
 				}
 			}
 			if(flag) continue;
 			if(stock[actOrder[n]].waza == 1) {
 				System.out.println("ぼうぎょした!");
-				window.println("ぼうぎょした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+				window.println("はぼうぎょした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 			}
 			else {
-				System.out.println(stock[actOrder[n]].name + "した!");
-				window.println(stock[actOrder[n]].name + "した!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+				System.out.println("の" + stock[actOrder[n]].name + "!");
+				window.println("の" + stock[actOrder[n]].name + "!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 			}
 			//
 			if(stock[actOrder[n]].target == 8) stock[actOrder[n]].target = actOrder[n];
@@ -1156,11 +1163,11 @@ class Battle {
             	else System.out.println("アイテムはぬすめなかった!");
             }else if(stock[actOrder[n]].waza == 16) {
             	if(Enemy[1].curHP <= 0) {
-            		Enemy[1] = MobData.callEnemy(9, MobData.BOSS_3RD_FLOOR);
+            		Enemy[1] = MobSummon.callEnemy(9, MobSummon.BOSS_3RD_FLOOR);
             		System.out.println(Enemy[1].name + "があらわれた!");
             	}
             	if(Enemy[2].curHP <= 0) {
-            		Enemy[2] = MobData.callEnemy(9, MobData.BOSS_3RD_FLOOR);
+            		Enemy[2] = MobSummon.callEnemy(9, MobSummon.BOSS_3RD_FLOOR);
             		System.out.println(Enemy[2].name + "があらわれた!");
             	}
 
@@ -1340,7 +1347,7 @@ class Battle {
 				if(type[n]) {
 					if(n == 1 && type[n]) {
 						if(x) continue;
-						for(int m = 0; m < 10; m++) {
+						for(int m = 0; m < 5; m++) {
 							if(buf[m][to] != null) if(buf[m][to].pattern == 9) {
 								d *= (1 - buf[m][to].effect);
 							}
