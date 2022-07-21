@@ -543,7 +543,7 @@ class dCanvas extends Canvas {
 	public void drawLoading(int step) {
 		int st=step/7;
 		blank(255);
-		String msg="今Loading";
+		String msg="Loading";
 		for(int i=0;i<(st%4);i++) {
 			msg+=".";
 		}

@@ -210,12 +210,12 @@ class GameLoop extends Thread{
 					int sel_y=0;
 					boolean draw_update;
 					
-					/*
+					
 					for(int n = 1; n < 24; n++) {
 						if(ItemData.getItemName(n)!=null)
 							w.m.plusItem(n);
 					}
-					*/
+					
 
 					item_list=reCalcItem();
 					item_num=item_list[24];
