@@ -17,8 +17,8 @@ public class MainData implements Serializable{
 		clearQuestFlag[n] = true;
 		for(int m = 0; m < 5; m++) {
 			if(nowQuestNumber[m] == n) {
-				if(QuestData.callQuest(nowQuestSituation[m]).type == QuestData.DELIVERY) {
-					itemCnt[QuestData.callQuest(nowQuestSituation[m]).target] -= QuestData.callQuest(nowQuestSituation[m]).need;
+				if(QuestData.callQuest(nowQuestNumber[m]).type == QuestData.DELIVERY) {
+					itemCnt[QuestData.callQuest(nowQuestNumber[m]).target] -= QuestData.callQuest(nowQuestNumber[m]).need;
 				}
 				nowQuestNumber[m] = -1;
 				nowQuestSituation[m] = -1;
