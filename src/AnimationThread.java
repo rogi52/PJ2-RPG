@@ -3,6 +3,7 @@ import java.awt.event.KeyEvent;
 class GameLoop extends Thread{
 	Window w;
 	dCanvas myCanvas;
+	boolean loop_on=true;
 	GameLoop(Window w){
 		this.w=w;
 		this.myCanvas=w.myCanvas;
@@ -11,7 +12,7 @@ class GameLoop extends Thread{
 	//操作用ループ
 	public void run(){
 		int direction,view_direction=w.def_dir;
-		while(true) {
+		while(loop_on) {
 
 			if(w.status==2 && Animation_Select.fin==true) {
 				direction=0;
@@ -36,6 +37,7 @@ class GameLoop extends Thread{
 			}else if(w.status==3) {
 				int bdx=myCanvas.pos_x;
 				int bdy=myCanvas.pos_y;
+				boolean no_event=true;
 				if(view_direction==1)bdy+=-PL2RPG.BLOCK_SIZE;
 				if(view_direction==3)bdy+= PL2RPG.BLOCK_SIZE;
 				if(view_direction==2)bdx+= PL2RPG.BLOCK_SIZE;
@@ -49,6 +51,7 @@ class GameLoop extends Thread{
 					if(bdx==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && bdy==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
+							no_event=false;
 							w.se[0].play(0);
 
 
@@ -116,6 +119,7 @@ class GameLoop extends Thread{
 							w.ma.update();
 							break;
 						case 2://ジョブ選択
+							no_event=false;
 							w.se[0].play(0);
 							menu_x=0;
 							w.myCanvas.drawMenu4(menu_x, PL2RPG.DIALOG_ANIMATION_TIME);
@@ -179,6 +183,7 @@ class GameLoop extends Thread{
 							break;
 
 						case 6:
+							no_event=false;
 
 							w.se[0].play(0);
 
@@ -196,6 +201,74 @@ class GameLoop extends Thread{
 							break;
 						}
 					}
+					
+				}
+				if(no_event) {
+					w.se[0].play(0);
+					int[] item_list=new int[24];
+					int item_num=0;
+					int sel_y=0;
+					boolean draw_update;
+					
+					
+					for(int n = 1; n < 24; n++) {
+						if(ItemData.getItemName(n)!=null)
+							w.m.plusItem(n);
+						
+						if(w.m.checkItem(n)) {
+							//・所持しているアイテムはここに到達する・//ItemData.getItemName(n)で名前、data.itemCnt[n] で個数
+							//list+=ItemData.getItemName(n)+"　"+Integer.toString(w.m.itemCnt[n])+"\n";
+							item_list[item_num]=n;
+							item_num++;
+						}
+					}
+					item_list[item_num]=0;
+					
+					w.myCanvas.drawMenu4(sel_y,item_list,PL2RPG.DIALOG_ANIMATION_TIME);
+					
+					while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+					while(w.is_press(KeyEvent.VK_ESCAPE)==false) {
+						draw_update=false;
+
+						if(w.is_press(KeyEvent.VK_ENTER)) {
+							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+							w.se[0].play(0);
+							
+							if(ItemData.getItem(item_list[sel_y]).waza==14 || ItemData.getItem(item_list[sel_y]).waza==18) {
+								if(ItemData.getItem(item_list[sel_y]).target==9) {
+									if(DialogYesNo(ItemData.getItemName(item_list[sel_y])+"をつかいますか？",true)) {
+										w.m.calcHeal(9, item_list[sel_y]);
+										w.m.minusItem(item_list[sel_y]);
+									}
+								}
+							}else {
+								Dialog("このアイテムはここではつかえません。");								
+							}
+							
+							draw_update=true;
+						}
+						if(w.is_press(KeyEvent.VK_DOWN)) {
+							w.se[0].play(0);
+							sel_y++;
+							if(sel_y>=item_num)sel_y=item_num-1;
+							while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+							draw_update=true;
+						}
+						if(w.is_press(KeyEvent.VK_UP)) {
+							w.se[0].play(0);
+							sel_y--;
+							if(sel_y<0)sel_y=0;
+							while(w.is_press(KeyEvent.VK_UP))w.wait(33);
+							draw_update=true;
+						}
+
+						if(draw_update)w.myCanvas.drawMenu4(sel_y,item_list);
+
+						w.wait(33);
+					}
+					w.se[0].play(0);
+					while(w.is_press(KeyEvent.VK_ESCAPE))w.wait(33);
+
 				}
 				w.status=2;
 			}
@@ -232,6 +305,7 @@ class GameLoop extends Thread{
 	public void Dialog(String str) {
 		w.myCanvas.drawDialog1(str, PL2RPG.DIALOG_ANIMATION_TIME);
 
+		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 		while(w.is_press(KeyEvent.VK_ENTER)==false)w.wait(33);
 		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 		w.se[0].play(0);
@@ -619,10 +693,7 @@ class AnimationMove extends Thread{
 			}else {
 				on_animate=false;
 			}
-			try {
-				Thread.sleep(17);
-			} catch (InterruptedException e1) {
-			}
+			w.wait(17);
 		}
 	}
 }

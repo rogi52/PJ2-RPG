@@ -133,5 +133,23 @@ public class MainData implements Serializable{
 			partyMP[n] = HeroData.callJob(partyJob[n], this.clearQuestFlag).maxMP;
 		}
 	}
+	
+	public void calcHeal(int n,int item_id) {
+		boolean HPMP=ItemData.getItem(item_id).waza==14;
+		double skill=ItemData.getItem(item_id).skill;
+		if(n == 9) {
+			for(n = 0; n < 4; n++) {
+				if(HPMP) partyHP[n] = (int) Math.min(HeroData.callJob(partyJob[n], this.clearQuestFlag).maxHP, partyHP[n] + skill);
+				else partyMP[n] = (int) Math.min(HeroData.callJob(partyJob[n], this.clearQuestFlag).maxMP, partyMP[n] + skill);
+			}
+		}
+		else {
+			if(HPMP) partyHP[n] = (int) Math.min(HeroData.callJob(partyJob[n], this.clearQuestFlag).maxHP, partyHP[n] + skill);
+			else partyMP[n] = (int) Math.min(HeroData.callJob(partyJob[n], this.clearQuestFlag).maxMP, partyMP[n] + skill);
+		}
+		//nは対象、選ぶ必要がある場合は0-4で選び、ない場合は9にしておく
+		//skillはアイテムに含まれているskillという部分をそのままもってくる
+		//HPMPはどちらについての話かを表すもの、HPならtrueにする
+	}
 
 }
