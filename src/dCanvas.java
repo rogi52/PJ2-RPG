@@ -408,8 +408,8 @@ class dCanvas extends Canvas {
 
 	}
 
-	public void blank(int alpht) {
-		buffer.setColor(new Color(0,0,0,alpht));
+	public void blank(int alpha) {
+		buffer.setColor(new Color(0,0,0,alpha));
 		buffer.fillRect(0,0,getSize().width,getSize().height);
 	}
 
@@ -543,7 +543,7 @@ class dCanvas extends Canvas {
 	public void drawLoading(int step) {
 		int st=step/7;
 		blank(255);
-		String msg="Loading";
+		String msg="今Loading";
 		for(int i=0;i<(st%4);i++) {
 			msg+=".";
 		}

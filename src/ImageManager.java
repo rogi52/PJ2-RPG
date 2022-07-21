@@ -1,3 +1,6 @@
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -5,7 +8,7 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-public class ImageManager {
+public class ImageManager{
 
 	static String mark1  = "ヴがぎぐげごガギグゲゴざじずぜぞザジズゼゾだぢづでどダヂヅデドばびぶべぼバビブベボ";
 	static String trans1 = "うかきくけこカキクケコさしすせそサシスセソたちつてとタチツテトはひふへほハヒフヘホ";
@@ -33,8 +36,35 @@ public class ImageManager {
 		if(c == '!') name = "text/！";
 		if(c == '▶') name = "text/arrow";
 		if(c == '◀') name = "text/arrow2";
-		return getImage(name);
+		try {
+			return getImage(name);
+		}catch(IOException e) {
+		}
+		BufferedImage back,back2;
+		Graphics buffer,buffer2;
+		
+		int size=12;
+		back =  new BufferedImage(size,size,BufferedImage.TYPE_4BYTE_ABGR);//(new Canvas()).createImage(32, 32);
+		buffer = back.getGraphics();
+		back2 =  new BufferedImage(32,32,BufferedImage.TYPE_4BYTE_ABGR);//(new Canvas()).createImage(32, 32);
+		buffer2 = back2.getGraphics();
+		
+		buffer.setColor(new Color(255,255,255,255));
+		buffer.setFont(new Font("Yu Gothic UI", Font.PLAIN, 13));
+		buffer.drawString(""+c,0,size);
+		
+		buffer2.drawImage(back,0,0,28,28,null);
+
+		return back2;
 	}
+	/*
+	static BufferedImage getCharImage(char c) throws IOException {
+		String name = "text/" + c;
+		if(c == '!') name = "text/！";
+		if(c == '▶') name = "text/arrow";
+		if(c == '◀') name = "text/arrow2";
+		return getImage(name);
+	}*/
 
 	/* name の画像を取得 */
 	static BufferedImage getImage(String name) throws IOException {
