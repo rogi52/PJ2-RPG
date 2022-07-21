@@ -101,6 +101,40 @@ class dCanvas extends Canvas {
 		repaint();
 	}
 	
+	//プレーヤー選択
+	public void drawMenu5(int ysel) {
+		drawMenu5(ysel,0);
+	}
+	public void drawMenu5(int ysel,int ms) {
+		buffer.setColor(new Color(255,255,255,255));
+		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
+		buffer.setColor(new Color(0,0,0,255));
+		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
+		
+
+		drawChr("だれにしようしますか？",104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
+
+		
+		String name3="";
+		
+		for(int i=0;i<4;i++) {
+			if(w.m.partyJob[i]<PL2RPG.JOB_NAME.length) {
+				name3+=PL2RPG.JOB_NAME[w.m.partyJob[i]]+"\n";
+				name3+="　HP　"+Integer.toString(w.m.partyHP[i])+"\n　MP　"+Integer.toString(w.m.partyMP[i])+"\n";
+			}
+		}
+		
+		drawChr(name3,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*1,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr("キャンセル",104+PL2RPG.BLOCK_SIZE*15,104+PL2RPG.BLOCK_SIZE*1,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		if(ysel==-1) {
+			drawChr("▶",104+PL2RPG.BLOCK_SIZE*14,104+PL2RPG.BLOCK_SIZE*1,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		}else {
+			drawChr("▶",104+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*(1+ysel*3),PL2RPG.MAIN_WIN_X-1-100*2-8);
+		}
+
+		repaint();
+	}
+
 	
 	//アイテム使用
 	public void drawMenu4(int ysel,int[] list) {
@@ -120,6 +154,8 @@ class dCanvas extends Canvas {
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100+ix,100+iy,PL2RPG.MAIN_WIN_X-1-100*2-ix,PL2RPG.MAIN_WIN_Y-1-100*2-iy);
 
+		drawChr("アイテムとステータス　　　ESCでとじる",104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
+
 		
 		String name="",name2="",name3="";
 		
@@ -130,33 +166,33 @@ class dCanvas extends Canvas {
 			}
 		}
 		
-		for(int j=ysel-4;j<=ysel+4;j++) {
-			if(j>=0) {
-				if(list[j]==0)break;
-				
-				//デバッグ用
-				if(j==ysel) {
-					name+="▶";
+		if(list[0]!=0) {
+			for(int j=ysel-4;j<=ysel+4;j++) {
+				if(j>=0) {
+					if(list[j]==0)break;
+					
+					//デバッグ用
+					if(j==ysel) {
+						name+="▶";
+					}else {
+						name+="　";
+					}
+					name+=ItemData.getItemName(list[j]);
+					name2+=Integer.toString(w.m.itemCnt[list[j]])+"コ";
+	
+					name+="\n";
+					name2+="\n";
 				}else {
-					name+="　";
+					name+="\n";
+					name2+="\n";
 				}
-				name+=ItemData.getItemName(list[j]);
-				name2+=Integer.toString(w.m.itemCnt[list[j]])+"コ";
-
-				name+="\n";
-				name2+="\n";
-			}else {
-				name+="\n";
-				name2+="\n";
 			}
+			drawChr(ItemData.getItem(list[ysel]).doc,104+PL2RPG.BLOCK_SIZE*10+4,104+PL2RPG.BLOCK_SIZE*12+8,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		}
 
-		drawChr("アイテムとステータス　　　ESCでとじる",104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 		drawChr(name3,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*1,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		drawChr(name,104+PL2RPG.BLOCK_SIZE*10,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		drawChr(name2,104+PL2RPG.BLOCK_SIZE*18,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
-		drawChr(ItemData.getItem(list[ysel]).doc,104+PL2RPG.BLOCK_SIZE*10+4,104+PL2RPG.BLOCK_SIZE*12+8,PL2RPG.MAIN_WIN_X-1-100*2-8);
-//		drawChr("▶",104+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*8,PL2RPG.MAIN_WIN_X-1-100*2-8);
 
 		repaint();
 	}

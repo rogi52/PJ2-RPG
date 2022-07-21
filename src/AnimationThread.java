@@ -205,24 +205,20 @@ class GameLoop extends Thread{
 				}
 				if(no_event) {
 					w.se[0].play(0);
-					int[] item_list=new int[24];
+					int[] item_list;
 					int item_num=0;
 					int sel_y=0;
 					boolean draw_update;
 					
-					
+					/*
 					for(int n = 1; n < 24; n++) {
 						if(ItemData.getItemName(n)!=null)
 							w.m.plusItem(n);
-						
-						if(w.m.checkItem(n)) {
-							//・所持しているアイテムはここに到達する・//ItemData.getItemName(n)で名前、data.itemCnt[n] で個数
-							//list+=ItemData.getItemName(n)+"　"+Integer.toString(w.m.itemCnt[n])+"\n";
-							item_list[item_num]=n;
-							item_num++;
-						}
 					}
-					item_list[item_num]=0;
+					*/
+
+					item_list=reCalcItem();
+					item_num=item_list[24];
 					
 					w.myCanvas.drawMenu4(sel_y,item_list,PL2RPG.DIALOG_ANIMATION_TIME);
 					
@@ -233,19 +229,46 @@ class GameLoop extends Thread{
 						if(w.is_press(KeyEvent.VK_ENTER)) {
 							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 							w.se[0].play(0);
-							
-							if(ItemData.getItem(item_list[sel_y]).waza==14 || ItemData.getItem(item_list[sel_y]).waza==18) {
-								if(ItemData.getItem(item_list[sel_y]).target==9) {
-									if(DialogYesNo(ItemData.getItemName(item_list[sel_y])+"をつかいますか？",true)) {
-										w.m.calcHeal(9, item_list[sel_y]);
-										w.m.minusItem(item_list[sel_y]);
+
+							if(item_num>0) {
+								if(ItemData.getItem(item_list[sel_y]).waza==14 || ItemData.getItem(item_list[sel_y]).waza==18) {
+									if(ItemData.getItem(item_list[sel_y]).target==9) {
+										if(DialogYesNo(ItemData.getItemName(item_list[sel_y])+"をつかいますか？",true)) {
+											if(ItemData.getItem(item_list[sel_y]).waza==14) {
+												Dialog("パーティーのHPがかいふくしました。");
+											}else {
+												Dialog("パーティーのMPがかいふくしました。");										
+											}
+											w.m.calcHeal(9, item_list[sel_y]);
+											w.m.minusItem(item_list[sel_y]);
+											item_list=reCalcItem();
+											item_num=item_list[24];
+											if(sel_y>=item_num)sel_y=item_num-1;
+											if(sel_y<0)sel_y=0;
+										}
+									}else {
+										int target=DialogTarget();
+										if(target!=-1) {
+											if(ItemData.getItem(item_list[sel_y]).waza==14) {
+												Dialog(PL2RPG.JOB_NAME[w.m.partyJob[target]]+"のHPがかいふくしました。");
+											}else {
+												Dialog(PL2RPG.JOB_NAME[w.m.partyJob[target]]+"のMPがかいふくしました。");										
+											}
+											w.m.calcHeal(target, item_list[sel_y]);
+											w.m.minusItem(item_list[sel_y]);
+											item_list=reCalcItem();
+											item_num=item_list[24];
+											if(sel_y>=item_num)sel_y=item_num-1;
+											if(sel_y<0)sel_y=0;
+										}
 									}
+								}else {
+									
+									Dialog("このアイテムはここではつかえません。");								
 								}
-							}else {
-								Dialog("このアイテムはここではつかえません。");								
+								
+								draw_update=true;
 							}
-							
-							draw_update=true;
 						}
 						if(w.is_press(KeyEvent.VK_DOWN)) {
 							w.se[0].play(0);
@@ -276,6 +299,24 @@ class GameLoop extends Thread{
 
 			w.wait(33);
 		}
+	}
+	
+	public int[] reCalcItem() {
+		int[] item_list=new int[25];
+		int item_num=0;
+		for(int n = 1; n < 24; n++) {
+			
+			if(w.m.checkItem(n)) {
+				//・所持しているアイテムはここに到達する・//ItemData.getItemName(n)で名前、data.itemCnt[n] で個数
+				//list+=ItemData.getItemName(n)+"　"+Integer.toString(w.m.itemCnt[n])+"\n";
+				item_list[item_num]=n;
+				item_num++;
+			}
+		}
+		item_list[item_num]=0;
+		item_list[24]=item_num;
+		return item_list;
+
 	}
 
 	public int[] getQuestStatus() {
@@ -331,6 +372,43 @@ class GameLoop extends Thread{
 		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 
 		return is_save;
+
+	}
+
+
+	public int DialogTarget() {
+		int ysel=0;
+		int job_num=0;
+		for(int j=0;j<4;j++) {
+			if(PL2RPG.JOB_NAME.length>w.m.partyJob[j]) {
+				job_num++;
+			}
+		}
+		w.myCanvas.drawMenu5(ysel,PL2RPG.DIALOG_ANIMATION_TIME);//5
+
+		while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+		while(w.is_press(KeyEvent.VK_ENTER)==false) {
+			if(w.is_press(KeyEvent.VK_DOWN)) {
+				w.se[0].play(0);
+				ysel++;
+				if(ysel>=job_num)ysel=job_num-1;
+				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+				w.myCanvas.drawMenu5(ysel);
+			}
+			if(w.is_press(KeyEvent.VK_UP)) {
+				w.se[0].play(0);
+				ysel--;
+				if(ysel<-1)ysel=-1;
+				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+				w.myCanvas.drawMenu5(ysel);
+			}
+			w.wait(33);
+		}
+		w.se[0].play(0);
+
+		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+
+		return ysel;
 
 	}
 }
