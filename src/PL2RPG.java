@@ -16,7 +16,7 @@ public class PL2RPG {
 	public static final int MAIN_WIN_X_BOX=30;
 	public static final int MAIN_WIN_Y_BOX=20;
 
-	public static final float RANDOM_MATCH_PROB=0.001f;
+	public static final float RANDOM_MATCH_PROB=0.00075f;
 
 	public static final int MAIN_WIN_X=BLOCK_SIZE*MAIN_WIN_X_BOX;
 	public static final int MAIN_WIN_Y=BLOCK_SIZE*MAIN_WIN_Y_BOX;
