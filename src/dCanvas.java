@@ -409,8 +409,14 @@ class dCanvas extends Canvas {
 	}
 
 	public void blank(int alpha) {
+		
 		buffer.setColor(new Color(0,0,0,alpha));
 		buffer.fillRect(0,0,getSize().width,getSize().height);
+		
+		/*
+		buffer.setColor(new Color(0,0,0,255));
+		buffer.fillRect(0,0,getSize().width,(int)(getSize().height*alpha/255));
+		*/
 	}
 
 	public void drawMap(int alpha,int view_direction,int step) {
