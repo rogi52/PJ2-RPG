@@ -1,5 +1,8 @@
 
 public class Mob extends Character {
+
+	int ID = -1;
+
 	public int[] item = new int[3];
 	void putCharacter3(int a, int b, int c) {
 		item[0] = a;

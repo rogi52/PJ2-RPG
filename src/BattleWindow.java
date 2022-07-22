@@ -32,11 +32,22 @@ public class BattleWindow implements KeyListener {
 		}
 	}
 
+	static class Enemy {
+		String name = "";
+		Integer ID;
+
+		Enemy(String name, Integer ID) {
+			this.name = name;
+			this.ID = ID;
+		}
+	}
+
 	/* busy waiting? */
 	ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	PrintWriter out = new PrintWriter(bos);
 
 	Player[] players = new Player[4];
+	Enemy[] enemies = new Enemy[4];
 
 	dCanvas myCanvas;
 	BattleWindow(dCanvas myCanvas) {
@@ -185,32 +196,14 @@ public class BattleWindow implements KeyListener {
 
 	int startX[] = {128, 320, 512, 704};
 
-	void repaintHPMP(int i) {
-		Graphics g = myCanvas.buffer;
-		try {
-			String num = players[i].HP.toString();
-			while(num.length() < 3) num = ' ' + num;
-			for(int j = 0; j < 3; j++) {
-				if(num.charAt(j) != ' ') {
-					BufferedImage image = ImageManager.getCharImage(num.charAt(j));
-					g.drawImage(image, startX[i] + (j + 1) * 32, 96, null);
-				}
-			}
-		} catch (IOException e) { System.out.println("Error : HP"); }
-
-		try {
-			String num = players[i].MP.toString();
-			while(num.length() < 3) num = ' ' + num;
-			for(int j = 0; j < 3; j++) {
-				if(num.charAt(j) != ' ') {
-					BufferedImage image = ImageManager.getCharImage(num.charAt(j));
-					g.drawImage(image, startX[i] + (j + 1) * 32, 128, null);
-				}
-			}
-		} catch (IOException e) { System.out.println("Error : MP"); }
-
-		myCanvas.repaint();
-	}
+	int enemySY = 320 - 128 / 2;
+	int enemySX[][] = {
+		new int[] {},
+		new int[] {386},
+		new int[] {320, 512},
+		new int[] {180, 386, 592},
+		new int[] {128, 320, 512, 704}
+	};
 
 	void repaint() {
 		Graphics g = myCanvas.buffer;
@@ -255,6 +248,22 @@ public class BattleWindow implements KeyListener {
 					}
 				}
 			} catch (IOException e) { System.out.println("Error : MP"); }
+		}
+
+		/* 敵 */
+		int enemyCnt = 0;
+		for(int i = 0; i < 4; i++) if(enemies[i] != null) enemyCnt++;
+
+		for(int i = 0; i < 4; i++) {
+			if(enemies[i] != null) {
+				try {
+					/* dCanvas にすでに読み込まれているのを使ったほうが早いか */
+					BufferedImage image = ImageManager.getImage("teki/" + enemies[i].ID.toString() + "." + enemies[i].name);
+					g.drawImage(image, enemySX[enemyCnt][i], enemySY, null);
+				} catch (IOException e) {
+					System.out.println(enemies[i].name + " ID : " + enemies[i].ID.toString());
+				}
+			}
 		}
 
 		if(STATE == MESSAGE) {

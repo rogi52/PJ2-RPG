@@ -94,11 +94,12 @@ class Battle {
 			selectEnemy();
 			makeActOrder();
 			doAct();
-			/* doAct() の中で HP, MP を更新する */
 			for(int i = 0; i < 4; i++) {
 				window.players[i].HP = hero[i].curHP;
 				window.players[i].MP = hero[i].curMP;
 			}
+			paintEnemy();
+			window.repaint();
 			turns++;
 		}
 
@@ -133,8 +134,23 @@ class Battle {
 		}
 	}
 
+	void paintEnemy() {
+		for(int i = 0; i < 4; i++) {
+			if(Enemy[i].isExist()) {
+				if(Enemy[i].isAlive()) {
+					window.enemies[i] = new BattleWindow.Enemy(Enemy[i].name, Enemy[i].ID);
+				} else {
+					/* 敵が死んでいるので、墓を立てたい */
+					window.enemies[i] = new BattleWindow.Enemy("墓", 77);
+				}
+			}
+		}
+	}
+
 	void setEnemy() {
 		Enemy = MobSummon.callEnemies(dungeonID, enemyUnitID);
+
+		paintEnemy();
 
 		double upper = 0;
 		for(int i = 0; i < 4; i++) if(hero[i].isExist()) upper += 1.0;
@@ -150,8 +166,7 @@ class Battle {
 			System.out.println(Enemy[i].name + "があらわれた!!");
 			window.println(Enemy[i].name + "があらわれた!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 		}
-
-		window.print("", BattleWindow.CONTINUE, BattleWindow.WAIT_ENTER_KEY);
+		window.waitEnterKey();
 	}
 
 	int judgement() {
@@ -912,6 +927,9 @@ class Battle {
 				window.players[i].HP = hero[i].curHP;
 				window.players[i].MP = hero[i].curMP;
 			}
+			paintEnemy();
+			window.repaint();
+
 			flag = false;
 			x = false;
 			if(actOrder[n] < 4) {
