@@ -101,6 +101,8 @@ class dCanvas extends Canvas {
 
 	public int DialogTarget() {
 		int ysel=0;
+		int xsel=0;
+		boolean update=false;
 		int job_num=0;
 		for(int j=0;j<4;j++) {
 			if(PL2RPG.JOB_NAME.length>w.m.partyJob[j]) {
@@ -109,29 +111,58 @@ class dCanvas extends Canvas {
 		}
 		w.myCanvas.drawMenu5(ysel,PL2RPG.DIALOG_ANIMATION_TIME);//5
 
-		while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+		while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT))w.wait(33);
 		while(w.is_press(KeyEvent.VK_ENTER)==false) {
-			if(w.is_press(KeyEvent.VK_DOWN)) {
-				w.se[0].play(0);
-				ysel++;
-				if(ysel>=job_num)ysel=job_num-1;
-				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-				w.myCanvas.drawMenu5(ysel);
+			update=false;
+			if(xsel==0) {
+				if(w.is_press(KeyEvent.VK_DOWN)) {
+					w.se[0].play(0);
+					ysel++;
+					if(ysel>=job_num)ysel=job_num-1;
+					while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+					update=true;
+				}
+				if(w.is_press(KeyEvent.VK_UP)) {
+					w.se[0].play(0);
+					ysel--;
+					if(ysel<0)ysel=0;
+					while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+					update=true;
+				}
 			}
-			if(w.is_press(KeyEvent.VK_UP)) {
+			if(w.is_press(KeyEvent.VK_RIGHT)) {
 				w.se[0].play(0);
-				ysel--;
-				if(ysel<-1)ysel=-1;
-				while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-				w.myCanvas.drawMenu5(ysel);
+				xsel++;
+				if(xsel>1)ysel=1;
+				while(w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT))w.wait(33);
+				update=true;
 			}
+			if(w.is_press(KeyEvent.VK_LEFT)) {
+				w.se[0].play(0);
+				xsel--;
+				if(xsel<0)xsel=0;
+				while(w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT))w.wait(33);
+				update=true;
+			}
+			if(update) {
+				if(xsel==1) {
+					w.myCanvas.drawMenu5(-1);
+				}else{
+					w.myCanvas.drawMenu5(ysel);
+				}
+			}
+
 			w.wait(33);
 		}
 		w.se[0].play(0);
 
 		while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 
-		return ysel;
+		if(xsel==1) {
+			return -1;
+		}else {
+			return ysel;
+		}
 
 	}
 
