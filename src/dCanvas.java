@@ -220,7 +220,7 @@ class dCanvas extends Canvas {
 		for(int i=0;i<4;i++) {
 			if(w.m.partyJob[i]<PL2RPG.JOB_NAME.length) {
 				name3+=PL2RPG.JOB_NAME[w.m.partyJob[i]]+"\n";
-				name3+="　HP　"+Integer.toString(w.m.partyHP[i])+"\n　MP　"+Integer.toString(w.m.partyMP[i])+"\n";
+				name3+="　HP　"+Integer.toString(w.m.partyHP[i])+"／"+Integer.toString(HeroData.callJob(w.m.partyJob[i], w.m.clearQuestFlag).maxHP)+"\n　MP　"+Integer.toString(w.m.partyMP[i])+"／"+Integer.toString(HeroData.callJob(w.m.partyJob[i], w.m.clearQuestFlag).maxMP)+"\n";
 			}
 		}
 		
@@ -262,7 +262,7 @@ class dCanvas extends Canvas {
 		for(int i=0;i<4;i++) {
 			if(w.m.partyJob[i]<PL2RPG.JOB_NAME.length) {
 				name3+=PL2RPG.JOB_NAME[w.m.partyJob[i]]+"\n";
-				name3+="　HP　"+Integer.toString(w.m.partyHP[i])+"\n　MP　"+Integer.toString(w.m.partyMP[i])+"\n";
+				name3+="　HP　"+Integer.toString(w.m.partyHP[i])+"／"+Integer.toString(HeroData.callJob(w.m.partyJob[i], w.m.clearQuestFlag).maxHP)+"\n　MP　"+Integer.toString(w.m.partyMP[i])+"／"+Integer.toString(HeroData.callJob(w.m.partyJob[i], w.m.clearQuestFlag).maxMP)+"\n";
 			}
 		}
 		
@@ -290,9 +290,9 @@ class dCanvas extends Canvas {
 			drawChr(ItemData.getItem(list[ysel]).doc,104+PL2RPG.BLOCK_SIZE*10+4,104+PL2RPG.BLOCK_SIZE*12+8,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		}
 
-		drawChr(name3,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*1,PL2RPG.MAIN_WIN_X-1-100*2-8);
-		drawChr(name,104+PL2RPG.BLOCK_SIZE*10,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
-		drawChr(name2,104+PL2RPG.BLOCK_SIZE*18,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr(name3,104+PL2RPG.BLOCK_SIZE*0,104+PL2RPG.BLOCK_SIZE*1,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr(name,104+PL2RPG.BLOCK_SIZE*10,104+(int)(PL2RPG.BLOCK_SIZE*2.5),PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr(name2,104+PL2RPG.BLOCK_SIZE*18,104+(int)(PL2RPG.BLOCK_SIZE*2.5),PL2RPG.MAIN_WIN_X-1-100*2-8);
 
 		repaint();
 	}
