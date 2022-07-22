@@ -196,6 +196,15 @@ public class BattleWindow implements KeyListener {
 
 	int startX[] = {128, 320, 512, 704};
 
+	int enemySY = 320 - 128 / 2;
+	int enemySX[][] = {
+		new int[] {},
+		new int[] {386},
+		new int[] {320, 512},
+		new int[] {180, 386, 592},
+		new int[] {128, 320, 512, 704}
+	};
+
 	void repaint() {
 		Graphics g = myCanvas.buffer;
 
@@ -242,12 +251,15 @@ public class BattleWindow implements KeyListener {
 		}
 
 		/* 敵 */
+		int enemyCnt = 0;
+		for(int i = 0; i < 4; i++) if(enemies[i] != null) enemyCnt++;
+
 		for(int i = 0; i < 4; i++) {
 			if(enemies[i] != null) {
 				try {
 					/* dCanvas にすでに読み込まれているのを使ったほうが早いか */
 					BufferedImage image = ImageManager.getImage("teki/" + enemies[i].ID.toString() + "." + enemies[i].name);
-					g.drawImage(image, startX[i], 320 - 128 / 2, null);
+					g.drawImage(image, enemySX[enemyCnt][i], enemySY, null);
 				} catch (IOException e) {
 					System.out.println(enemies[i].name + " ID : " + enemies[i].ID.toString());
 				}
