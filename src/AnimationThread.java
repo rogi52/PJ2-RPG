@@ -49,6 +49,10 @@ class GameLoop extends Thread{
 				for(int i=0;i<myCanvas.entities;i++) {
 					int menu_x=0;
 					int menu_y_max;
+					int clear_id;
+					int target_job;
+					int old_hp,old_mp,old_att,old_def,old_age,old_luc;
+					String msg;
 					boolean draw_update=false;
 					int quest_id_list[]=new int[51];
 					if(bdx==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && bdy==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
@@ -61,9 +65,54 @@ class GameLoop extends Thread{
 							//クエスト完了テスト
 							for(int j=0;j<5;j++) {
 								if(w.m.nowQuestNumber[j]!=-1) {
-									if(w.m.nowQuestSituation[j]>=QuestData.callQuest(w.m.nowQuestNumber[j]).need) {
-										w.myCanvas.Dialog("クエスト　"+QuestData.callQuest(w.m.nowQuestNumber[j]).name+"　をクリアしました！");
-										w.m.goalQuest(w.m.nowQuestNumber[j]);
+									clear_id=w.m.nowQuestNumber[j];
+									if(w.m.nowQuestSituation[j]>=QuestData.callQuest(clear_id).need) {
+										if(clear_id==50) {
+											msg="ラストダンジョンがかいほうされた！";
+										}else {
+											target_job=clear_id/7;
+											if(clear_id%7==0)target_job--;
+											old_hp=HeroData.callJob(target_job,w.m.clearQuestFlag).maxHP;
+											old_mp=HeroData.callJob(target_job,w.m.clearQuestFlag).maxMP;
+											old_att=HeroData.callJob(target_job,w.m.clearQuestFlag).ATK;
+											old_def=HeroData.callJob(target_job,w.m.clearQuestFlag).DEF;
+											old_age=HeroData.callJob(target_job,w.m.clearQuestFlag).AGE;
+											old_luc=HeroData.callJob(target_job,w.m.clearQuestFlag).LUC;
+	
+											w.m.goalQuest(clear_id);
+	
+											msg=PL2RPG.JOB_NAME[target_job];
+											switch(clear_id%7) {
+											case 0:
+												msg+="はあたらしいスキルをかくとくした！";
+												break;
+											case 1:
+												msg+="のさいだいHPがあがった！\n";
+												msg+="HP "+Integer.toString(old_hp)+"▶"+Integer.toString(HeroData.callJob(target_job,w.m.clearQuestFlag).maxHP);
+												break;
+											case 2:
+												msg+="のさいだいMPがあがった！\n";
+												msg+="MP "+Integer.toString(old_mp)+"▶"+Integer.toString(HeroData.callJob(target_job,w.m.clearQuestFlag).maxMP);
+												break;
+											case 3:
+												msg+="のATTがあがった！\n";
+												msg+="ATT "+Integer.toString(old_att)+"▶"+Integer.toString(HeroData.callJob(target_job,w.m.clearQuestFlag).ATK);
+												break;
+											case 4:
+												msg+="のDEFがあがった！\n";
+												msg+="DEF "+Integer.toString(old_def)+"▶"+Integer.toString(HeroData.callJob(target_job,w.m.clearQuestFlag).DEF);
+												break;
+											case 5:
+												msg+="のAGEがあがった！\n";
+												msg+="AGE "+Integer.toString(old_age)+"▶"+Integer.toString(HeroData.callJob(target_job,w.m.clearQuestFlag).AGE);
+												break;
+											case 6:
+												msg+="のLUCがあがった！\n";
+												msg+="LUC "+Integer.toString(old_luc)+"▶"+Integer.toString(HeroData.callJob(target_job,w.m.clearQuestFlag).LUC);
+												break;
+											}
+										}
+										w.myCanvas.Dialog("クエストNO."+Integer.toString(clear_id)+"　"+QuestData.callQuest(clear_id).name+"　をクリアしました！\n"+msg);
 									}
 								}
 							}
@@ -179,7 +228,7 @@ class GameLoop extends Thread{
 								w.wait(33);
 							}
 							w.se[0].play(0);
-							
+
 							w.m.max();
 
 							w.ma.update();
@@ -196,7 +245,7 @@ class GameLoop extends Thread{
 
 							if(w.myCanvas.DialogYesNo("セーブしますか？",true)) {
 								w.save(w.load_name);
-								
+
 								w.myCanvas.Dialog("セーブしました。");
 							}
 
@@ -204,7 +253,7 @@ class GameLoop extends Thread{
 							break;
 						}
 					}
-					
+
 				}
 				if(no_event) {
 					w.se[0].play(0);
@@ -212,19 +261,19 @@ class GameLoop extends Thread{
 					int item_num=0;
 					int sel_y=0;
 					boolean draw_update;
-					
-					
+
+
 					for(int n = 1; n < 24; n++) {
 						if(ItemData.getItemName(n)!=null)
 							w.m.plusItem(n);
 					}
-					
+
 
 					item_list=reCalcItem();
 					item_num=item_list[24];
-					
+
 					w.myCanvas.drawMenu4(sel_y,item_list,PL2RPG.DIALOG_ANIMATION_TIME);
-					
+
 					while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 					while(w.is_press(KeyEvent.VK_ESCAPE)==false) {
 						draw_update=false;
@@ -266,10 +315,10 @@ class GameLoop extends Thread{
 										}
 									}
 								}else {
-									
+
 									w.myCanvas.Dialog("このアイテムはここではつかえません。");								
 								}
-								
+
 								draw_update=true;
 							}
 						}
@@ -303,12 +352,12 @@ class GameLoop extends Thread{
 			w.wait(33);
 		}
 	}
-	
+
 	public int[] reCalcItem() {
 		int[] item_list=new int[25];
 		int item_num=0;
 		for(int n = 1; n < 24; n++) {
-			
+
 			if(w.m.checkItem(n)) {
 				//・所持しているアイテムはここに到達する・//ItemData.getItemName(n)で名前、data.itemCnt[n] で個数
 				//list+=ItemData.getItemName(n)+"　"+Integer.toString(w.m.itemCnt[n])+"\n";
@@ -345,7 +394,7 @@ class GameLoop extends Thread{
 
 		return quest_id_list;
 	}
-	
+
 }
 
 class AnimationMove extends Thread{
@@ -682,7 +731,7 @@ class AnimationMove extends Thread{
 
 				//System.out.println(result);
 				myCanvas.blank(0);
-				
+
 				for(int j=0;j<4;j++) {
 					if(w.m.partyHP[j]==0) {
 						w.m.partyHP[j]=1;
@@ -859,17 +908,17 @@ class AnimationDelete extends Thread{
 
 	public void run(){
 		if(w.myCanvas.DialogYesNo("データを削除すると戻すことはできません。\n本当に削除しますか？", false)) {
-			
+
 			try {
 				Files.delete(Paths.get(PL2RPG.SAVE_PATH+"/"+w.save_list[key_y]));
 			} catch (IOException e) {}
-			
+
 			w.updateSaveList();
 			w.key_y=0;
 		}else {
 			w.key_y=key_y;
 		}
-		
+
 		if(w.save_num==0) {
 			//データ全消しの場合
 			w.drawStart(true);
