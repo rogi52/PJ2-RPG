@@ -4,7 +4,7 @@ public class MobSummon{
 	static Mob[] callEnemies(int dungeonID, int enemyUnitID) {
 		Mob[] res = new Mob[4];
 		int numOfEnemy = 1;
-		if(enemyUnitID == MINION) numOfEnemy += (new Random().nextInt());
+		if(enemyUnitID == MINION) numOfEnemy += (new Random().nextInt(4));
 		for(int i = 0; i < numOfEnemy; i++) res[i] = callEnemy(dungeonID, enemyUnitID);
 		for(int i = numOfEnemy; i < 4; i++) {
 			res[i] = new Mob();
