@@ -47,9 +47,10 @@ public class BattleWindow implements KeyListener {
 	int posLeft = 0;
 	ArrayList<String> cmdsLeft = new ArrayList<>();
 	ArrayList<String[][]> cmdsBox6 = new ArrayList<>();
+	ArrayList<Integer[][]> cmdsBox6ID = new ArrayList<>();
 
 
-	String getOption(ArrayList<String> cmds, int windowType) {
+	int getOption(ArrayList<String> cmds, int windowType) {
 		cmdArrayPos = 0;
 		posRightI = posRightJ = 0;
 		STATE = COMMAND;
@@ -63,23 +64,39 @@ public class BattleWindow implements KeyListener {
 
 			case CMD_RIGHT: {
 				cmdsBox6.clear();
+				cmdsBox6ID.clear();
 				String[][] box = new String[4][];
+				Integer[][] boxID = new Integer[4][];
 				for(int i = 0; i < 4; i++) {
 					box[i] = new String[2];
-					if(i < cmds.size()) box[i][0] = ImageManager.arrange(cmds.get(i));
+					boxID[i] = new Integer[2];
+					if(i < cmds.size()) {
+						box[i][0] = ImageManager.arrange(cmds.get(i));
+						boxID[i][0] = i;
+					}
 				}
 				cmdsBox6.add(box);
+				cmdsBox6ID.add(boxID);
 			} break;
 
 			case CMD_RIGHT_BOX6: {
 				cmdsBox6.clear();
+				cmdsBox6ID.clear();
 				for(int i = 0; i < cmds.size(); i += 6) {
 					String[][] box = new String[4][];
-					for(int j = 0; j < 4; j++) box[j] = new String[2];
-					for(int j = 0; j < 6; j++) if(i + j  < cmds.size()) box[j % 3][j / 3] = cmds.get(i + j);
+					Integer[][] boxID = new Integer[4][];
+					for(int j = 0; j < 4; j++) {
+						box[j] = new String[2];
+						boxID[j] = new Integer[2];
+					}
+					for(int j = 0; j < 6; j++) if(i + j  < cmds.size()) {
+						box[j % 3][j / 3] = cmds.get(i + j);
+						boxID[j % 3][j / 3] = i + j;
+					}
 					if(i > 0) box[3][0] = "LEFT";
 					if(i + 6 < cmds.size()) box[3][1] = "RIGHT";
 					cmdsBox6.add(box);
+					cmdsBox6ID.add(boxID);
 				}
 			} break;
 
@@ -100,15 +117,14 @@ public class BattleWindow implements KeyListener {
 					bos = new ByteArrayOutputStream();
 					out = new PrintWriter(bos);
 					STATE = NULL;
-					return res;
-					/* コマンド用のクラス = [name, hash] を作るといいかも */
+					return Integer.parseInt(res);
 				}
 			}
 		} catch (IOException | InterruptedException e) {}
 
 		STATE = NULL;
 		CMD_TYPE = NULL;
-		return "ERROR";
+		return -1;
 	}
 
 	int cmdArrayPos = 0;
@@ -307,7 +323,7 @@ public class BattleWindow implements KeyListener {
 						case KeyEvent.VK_DOWN:  { posLeft = Math.min(posLeft + 1, cmdsLeft.size() - 1); repaint(); } break;
 						case KeyEvent.VK_UP:    { posLeft = Math.max(posLeft - 1,                   0); repaint(); } break;
 						case KeyEvent.VK_ENTER: {
-							out.println(cmdsLeft.get(posLeft));
+							out.println(posLeft);
 							out.flush();
 						}
 					}
@@ -347,6 +363,7 @@ public class BattleWindow implements KeyListener {
 						case KeyEvent.VK_ENTER: {
 							if(cmdsBox6.size() <= cmdArrayPos) return;
 							String cmd = cmdsBox6.get(cmdArrayPos)[posRightI][posRightJ];
+							int ID = cmdsBox6ID.get(cmdArrayPos)[posRightI][posRightJ];
 							posRightI = 0;
 							posRightJ = 0;
 							if(cmd.equals("LEFT")) {
@@ -356,9 +373,9 @@ public class BattleWindow implements KeyListener {
 								cmdArrayPos = Math.min(cmdsBox6.size() - 1, cmdArrayPos + 1);
 								repaint();
 							} else {
-								cmdArrayPos = 0;
-								out.println(cmd);
+								out.println(ID);
 								out.flush();
+								cmdArrayPos = 0;
 							}
 						} break;
 					}
