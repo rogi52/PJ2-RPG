@@ -247,7 +247,7 @@ class dCanvas extends Canvas {
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		
-		int ix=PL2RPG.BLOCK_SIZE*10;
+		int ix=PL2RPG.BLOCK_SIZE*12;
 		int iy=PL2RPG.BLOCK_SIZE*12+8;
 		
 		buffer.setColor(new Color(255,255,255,255));
@@ -288,12 +288,12 @@ class dCanvas extends Canvas {
 					name2+="\n";
 				}
 			}
-			drawChr(ItemData.getItem(list[ysel]).doc,104+PL2RPG.BLOCK_SIZE*10+4,104+PL2RPG.BLOCK_SIZE*12+8,PL2RPG.MAIN_WIN_X-1-100*2-8);
+			drawChr(ItemData.getItem(list[ysel]).doc,104+PL2RPG.BLOCK_SIZE*12+4,104+PL2RPG.BLOCK_SIZE*12+8,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		}
 
 		drawChr(name3,104+PL2RPG.BLOCK_SIZE*0,104+PL2RPG.BLOCK_SIZE*1,PL2RPG.MAIN_WIN_X-1-100*2-8);
-		drawChr(name,104+PL2RPG.BLOCK_SIZE*10,104+(int)(PL2RPG.BLOCK_SIZE*2.5),PL2RPG.MAIN_WIN_X-1-100*2-8);
-		drawChr(name2,104+PL2RPG.BLOCK_SIZE*18,104+(int)(PL2RPG.BLOCK_SIZE*2.5),PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr(name,104+PL2RPG.BLOCK_SIZE*11,104+(int)(PL2RPG.BLOCK_SIZE*2.5),PL2RPG.MAIN_WIN_X-1-100*2-8);
+		drawChr(name2,104+PL2RPG.BLOCK_SIZE*19,104+(int)(PL2RPG.BLOCK_SIZE*2.5),PL2RPG.MAIN_WIN_X-1-100*2-8);
 
 		repaint();
 	}
