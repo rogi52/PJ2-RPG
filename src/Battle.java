@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.Scanner;
 
 //未実装メモ
 //攻撃対象設定、ジョブ毎に対象を決める場合
@@ -307,18 +306,18 @@ class Battle {
 	}
 
 	public Item useItem(int k) {
-		Scanner s = new Scanner(System.in);
-		int m;
-		System.out.println("0:もどる");
+		ArrayList<String> cmd = new ArrayList<>();
+		ArrayList<Integer> ID = new ArrayList<>();
 		for(int n = 1; n < 24; n++) {
-			if(data.checkItem(n)) System.out.println(n  + ":"+ ItemData.getItemName(n) + "(" + data.itemCnt[n] + ")");
+			if(data.checkItem(n)) {
+				System.out.println(n  + ":"+ ItemData.getItemName(n) + "(" + data.itemCnt[n] + ")");
+				cmd.add(ItemData.getItemName(n) + " " + data.itemCnt[n] + "コ");
+				ID.add(n);
+			}
 		}
-		m = s.nextInt();
-		if(m == 0) return null;
-		else {
-			itemFlag[k] = m;
-			return ItemData.getItem(m);
-		}
+		int m = ID.get(window.getOption(cmd, BattleWindow.CMD_RIGHT_BOX6));
+		itemFlag[k] = m;
+		return ItemData.getItem(m);
 	}
 
 	public int[] getSkillMP(int n) {//スキルMPを取得する.
@@ -913,8 +912,6 @@ class Battle {
 				window.players[i].HP = hero[i].curHP;
 				window.players[i].MP = hero[i].curMP;
 			}
-
-			boolean windowFinFlag = false;
 			flag = false;
 			x = false;
 			if(actOrder[n] < 4) {
