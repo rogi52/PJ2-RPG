@@ -60,7 +60,7 @@ public class BattleWindow implements KeyListener {
 	ArrayList<String[]> cmdsBox4 = new ArrayList<>();
 	ArrayList<Integer[]> cmdsBox4ID = new ArrayList<>();
 	int posBox4 = 0;
-	int pos4I = 0, pos4J = 0;
+	int pos4I = 0;
 
 	ArrayList<String[][]> cmdsBox8 = new ArrayList<>();
 	ArrayList<Integer[][]> cmdsBox8ID = new ArrayList<>();
@@ -82,6 +82,8 @@ public class BattleWindow implements KeyListener {
 			case CMD_RIGHT_BOX4: {
 				cmdsBox4.clear();
 				cmdsBox4ID.clear();
+				posBox4 = 0;
+				pos4I = 0;
 				for(int i = 0; i < cmds.size(); i += 4) {
 					String[] box = new String[4];
 					Integer[] boxID = new Integer[4];
@@ -97,6 +99,8 @@ public class BattleWindow implements KeyListener {
 			case CMD_RIGHT_BOX8: {
 				cmdsBox8.clear();
 				cmdsBox8ID.clear();
+				posBox8 = 0;
+				pos8I = pos8J = 0;
 				for(int i = 0; i < cmds.size(); i += 8) {
 					String[][] box = new String[4][];
 					Integer[][] boxID = new Integer[4][];
