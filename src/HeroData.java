@@ -121,11 +121,11 @@ public class HeroData {
 
 		if(0 <= m && m < 7) {
 			if(flag[7 * m + 1]) x.maxHP += QuestData.upStatus(7 * m + 1);
-			if(flag[7 * m + 2]) x.maxMP += QuestData.upStatus(7 * m + 1);
-			if(flag[7 * m + 3]) x.ATK += QuestData.upStatus(7 * m + 1);
-			if(flag[7 * m + 4]) x.DEF += QuestData.upStatus(7 * m + 1);
-			if(flag[7 * m + 5]) x.AGE += QuestData.upStatus(7 * m + 1);
-			if(flag[7 * m + 6]) x.LUC += QuestData.upStatus(7 * m + 1);
+			if(flag[7 * m + 2]) x.maxMP += QuestData.upStatus(7 * m + 2);
+			if(flag[7 * m + 3]) x.ATK += QuestData.upStatus(7 * m + 3);
+			if(flag[7 * m + 4]) x.DEF += QuestData.upStatus(7 * m + 4);
+			if(flag[7 * m + 5]) x.AGE += QuestData.upStatus(7 * m + 5);
+			if(flag[7 * m + 6]) x.LUC += QuestData.upStatus(7 * m + 6);
 		}
 		return x;
 	}
