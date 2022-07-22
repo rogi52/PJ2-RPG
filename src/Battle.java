@@ -1276,7 +1276,7 @@ class Battle {
 					else System.out.println(Enemy[stock[actOrder[n]].target - 4].name +"のMPは");
 					damage = calcHeal(stock[actOrder[n]].target, stock[actOrder[n]]);//
 					System.out.println(damage + "かいふくした!");//
-					changeHP(-damage, stock[actOrder[n]].target);//
+					changeMP(-damage, stock[actOrder[n]].target);//
 					window.println(damage + "かいふくした!");
 				}else {
 					boolean f = false;
@@ -1295,7 +1295,7 @@ class Battle {
 								System.out.println(Enemy[m].name +"のMPは");
 								damage = calcHeal(m + 4, stock[actOrder[n]]);
 								System.out.println(damage + "かいふくした!");
-								changeHP(-damage, m + 4);
+								changeMP(-damage, m + 4);
 								f = true;
 								continue;
 							}
