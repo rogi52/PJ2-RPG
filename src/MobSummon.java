@@ -3,7 +3,8 @@ import java.util.Random;
 public class MobSummon{
 	static Mob[] callEnemies(int dungeonID, int enemyUnitID) {
 		Mob[] res = new Mob[4];
-		int numOfEnemy = 1 + (new Random().nextInt(3));
+		int numOfEnemy = 1;
+		if(enemyUnitID == MINION) numOfEnemy += (new Random().nextInt());
 		for(int i = 0; i < numOfEnemy; i++) res[i] = callEnemy(dungeonID, enemyUnitID);
 		for(int i = numOfEnemy; i < 4; i++) {
 			res[i] = new Mob();
@@ -20,12 +21,10 @@ public class MobSummon{
 
 	static Mob callEnemy(int dungeonID, int enemyUnitID) {
 		Mob x = new Mob();
-		/* MobData は インスタンス を できれば 作りたくない */
 		MobData data = new MobData();
 		int type1,type2;
 
 		type1 = dungeonID;
-		/* MobData と Character の互換性を持たせると良い */
 
 		switch(enemyUnitID) {
 			case MINION: {
