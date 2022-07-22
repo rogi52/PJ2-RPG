@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -199,8 +198,6 @@ class Battle {
 	public void selecthero() {
 		ArrayList<String> cmd1 = new ArrayList<String>(Arrays.asList("もどる", "こうげき", "ぼうぎょ", "スキル"));
 		for(int i = 0; i < cmd1.size(); i++) cmd1.set(i, ImageManager.arrange(cmd1.get(i)));
-		HashMap<String, Integer> cmd1_mp = new HashMap<>();
-		for(int i = 0; i < 4; i++) cmd1_mp.put(cmd1.get(i), i);
 		int selects;
 		boolean namePrintFlag = true;
 		for(int n = 0; n < 4; n++) {
@@ -212,9 +209,8 @@ class Battle {
 					window.println(hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
 				}
 				namePrintFlag = true;
-				String option = window.getOption(cmd1, BattleWindow.CMD_LEFT);
-				selects = cmd1_mp.get(option) - 1;
-				System.out.println("DBG : " + option + " " + selects);
+				selects = window.getOption(cmd1, BattleWindow.CMD_LEFT) - 1;
+				System.out.println("DBG : " + cmd1.get(selects + 1) + " " + selects);
 
 				if(selects == -1) {
 					n -= 2;
@@ -224,15 +220,16 @@ class Battle {
 					stock[n].name = "こうげき";
 					stock[n].waza = selects;
 					ArrayList<String> cmd3 = new ArrayList<>();
-					HashMap<String,Integer> enemy_hash = new HashMap<>();
+					ArrayList<Integer> ID = new ArrayList<>();
 					for(int m = 0; m < 4; m++) {
 						if(Enemy[m].curHP > 0) {
 							String name = ImageManager.arrange(Enemy[m].name);
 							cmd3.add(name);
-							enemy_hash.put(name, m + 5);
+							ID.add(m + 5);
 						}
 					}
-					stock[n].target = enemy_hash.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT)) - 1;
+
+					stock[n].target = ID.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT)) - 1;
 
 					if(stock[n].target == -1) {
 						n--;
@@ -248,24 +245,24 @@ class Battle {
 					stock[n].costMP = 0;
 				}else if(selects == 2){//スキル
 					ArrayList<String> cmd2 = new ArrayList<>();
-					HashMap<String,Integer> skill_hash = new HashMap<>();
+					ArrayList<Integer> ID = new ArrayList<>();
 					String[] skillsname = getSkillname(n);
 					int[] skillsMP = getSkillMP(n);
 					for(int m = 0; m < 10 && skillsname[m] != null; m++)
 						if(hero[n].curMP >= skillsMP[m]) {
 							String name = ImageManager.arrange(skillsname[m]);
 							cmd2.add(name);
-							skill_hash.put(name, m + 1);
+							ID.add(m + 1);
 						}
 
-					if(skill_hash.size() == 0) {
+					if(cmd2.size() == 0) {
 						window.println("つかえるスキルがありません", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
 						n--;
 						namePrintFlag = false;
 						continue;
 					}
 
-					selects = skill_hash.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX6)) - 1;
+					selects = ID.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX6)) - 1;
 
 					if(selects == -1) {
 						n--;
@@ -282,23 +279,23 @@ class Battle {
 					if(stock[n].target < 0) {
 
 						ArrayList<String> cmd3 = new ArrayList<>();
-						HashMap<String, Integer> hash = new HashMap<>();
+						ArrayList<Integer> cmd3ID = new ArrayList<>();
 						for(int m = 0; m < 4; m++) {
 							if(stock[n].target == -1) {
 								if(Enemy[m].curHP > 0) {
 									String name = Enemy[m].name;
 									cmd3.add(name);
-									hash.put(name, m + 5);
+									cmd3ID.add(m + 5);
 								}
 							} else {
 								if(hero[m].curHP > 0) {
 									String name = hero[m].name;
 									cmd3.add(name);
-									hash.put(name, m + 1);
+									cmd3ID.add(m + 1);
 								}
 							}
 						}
-						stock[n].target = hash.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX6)) - 1;
+						stock[n].target = cmd3ID.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX6)) - 1;
 						if(stock[n].target == -1) {
 							n--;
 							continue;
