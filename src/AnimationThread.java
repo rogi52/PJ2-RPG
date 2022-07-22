@@ -59,7 +59,6 @@ class GameLoop extends Thread{
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
 							no_event=false;
-							w.se[0].play(0);
 
 
 							//クエスト完了テスト
@@ -67,6 +66,8 @@ class GameLoop extends Thread{
 								if(w.m.nowQuestNumber[j]!=-1) {
 									clear_id=w.m.nowQuestNumber[j];
 									if(w.m.nowQuestSituation[j]>=QuestData.callQuest(clear_id).need) {
+										w.se[2].play(0);
+
 										if(clear_id==50) {
 											msg="ラストダンジョンがかいほうされた！";
 										}else {
@@ -116,6 +117,9 @@ class GameLoop extends Thread{
 									}
 								}
 							}
+							
+							w.se[0].play(0);
+
 
 							quest_id_list=getQuestStatus();
 
@@ -262,11 +266,11 @@ class GameLoop extends Thread{
 					int sel_y=0;
 					boolean draw_update;
 
-
+/*
 					for(int n = 1; n < 24; n++) {
 						if(ItemData.getItemName(n)!=null)
 							w.m.plusItem(n);
-					}
+					}*/
 
 
 					item_list=reCalcItem();
