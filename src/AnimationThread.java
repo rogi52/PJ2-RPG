@@ -603,9 +603,7 @@ class AnimationMove extends Thread{
 							a.mode(2,-1);
 							a.start();
 							while(Animation_Select.fin==false) {
-								try {
-									sleep(33);
-								} catch (InterruptedException e) {}
+								w.wait(33);
 							}
 							myCanvas.loadMap(myCanvas.en_p[i][sel*4+1],Integer.parseInt(myCanvas.en_p[i][sel*4+2]),Integer.parseInt(myCanvas.en_p[i][sel*4+3]));
 							a=new Animation_Select(w.myCanvas,w);
@@ -679,11 +677,18 @@ class AnimationMove extends Thread{
 
 				//System.out.println(result);
 				myCanvas.blank(0);
+				
+				for(int j=0;j<4;j++) {
+					if(w.m.partyHP[j]==0) {
+						w.m.partyHP[j]=1;
+					}
+				}
 
 
 
 				//ここから
 				if(result==-1) {
+					w.myCanvas.en_used="";
 					w.load(w.load_name);
 					myCanvas.loadMap("home.1.csv",-1,-1);
 				}
@@ -696,6 +701,7 @@ class AnimationMove extends Thread{
 
 
 				w.changeBgm(w.walk_bgm);
+				walk_count=0;
 				dir_con=0;
 				update=true;
 
