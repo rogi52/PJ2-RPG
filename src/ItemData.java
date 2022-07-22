@@ -128,7 +128,7 @@ public class ItemData {
 
 			case 22: {
 				item.name = "エリクサー";
-				item.doc = "はんいデバフかいじょ";
+				item.doc = "はんいHPかいふく";
 				item.waza = 14;
 				item.skill = 16;
 				item.target = 9;
