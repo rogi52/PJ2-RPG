@@ -60,8 +60,13 @@ public class MainData implements Serializable{
 	void battle(Mob[] Enemy) {
 		for(int m = 0; m < 5; m++) {
 			if(nowQuestNumber[m] != -1) {
-				if(QuestData.callQuest(nowQuestSituation[m]).type == QuestData.SUBJUGAT) {
-					//敵情報の確認、一致したらnowQuestSituation[m]を加算
+				Quest q = QuestData.callQuest(nowQuestNumber[m]);
+				if(q.type == QuestData.SUBJUGAT) {
+					for(int i = 0; i < 4; i++) {
+						if(Enemy[i].isExist() && q.target == Enemy[i].ID) {
+							nowQuestSituation[m]++;
+						}
+					}
 				}
 			}
 		}
@@ -133,7 +138,7 @@ public class MainData implements Serializable{
 			partyMP[n] = HeroData.callJob(partyJob[n], this.clearQuestFlag).maxMP;
 		}
 	}
-	
+
 	public void calcHeal(int n,int item_id) {
 		boolean HPMP=ItemData.getItem(item_id).waza==14;
 		double skill=ItemData.getItem(item_id).skill;
