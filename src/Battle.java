@@ -922,21 +922,21 @@ class Battle {
 			if(actOrder[n] < 4) {
 				if(hero[actOrder[n]].curHP == 0) flag = true;
 				else {
-					System.out.printf(hero[actOrder[n]].name + "は");
-					window.print(hero[actOrder[n]].name + "は", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
+					System.out.printf(hero[actOrder[n]].name);
+					window.print(hero[actOrder[n]].name, BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
 				}
 			}
 			else {
 				if(Enemy[actOrder[n] - 4].curHP == 0) flag = true;
 				else{
-					System.out.printf(Enemy[actOrder[n] - 4].name + "は");
-					window.print(Enemy[actOrder[n] - 4].name + "は", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
+					System.out.printf(Enemy[actOrder[n] - 4].name);
+					window.print(Enemy[actOrder[n] - 4].name, BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
 				}
 			}
 			if(flag) continue;
 			if(stock[actOrder[n]].waza == 1) {
-				System.out.println("ぼうぎょした!");
-				window.println("ぼうぎょした!", BattleWindow.CONTINUE, BattleWindow.WAIT_ENTER_KEY);
+				System.out.println("はぼうぎょした!");
+				window.println("はぼうぎょした!", BattleWindow.CONTINUE, BattleWindow.WAIT_ENTER_KEY);
 			}
 			else {
 				System.out.println("の" + stock[actOrder[n]].name + "!");
