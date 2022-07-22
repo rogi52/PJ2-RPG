@@ -464,6 +464,7 @@ class AnimationMove extends Thread{
 					random_match_test=false;
 
 					boolean is_enter=true;
+					int selectable=0;
 					int direction2;
 					int sel=0;
 					String moji;
@@ -565,8 +566,12 @@ class AnimationMove extends Thread{
 
 						sel=0;
 						moji="";
+						selectable=0;
 						for(int j=0;j<myCanvas.en_pc[i];j+=4) {
-							moji+=myCanvas.en_p[i][j]+"\n";
+							if(!myCanvas.en_p[i][j+1].equals("last.1.csv") || w.m.clearQuestFlag[50]) {
+								moji+=myCanvas.en_p[i][j]+"\n";
+								selectable++;
+							}
 						}
 						moji+="キャンセル";
 						w.myCanvas.drawMenu3(moji,sel, PL2RPG.DIALOG_ANIMATION_TIME);
@@ -577,7 +582,7 @@ class AnimationMove extends Thread{
 							if(w.is_press(KeyEvent.VK_DOWN)) {
 								w.se[0].play(0);
 								sel++;
-								if(sel>myCanvas.en_pc[i]/4)sel=myCanvas.en_pc[i]/4;
+								if(sel>selectable)sel=selectable;
 								while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 								w.myCanvas.drawMenu3(moji,sel);
 							}
@@ -594,7 +599,7 @@ class AnimationMove extends Thread{
 
 						w.ma.update();
 
-						if(sel<myCanvas.en_pc[i]/4) {
+						if(sel<selectable) {
 							//取得済みアイテム、マッチ済み固定マッチング解除
 							w.myCanvas.en_used="";
 
