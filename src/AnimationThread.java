@@ -253,6 +253,14 @@ class GameLoop extends Thread{
 								w.myCanvas.Dialog("セーブしました。");
 							}
 
+							break;
+
+						case 7:
+							no_event=false;
+
+							w.se[0].play(0);
+
+							w.myCanvas.Dialog(w.myCanvas.en_p[i][1]);
 
 							break;
 						}

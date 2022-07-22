@@ -4,6 +4,7 @@ public class PL2RPG {
 	public static final String BLOCK_IMG_PATH="./img/block";
 	public static final String UI_CHR_PATH="./img/chr";
 	public static final String TEKI_PATH="./img/teki";
+	public static final String HELP_PATH="./img/help";
 	public static final String SE_PATH="./se";
 	public static final String MAP_PATH="./map";
 	public static final String ICON_PATH="./img/icon.png";
