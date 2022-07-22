@@ -243,7 +243,7 @@ class Battle {
 						}
 					}
 
-					stock[n].target = ID.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT)) - 1;
+					stock[n].target = ID.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX4)) - 1;
 
 					if(stock[n].target == -1) {
 						n--;
@@ -276,7 +276,7 @@ class Battle {
 						continue;
 					}
 
-					selects = ID.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX6)) - 1;
+					selects = ID.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX8)) - 1;
 
 					if(selects == -1) {
 						n--;
@@ -309,7 +309,7 @@ class Battle {
 								}
 							}
 						}
-						stock[n].target = cmd3ID.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX6)) - 1;
+						stock[n].target = cmd3ID.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX4)) - 1;
 						if(stock[n].target == -1) {
 							n--;
 							continue;
@@ -330,7 +330,14 @@ class Battle {
 				ID.add(n);
 			}
 		}
-		int m = ID.get(window.getOption(cmd, BattleWindow.CMD_RIGHT_BOX6));
+
+		if(cmd.size() == 0) {
+			window.println("つかえるアイテムがありません");
+			window.waitEnterKey();
+			return null;
+		}
+
+		int m = ID.get(window.getOption(cmd, BattleWindow.CMD_RIGHT_BOX4));
 		itemFlag[k] = m;
 		return ItemData.getItem(m);
 	}
