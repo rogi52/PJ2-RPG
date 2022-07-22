@@ -859,7 +859,7 @@ class Battle {
 	public void makeActOrder() {
 		Random R = new Random();
 		int[] speeds = new int[8];
-		actOredt = new int[8];
+		actOrder = new int[8];
 		int max, part;
 		double eff = 1;
 		for(int n = 0; n < 4; n++) {
