@@ -777,7 +777,7 @@ class AnimationMove extends Thread{
 
 			if( ( update || force_update ) && Animation_Select.on_animate==false && w.status==2) {
 				force_update=false;
-				w.setTitle(""+myCanvas.pos_x/PL2RPG.BLOCK_SIZE+" , "+myCanvas.pos_y/PL2RPG.BLOCK_SIZE+" Matching_Prob="+Float.toString(PL2RPG.RANDOM_MATCH_PROB*(walk_count-PL2RPG.RANDOM_MATCH_MIN)));
+				System.out.println(Integer.toString(myCanvas.pos_x/PL2RPG.BLOCK_SIZE) +" , "+Integer.toString(myCanvas.pos_y/PL2RPG.BLOCK_SIZE) +" Matching_Prob="+Float.toString(PL2RPG.RANDOM_MATCH_PROB*(walk_count-PL2RPG.RANDOM_MATCH_MIN)));
 				myCanvas.drawMap(0,view_direction,step);
 				on_animate=true;
 			}else {
