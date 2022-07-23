@@ -198,7 +198,7 @@ public class BattleWindow implements KeyListener {
 		STATE = NULL;
 	}
 
-	int startX[] = {128, 320, 512, 704};
+	int startX[] = {128 - 16, 320 - 16, 512 - 16, 704 - 16};
 
 	int enemySY = 320 - 128 / 2;
 	int enemySX[][] = {
@@ -214,25 +214,26 @@ public class BattleWindow implements KeyListener {
 
 		/* 背景 */
 		try {
-			BufferedImage background = ImageManager.getImage("battle");
+			BufferedImage background = ImageManager.getImage("battle3");
 			g.drawImage(background, 0, 0, null);
 		} catch (IOException e) { System.out.println("Error : battle.png"); }
 
 		/* 主人公 */
 		for(int i = 0; i < 4; i++) {
-			for(int j = 0; j < players[i].name.length(); j++) {
+			String name = (i + 1) + players[i].name;
+			for(int j = 0; j < name.length(); j++) {
 				try {
-					BufferedImage image = ImageManager.getCharImage(players[i].name.charAt(j));
+					BufferedImage image = ImageManager.getCharImage(name.charAt(j));
 					g.drawImage(image, startX[i] + j * 32, 32, null);
-				} catch (IOException e) { System.out.println("Error : " + players[i].name); }
+				} catch (IOException e) { System.out.println("Error : " + name); }
 			}
 
 			try {
 				BufferedImage image = ImageManager.getCharImage('H');
 				g.drawImage(image, startX[i], 96, null);
 				String num = players[i].HP.toString();
-				while(num.length() < 3) num = ' ' + num;
-				for(int j = 0; j < 3; j++) {
+				while(num.length() < 4) num = ' ' + num;
+				for(int j = 0; j < 4; j++) {
 					if(num.charAt(j) != ' ') {
 						image = ImageManager.getCharImage(num.charAt(j));
 						g.drawImage(image, startX[i] + (j + 1) * 32, 96, null);
@@ -244,8 +245,8 @@ public class BattleWindow implements KeyListener {
 				BufferedImage image = ImageManager.getCharImage('M');
 				g.drawImage(image, startX[i], 128, null);
 				String num = players[i].MP.toString();
-				while(num.length() < 3) num = ' ' + num;
-				for(int j = 0; j < 3; j++) {
+				while(num.length() < 4) num = ' ' + num;
+				for(int j = 0; j < 4; j++) {
 					if(num.charAt(j) != ' ') {
 						image = ImageManager.getCharImage(num.charAt(j));
 						g.drawImage(image, startX[i] + (j + 1) * 32, 128, null);
@@ -260,9 +261,13 @@ public class BattleWindow implements KeyListener {
 
 		for(int i = 0; i < 4; i++) {
 			if(enemies[i] != null) {
-				/* dCanvas にすでに読み込まれているのを使ったほうが早いか */
-				//BufferedImage image = ImageManager.getImage("teki/" + enemies[i].ID.toString() + "." + enemies[i].name);
-				g.drawImage(myCanvas.teki[enemies[i].ID], enemySX[enemyCnt][i], enemySY, null);
+				try {
+					/* dCanvas にすでに読み込まれているのを使ったほうが早いか */
+					BufferedImage image = ImageManager.getImage("teki/" + enemies[i].ID.toString() + "." + enemies[i].name);
+					g.drawImage(image, enemySX[enemyCnt][i], enemySY, null);
+				} catch (IOException e) {
+					System.out.println(enemies[i].name + " ID : " + enemies[i].ID.toString());
+				}
 			}
 		}
 
