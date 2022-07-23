@@ -14,7 +14,7 @@ public class QuestData {
 			/* 戦士 */
 			case 1:{
 				q.name = "ちからぐさ10こののうひん";
-				q.setQuest(DELIVERY, 4, 10, 10, 0);
+				q.setQuest(DELIVERY, 4, 10, 10, 7);
 			} break;
 
 			case 2:{
@@ -24,7 +24,7 @@ public class QuestData {
 
 			case 3:{
 				q.name = "バット5たいのとうばつ";
-				q.setQuest(SUBJUGAT, 1, 3, 10, 0);
+				q.setQuest(SUBJUGAT, 1, 3, 10, 7);
 			} break;
 
 			case 4:{
@@ -33,17 +33,17 @@ public class QuestData {
 			} break;
 
 			case 5:{
-				q.name = "CCCC3たいのとうばつ";
+				q.name = "キシ3たいのとうばつ";
 				q.setQuest(SUBJUGAT, 3, 3, 5, 0);
 			} break;
 
 			case 6:{
-				q.name = "DDDD3たいのとうばつ";
+				q.name = "キッシー3たいのとうばつ";
 				q.setQuest(SUBJUGAT, 4, 3, 5, 0);
 			} break;
 
 			case 7:{
-				q.name = "BOSS1たいのとうばつ";//1Fのボスの話
+				q.name = "オオカミ1たいのとうばつ";//1Fのボスの話
 				q.setQuest(SUBJUGAT, 31, 1, 0, 0);
 			} break;
 
@@ -55,7 +55,7 @@ public class QuestData {
 
 			case 9:{
 				q.name = "まほうすい10こののうひん";
-				q.setQuest(DELIVERY, 13, 3, 10, 0);
+				q.setQuest(DELIVERY, 13, 3, 10, 14);
 			} break;
 
 			case 10:{
@@ -65,7 +65,7 @@ public class QuestData {
 
 			case 11:{
 				q.name = "BBBB5たいのとうばつ";
-				q.setQuest(SUBJUGAT, 6, 5, 10, 0);
+				q.setQuest(SUBJUGAT, 6, 5, 10, 14);
 			} break;
 
 			case 12:{
@@ -79,19 +79,19 @@ public class QuestData {
 			} break;
 
 			case 14:{
-				q.name = "BOSS1たいのとうばつ";//1Fのボスの話
+				q.name = "クリート1たいのとうばつ";//1Fのボスの話
 				q.setQuest(SUBJUGAT, 33, 3, 0, 0);
 			} break;
 
 			/* エンチャンター */
 			case 15:{
 				q.name = "ちからぬき10こののうひん";
-				q.setQuest(DELIVERY, 7, 10, 10, 0);
+				q.setQuest(DELIVERY, 7, 10, 10, 21);
 			} break;
 
 			case 16:{
 				q.name = "まもりぬき10こののうひん";
-				q.setQuest(DELIVERY, 8, 3, 10, 0);
+				q.setQuest(DELIVERY, 8, 3, 10, 21);
 			} break;
 
 			case 17:{
@@ -115,7 +115,7 @@ public class QuestData {
 			} break;
 
 			case 21:{
-				q.name = "BOSS1たいのとうばつ";//1Fのボスの話
+				q.name = "コフィン1たいのとうばつ";//1Fのボスの話
 				q.setQuest(SUBJUGAT, 35, 3, 0, 0);
 			} break;
 
@@ -142,12 +142,12 @@ public class QuestData {
 
 			case 26:{
 				q.name = "スズキ5たいのとうばつ";
-				q.setQuest(SUBJUGAT, 15, 5, 10, 0);
+				q.setQuest(SUBJUGAT, 15, 5, 10, 28);
 			} break;
 
 			case 27:{
 				q.name = "マイケル5たいのとうばつ";
-				q.setQuest(SUBJUGAT, 16, 5, 10, 0);
+				q.setQuest(SUBJUGAT, 16, 5, 10, 28);
 			} break;
 
 			case 28:{
@@ -163,7 +163,7 @@ public class QuestData {
 
 			case 30:{
 				q.name = "ほしくず10こののうひん";
-				q.setQuest(DELIVERY, 10, 10, 10, 0);
+				q.setQuest(DELIVERY, 10, 10, 10, 35);
 			} break;
 
 			case 31:{
@@ -173,7 +173,7 @@ public class QuestData {
 
 			case 32:{
 				q.name = "うおたみ5たいのとうばつ";
-				q.setQuest(SUBJUGAT, 18, 5, 10, 0);
+				q.setQuest(SUBJUGAT, 18, 5, 10, 35);
 			} break;
 
 			case 33:{
@@ -187,7 +187,7 @@ public class QuestData {
 			} break;
 
 			case 35:{
-				q.name = "BOSS1たいのとうばつ";//1Fのボスの話
+				q.name = "イカくん1たいのとうばつ";//1Fのボスの話
 				q.setQuest(SUBJUGAT, 39, 3, 0, 0);
 			} break;
 
@@ -204,7 +204,7 @@ public class QuestData {
 
 			case 38:{
 				q.name = "モブリ5たいのとうばつ";
-				q.setQuest(SUBJUGAT, 21, 3, 10, 0);
+				q.setQuest(SUBJUGAT, 21, 3, 10, 42);
 			} break;
 
 			case 39:{
@@ -218,8 +218,8 @@ public class QuestData {
 			} break;
 
 			case 41:{
-				q.name = "DDDD5たいのとうばつ";
-				q.setQuest(SUBJUGAT, 24, 3, 10, 0);
+				q.name = "ティガ5たいのとうばつ";
+				q.setQuest(SUBJUGAT, 24, 3, 10, 42);
 			} break;
 
 			case 42:{
@@ -245,12 +245,12 @@ public class QuestData {
 
 			case 46:{
 				q.name = "アカキノ5たいのとうばつ";
-				q.setQuest(SUBJUGAT, 26, 5, 10, 0);
+				q.setQuest(SUBJUGAT, 26, 5, 10, 49);
 			} break;
 
 			case 47:{
 				q.name = "ハンタ5たいのとうばつ";
-				q.setQuest(SUBJUGAT, 27, 3, 10, 0);
+				q.setQuest(SUBJUGAT, 27, 3, 10, 49);
 			} break;
 
 			case 48:{
@@ -259,7 +259,7 @@ public class QuestData {
 			} break;
 
 			case 49:{
-				q.name = "BOSS1たいのとうばつ";//1Fのボスの話
+				q.name = "KUMA1たいのとうばつ";//1Fのボスの話
 				q.setQuest(SUBJUGAT, 43, 3, 0, 0);
 			} break;
 
