@@ -303,7 +303,7 @@ class Battle {
 								}
 							} else {
 								if(hero[m].curHP > 0) {
-									String name = hero[m].name;
+									String name = (m + 1) + hero[m].name;
 									cmd3.add(name);
 									cmd3ID.add(m + 1);
 								}
