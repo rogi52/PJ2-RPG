@@ -1165,7 +1165,7 @@ class Battle {
 								}
 								window.waitEnterKey();
 							}else{
-								if(r.nextInt(100) < (-50 + hero[stock[actOrder[n]].target - 4].debuf + Enemy[actOrder[n]].buf)) {
+								if(r.nextInt(100) < (-50 + hero[stock[actOrder[n]].target].debuf + Enemy[actOrder[n] - 4].buf)) {
 									k = makeBufSpace(stock[actOrder[n]].target);
 									buf[k][stock[actOrder[n]].target] = makeBuf(hero[stock[actOrder[n]].target].debuf, stock[actOrder[n]]);
 									System.out.println(hero[stock[actOrder[n]].target - 4].name + "にデバフのこうか!");
