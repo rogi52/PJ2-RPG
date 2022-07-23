@@ -14,7 +14,7 @@ public class QuestData {
 			/* 戦士 */
 			case 1:{
 				q.name = "ちからぐさ10こののうひん";
-				q.setQuest(DELIVERY, 4, 10, 10, 2);
+				q.setQuest(DELIVERY, 4, 10, 10, 0);
 			} break;
 
 			case 2:{
