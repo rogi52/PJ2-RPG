@@ -23,31 +23,26 @@ public class Window extends JFrame implements KeyListener{
 	public int battle_bgm=0;
 	public int now_dangeon_id=-1;
 
-
-
 	public int status=-1;
 	public int key_y=0;
 	public int key_x=0;
-	private boolean pr_enter=false;
 	public String load_name;
 
 	public String[] save_list;
 	public int save_num;
 
 	public dCanvas myCanvas;
-
 	public AnimationMove ma;
-
 	public int def_dir=1;
 
-	private GameLoop gl;
 	public Animation_Select a;
-	
 	public int online_mode=0;
-
-	private boolean press_up=false,press_dw=false,press_le=false,press_ri=false,press_esc=false;
-
 	public MainData m;
+	
+	public String host_ip;
+	
+	private GameLoop gl;
+	private boolean press_up=false,press_dw=false,press_le=false,press_ri=false,pr_enter=false,press_esc=false;
 
 	Window(){
 		super("JobMaster");

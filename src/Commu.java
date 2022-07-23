@@ -19,11 +19,8 @@ public class Commu {
 		System.out.println(BroadCastIP.getName(b.my_ip));
 
 		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
+			Thread.sleep(15000);
+		} catch (InterruptedException e) {}
 
 		b.close();
 
@@ -37,10 +34,12 @@ public class Commu {
 
 class GetHost extends Thread{
 	private DatagramSocket dgSocket;
-	DatagramPacket packet;
-	private boolean state=false;
-
-	private String hosts;
+	private DatagramPacket packet;
+	private ThreadGetHost tg;
+	
+	public boolean state=false;
+	public String hosts;
+	public String[] reslist = new String[0];
 
 	GetHost(){
 		state=false;
@@ -52,34 +51,22 @@ class GetHost extends Thread{
 		try {
 			dgSocket = new DatagramSocket(15224);
 			dgSocket.setSoTimeout(1000);
-
-			state=true;
 			byte buffer[] = new byte[256];
 			packet = new DatagramPacket(buffer, buffer.length);
+
+			state=true;
 			start();
-
-		} catch (SocketException e) {
-
-
-		}
-
-
+			tg=new ThreadGetHost(this);
+			tg.start();
+		} catch (SocketException e) {}
 	}
+	
 	public void close() {
 		state=false;
 	}
 
 	public String[] getHost() {
-		hosts="";
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
-
-		if(hosts.equals("")) {
-			return new String[0];			
-		}
-		return hosts.split(",");
+		return reslist;
 	}
 
 	public boolean getStatus() {
@@ -87,26 +74,48 @@ class GetHost extends Thread{
 	}
 
 	public void run() {
+
 		String resip;
 		while (state) {
-
 			try {
 				dgSocket.receive(packet);
 				resip=packet.getAddress().getHostAddress();
 				if(hosts.indexOf(resip)==-1) {
 					hosts+=resip+",";
 				}
-				
+
 			} catch(SocketTimeoutException e) {
 			} catch (IOException e) {
 				state=false;
 			}
+		}
+		dgSocket.close();
+	}
+}
 
+class ThreadGetHost extends Thread{
+	GetHost g;
+	ThreadGetHost(GetHost g){
+		this.g=g;
+	}
+	
+	public void run(){
+		while(g.state) {
+			g.hosts="";
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
 
-			//System.out.print (new String(packet.getData(), 0, packet.getLength()));
+			if(g.hosts.equals("")) {
+				g.reslist= new String[0];
+			}else {
+				g.reslist= g.hosts.split(",");
+			}
 		}
 	}
 }
+
 
 class BroadCastIP extends Thread{
 
@@ -117,11 +126,9 @@ class BroadCastIP extends Thread{
 
 	private boolean state;
 
-
 	BroadCastIP(){
 		state=false;
 	}
-
 
 	public void open() {
 		state=false;
@@ -158,6 +165,8 @@ class BroadCastIP extends Thread{
 				break;
 			}
 		}
+		ds.close();
+		
 	}
 
 	public boolean getStatus() {

@@ -55,6 +55,9 @@ class GameLoop extends Thread{
 					String msg;
 					boolean draw_update=false;
 					int quest_id_list[]=new int[51];
+					int step=0,step2=0;
+					String my_host_name;
+					
 					if(bdx==myCanvas.en_x[i]*PL2RPG.BLOCK_SIZE && bdy==myCanvas.en_y[i]*PL2RPG.BLOCK_SIZE) {
 						switch(myCanvas.en_type[i]) {
 						case 1://クエスト選択
@@ -243,7 +246,6 @@ class GameLoop extends Thread{
 
 							w.se[0].play(0);
 
-							w.ma.update();
 							w.m.max();
 							w.myCanvas.Dialog("HP　MPをかいふくしました。");
 
@@ -252,6 +254,8 @@ class GameLoop extends Thread{
 
 								w.myCanvas.Dialog("セーブしました。");
 							}
+							
+							w.ma.update();
 
 							break;
 
@@ -261,6 +265,155 @@ class GameLoop extends Thread{
 							w.se[0].play(0);
 
 							w.myCanvas.Dialog(w.myCanvas.en_p[i][1]);
+							w.ma.update();
+
+							break;
+
+
+						case 8:
+							no_event=false;
+
+							w.se[0].play(0);
+
+							w.myCanvas.drawMenu6(0);
+
+							
+
+							menu_x=0;
+							w.myCanvas.drawMenu6(menu_x,PL2RPG.DIALOG_ANIMATION_TIME);
+
+							while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+							while(w.is_press(KeyEvent.VK_ENTER)==false) {
+								draw_update=false;
+
+								if(w.is_press(KeyEvent.VK_DOWN)) {
+									w.se[0].play(0);
+									menu_x++;
+									if(menu_x>2)menu_x=2;
+									while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+									draw_update=true;
+								}
+								if(w.is_press(KeyEvent.VK_UP)) {
+									w.se[0].play(0);
+									menu_x--;
+									if(menu_x<0)menu_x=0;
+									while(w.is_press(KeyEvent.VK_UP))w.wait(33);
+									draw_update=true;
+								}
+
+								if(draw_update)w.myCanvas.drawMenu6(menu_x);
+
+								w.wait(33);
+							}
+							w.se[0].play(0);
+							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+							
+							if(menu_x==0) {
+								//HOST
+								BroadCastIP b=new BroadCastIP();
+								b.open();
+								menu_x=0;
+								my_host_name=BroadCastIP.getName(b.my_ip);
+								w.myCanvas.drawMenu8(menu_x,step,my_host_name,new String[0],PL2RPG.DIALOG_ANIMATION_TIME);
+
+								while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+								while(w.is_press(KeyEvent.VK_ENTER)==false) {
+									draw_update=false;
+									step2++;
+									if(step2>10) {
+										step2=0;
+										step=(step+1)%4;
+										draw_update=true;
+									}
+									
+									if(w.is_press(KeyEvent.VK_DOWN)) {
+										w.se[0].play(0);
+										menu_x++;
+										if(menu_x>1)menu_x=1;
+										while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+										draw_update=true;
+									}
+									if(w.is_press(KeyEvent.VK_UP)) {
+										w.se[0].play(0);
+										menu_x--;
+										if(menu_x<0)menu_x=0;
+										while(w.is_press(KeyEvent.VK_UP))w.wait(33);
+										draw_update=true;
+									}
+									
+									
+									if(b.getStatus()==false) {
+										w.myCanvas.Dialog("ネットワークエラー");
+										menu_x=0;
+										break;
+									}
+									if(draw_update)w.myCanvas.drawMenu8(menu_x,step,my_host_name,new String[0]);
+									
+									w.wait(33);
+								}
+								w.se[0].play(0);
+								while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+								b.close();
+								
+								if(menu_x==1) {
+									//開始
+									w.myCanvas.Dialog("MULTI PLAY START！");
+								}else {
+									//取り消し
+								}
+							}else if(menu_x==1) {
+								//CLIENT
+								GetHost g=new GetHost();
+								g.open();
+								menu_x=-1;
+								w.myCanvas.drawMenu7(menu_x,step,new String[0],PL2RPG.DIALOG_ANIMATION_TIME);
+
+								while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+								while(w.is_press(KeyEvent.VK_ENTER)==false) {
+									draw_update=false;
+									step2++;
+									if(step2>10) {
+										step2=0;
+										step=(step+1)%4;
+										draw_update=true;
+									}
+									
+									if(w.is_press(KeyEvent.VK_DOWN)) {
+										w.se[0].play(0);
+										menu_x++;
+										while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+										draw_update=true;
+									}
+									if(w.is_press(KeyEvent.VK_UP)) {
+										w.se[0].play(0);
+										menu_x--;
+										if(menu_x<-1)menu_x=-1;
+										while(w.is_press(KeyEvent.VK_UP))w.wait(33);
+										draw_update=true;
+									}
+									
+									if(menu_x>=g.getHost().length)menu_x=g.getHost().length-1;
+									
+									if(g.getStatus()==false) {
+										w.myCanvas.Dialog("ネットワークエラー");
+										menu_x=-1;
+										break;
+									}
+									if(draw_update)w.myCanvas.drawMenu7(menu_x,step,g.getHost());
+									
+									w.wait(33);
+								}
+								w.se[0].play(0);
+								while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+								g.close();
+								
+								if(menu_x>=0) {
+									w.host_ip=g.getHost()[menu_x];
+									w.myCanvas.Dialog(w.host_ip);
+								}
+							}
+
+							w.ma.update();
 
 							break;
 						}

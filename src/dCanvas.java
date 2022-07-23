@@ -202,6 +202,94 @@ class dCanvas extends Canvas {
 		repaint();
 	}
 	
+	//プレーヤー待機
+	public void drawMenu8(int ysel,int step,String hname,String[] list) {
+		drawMenu8(ysel,step,hname,list,0);
+	}
+	public void drawMenu8(int ysel,int step,String hname,String[] list,int ms) {
+		buffer.setColor(new Color(255,255,255,255));
+		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
+		buffer.setColor(new Color(0,0,0,255));
+		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
+		
+		String name="プレーヤーをまっています";
+		for(int i=0;i<step;i++) {
+			name+=".";
+		}
+		name+="\nあなたは"+hname;
+		
+		drawChr(name,104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
+
+		String name3="キャンセル\nしめきる\n";
+		for(int i=0;i<list.length;i++) {
+			name3+="\n"+BroadCastIP.getName(list[i]);
+		}
+		
+		
+		drawChr(name3,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		
+		drawChr("▶",104+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*(3+ysel),PL2RPG.MAIN_WIN_X-1-100*2-8);
+		
+
+		repaint();
+	}
+	
+	//オンライン選択
+	public void drawMenu7(int ysel,int step,String[] list) {
+		drawMenu7(ysel,step,list,0);
+	}
+	public void drawMenu7(int ysel,int step,String[] list,int ms) {
+		buffer.setColor(new Color(255,255,255,255));
+		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
+		buffer.setColor(new Color(0,0,0,255));
+		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
+		
+		String name="ホストをさがしています";
+		for(int i=0;i<step;i++) {
+			name+=".";
+		}
+		
+		drawChr(name,104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
+
+		String name3="キャンセル";
+		for(int i=0;i<list.length;i++) {
+			name3+="\n"+BroadCastIP.getName(list[i]);
+		}
+		
+		
+		drawChr(name3,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		
+		drawChr("▶",104+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*(3+ysel),PL2RPG.MAIN_WIN_X-1-100*2-8);
+		
+
+		repaint();
+	}
+	
+	
+	//オンライン選択
+	public void drawMenu6(int ysel) {
+		drawMenu6(ysel,0);
+	}
+	public void drawMenu6(int ysel,int ms) {
+		buffer.setColor(new Color(255,255,255,255));
+		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
+		buffer.setColor(new Color(0,0,0,255));
+		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
+		
+
+		drawChr("せつぞくモードをえらんでください。",104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
+
+		
+		String name3="ホスト\nクライアント\nキャンセル";
+		
+		
+		drawChr(name3,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);
+		
+		drawChr("▶",104+PL2RPG.BLOCK_SIZE*1,104+PL2RPG.BLOCK_SIZE*(2+ysel),PL2RPG.MAIN_WIN_X-1-100*2-8);
+
+		repaint();
+	}
+	
 	//プレーヤー選択
 	public void drawMenu5(int ysel) {
 		drawMenu5(ysel,0);
