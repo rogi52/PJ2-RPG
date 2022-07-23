@@ -260,13 +260,9 @@ public class BattleWindow implements KeyListener {
 
 		for(int i = 0; i < 4; i++) {
 			if(enemies[i] != null) {
-				try {
-					/* dCanvas にすでに読み込まれているのを使ったほうが早いか */
-					BufferedImage image = ImageManager.getImage("teki/" + enemies[i].ID.toString() + "." + enemies[i].name);
-					g.drawImage(image, enemySX[enemyCnt][i], enemySY, null);
-				} catch (IOException e) {
-					System.out.println(enemies[i].name + " ID : " + enemies[i].ID.toString());
-				}
+				/* dCanvas にすでに読み込まれているのを使ったほうが早いか */
+				//BufferedImage image = ImageManager.getImage("teki/" + enemies[i].ID.toString() + "." + enemies[i].name);
+				g.drawImage(myCanvas.teki[enemies[i].ID], enemySX[enemyCnt][i], enemySY, null);
 			}
 		}
 

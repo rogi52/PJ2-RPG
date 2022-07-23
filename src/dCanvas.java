@@ -17,11 +17,11 @@ import javax.imageio.ImageIO;
 class dCanvas extends Canvas {
 	public int block_num,teki_num,help_num;
 
-	private BufferedImage bg_img,new_img,con_img,new_act_img,con_act_img,con_dis_img,item_img,save_img;
-	private BufferedImage[] block;
-	private BufferedImage[] teki;
-	private BufferedImage[] help;
-	private BufferedImage[][][] chr;//キャラ、向き、歩行
+	public BufferedImage bg_img,new_img,con_img,new_act_img,con_act_img,con_dis_img,item_img,save_img;
+	public BufferedImage[] block;
+	public BufferedImage[] teki;
+	public BufferedImage[] help;
+	public BufferedImage[][][] chr;//キャラ、向き、歩行
 	
 	private int load_che_rand;
 

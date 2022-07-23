@@ -46,12 +46,11 @@ class BroadCastIP extends Thread{
 			byte[] buffer = {};
 			packet = new DatagramPacket( buffer, 0, isAddress );
 			ds=new DatagramSocket();
+			res=true;
 		} catch (UnknownHostException e) {
 		} catch (SocketException e) {
 		}
-
-		res=true;
-
+		
 		return res;
 	}
 
