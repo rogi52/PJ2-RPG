@@ -42,6 +42,8 @@ public class Window extends JFrame implements KeyListener{
 
 	private GameLoop gl;
 	public Animation_Select a;
+	
+	public int online_mode=0;
 
 	private boolean press_up=false,press_dw=false,press_le=false,press_ri=false,press_esc=false;
 
