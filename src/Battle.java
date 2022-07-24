@@ -219,8 +219,8 @@ class Battle {
 				itemFlag[n] = -1;
 				stock[n] = new Skill();
 				if(namePrintFlag) {
-					System.out.println(hero[n].name + "のターン.");
-					window.println(hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
+					System.out.println((n+1) + hero[n].name + "のターン.");
+					window.println((n+1) + hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
 				}
 				namePrintFlag = true;
 				selects = window.getOption(cmd1, BattleWindow.CMD_LEFT) - 1;
