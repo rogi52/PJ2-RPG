@@ -200,7 +200,7 @@ public class BattleWindow implements KeyListener {
 
 	int startX[] = {128 - 16, 320 - 16, 512 - 16, 704 - 16};
 
-	int enemySY = 320 - 128 / 2;
+	int enemySY = 320 - 128 / 2 - 32;
 	int enemySX[][] = {
 		new int[] {},
 		new int[] {386},
@@ -262,6 +262,16 @@ public class BattleWindow implements KeyListener {
 		for(int i = 0; i < 4; i++) {
 			if(enemies[i] != null) {
 				g.drawImage(myCanvas.teki[enemies[i].ID], enemySX[enemyCnt][i], enemySY, null);
+
+				if(enemies[i].name.equals("墓")) continue;
+
+				String name = (i + 1) + enemies[i].name;
+				for(int j = 0; j < name.length(); j++) {
+					try {
+						BufferedImage image = ImageManager.getCharImage(name.charAt(j));
+						g.drawImage(image, enemySX[enemyCnt][i] + j * 32 - 16, enemySY + 32 * 4, null);
+					} catch (IOException e) { System.out.println("Error : ENEMY"); }
+				}
 			}
 		}
 
