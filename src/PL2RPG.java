@@ -9,7 +9,7 @@ public class PL2RPG {
 	public static final String MAP_PATH="./map";
 	public static final String ICON_PATH="./img/icon.png";
 	
-	public static final String JOBS[]= {"w","m","e","a","s","a","h"};
+	public static final String JOBS[]= {"w","m","e","","s","a","h"};
 	public static final String JOB_NAME[]= {"せんし","ウィッチ","エンチャ","ぬすっと","まほせん","アーチャ","ヒーラー"};
 
 	public static final int DIALOG_ANIMATION_TIME=20;
