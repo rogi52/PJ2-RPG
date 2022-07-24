@@ -366,14 +366,15 @@ class GameLoop extends Thread{
 										if(w.clientRecv[j]!=null)w.clientRecv[j].send(inf);
 									}
 									w.myCanvas.Dialog("MULTI PLAY START！");
+									w.wc.close();//これいらない
 								}else {
 									//取り消し
 									for(int j=0;j<3;j++) {
 										if(w.clientRecv[j]!=null)w.clientRecv[j].close();
 									}
+									w.wc.close();
 								}
 								//切断時はwc,recvをクローズ
-								w.wc.close();
 							}else if(menu_x==1) {
 								//CLIENT
 								GetHost g=new GetHost();
@@ -461,11 +462,12 @@ class GameLoop extends Thread{
 									System.out.println(str);
 									if(str) {
 										w.myCanvas.Dialog(w.cc.ip);
+										w.cc.close();//これいらない
 									}else {
+										w.cc.close();
 										w.myCanvas.Dialog("とりけされました。");										
 									}
 									//切断時はccをクローズ
-									w.cc.close();
 								}
 							}
 

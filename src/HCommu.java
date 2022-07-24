@@ -90,6 +90,7 @@ class ClientConnect extends Thread{
 			if(sock!=null)sock.close();
 		} catch (IOException e) {
 		}
+		status=false;
 	}
 	
 	public void send(Info i) {
@@ -106,12 +107,10 @@ class ClientConnect extends Thread{
 		try {
 
 			while(status) {
-				System.out.println("A");
 				i=(Info)ois.readObject();
 				//受信情報を追加してバッファに書き込み
 
 				//0	は接続確認なので負荷軽減のためここではじく
-				System.out.println(i.ctr);
 
 				if(i.ctr!=0) {
 					is=new InfoS();
