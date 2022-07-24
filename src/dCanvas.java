@@ -237,7 +237,7 @@ class dCanvas extends Canvas {
 		
 		drawChr(name,104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 
-		String name3="キャンセル\nしめきる\n";
+		String name3="しめきる\nキャンセル\n";
 		String name4;
 		for(int i=0;i<list.length;i++) {
 			name3+="\n"+BroadCastIP.getName(list[i]);

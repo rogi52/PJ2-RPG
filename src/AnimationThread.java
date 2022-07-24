@@ -32,6 +32,27 @@ class GameLoop extends Thread{
 				if ( w.is_press( KeyEvent.VK_LEFT) ){
 					direction=4;
 				}
+				
+				if(w.online_mode==2) {
+					if(!w.cc.getStatus()) {
+						w.status=3;
+						w.myCanvas.Dialog("ホストがせつだんされました。\nマルチプレイをしゅうりょうします。");
+						w.online_mode=0;
+						w.status=2;
+					}
+				}else if(w.online_mode==1){
+					int ct=0;
+					for(int i=0;i<3;i++) {
+						if(w.clientRecv[i]!=null)ct++;
+					}
+					if(ct==0) {
+						w.status=3;
+						w.myCanvas.Dialog("すべてのプレーヤーがせつだんされました。\nマルチプレイをしゅうりょうします。");
+						w.online_mode=0;
+						w.status=2;
+
+					}
+				}
 
 				if(direction!=0) {
 					w.ma.move(direction);
@@ -275,62 +296,23 @@ class GameLoop extends Thread{
 							no_event=false;
 
 							w.se[0].play(0);
-
-							w.myCanvas.drawMenu6(0);
-
 							
-
-							menu_x=0;
-							w.myCanvas.drawMenu6(menu_x,PL2RPG.DIALOG_ANIMATION_TIME);
-
-							while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-							while(w.is_press(KeyEvent.VK_ENTER)==false) {
-								draw_update=false;
-
-								if(w.is_press(KeyEvent.VK_DOWN)) {
-									w.se[0].play(0);
-									menu_x++;
-									if(menu_x>2)menu_x=2;
-									while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-									draw_update=true;
-								}
-								if(w.is_press(KeyEvent.VK_UP)) {
-									w.se[0].play(0);
-									menu_x--;
-									if(menu_x<0)menu_x=0;
-									while(w.is_press(KeyEvent.VK_UP))w.wait(33);
-									draw_update=true;
-								}
-
-								if(draw_update)w.myCanvas.drawMenu6(menu_x);
-
-								w.wait(33);
-							}
-							w.se[0].play(0);
-							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-							
-							if(menu_x==0) {
-								//HOST
-								w.b=new BroadCastIP();
-								w.wc=new waitConnect(w);
+							if(w.online_mode==0) {
+								//新規接続
+	
+								w.myCanvas.drawMenu6(0);
+	
 								menu_x=0;
-								my_host_name=BroadCastIP.getName(w.b.my_ip);
-								w.myCanvas.drawMenu8(menu_x,step,my_host_name,new String[0],PL2RPG.DIALOG_ANIMATION_TIME);
-
+								w.myCanvas.drawMenu6(menu_x,PL2RPG.DIALOG_ANIMATION_TIME);
+	
 								while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 								while(w.is_press(KeyEvent.VK_ENTER)==false) {
 									draw_update=false;
-									step2++;
-									if(step2>10) {
-										step2=0;
-										step=(step+1)%4;
-										draw_update=true;
-									}
-									
+	
 									if(w.is_press(KeyEvent.VK_DOWN)) {
 										w.se[0].play(0);
 										menu_x++;
-										if(menu_x>1)menu_x=1;
+										if(menu_x>2)menu_x=2;
 										while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
 										draw_update=true;
 									}
@@ -341,95 +323,23 @@ class GameLoop extends Thread{
 										while(w.is_press(KeyEvent.VK_UP))w.wait(33);
 										draw_update=true;
 									}
-									
-									
-									if(!w.b.getStatus() || !w.wc.getStatus()) {
-										w.myCanvas.Dialog("ネットワークエラー");
-										menu_x=0;
-										break;
-									}
-									if(draw_update)w.myCanvas.drawMenu8(menu_x,step,my_host_name,new String[0]);
-									
+	
+									if(draw_update)w.myCanvas.drawMenu6(menu_x);
+	
 									w.wait(33);
 								}
 								w.se[0].play(0);
 								while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-								w.b.close();
 								
-								if(menu_x==1) {
-									//開始
-									Info inf=new Info();
-									inf.i=new int[1];
-									inf.i[0]=0;
-									inf.ctr=3;
-									for(int j=0;j<3;j++) {
-										if(w.clientRecv[j]!=null)w.clientRecv[j].send(inf);
-									}
-									w.myCanvas.Dialog("MULTI PLAY START！");
-									w.wc.close();//これいらない
-								}else {
-									//取り消し
-									for(int j=0;j<3;j++) {
-										if(w.clientRecv[j]!=null)w.clientRecv[j].close();
-									}
-									w.wc.close();
-								}
-								//切断時はwc,recvをクローズ
-							}else if(menu_x==1) {
-								//CLIENT
-								GetHost g=new GetHost();
-								menu_x=-1;
-								w.myCanvas.drawMenu7(menu_x,step,new String[0],PL2RPG.DIALOG_ANIMATION_TIME);
-
-								while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-								while(w.is_press(KeyEvent.VK_ENTER)==false) {
-									draw_update=false;
-									step2++;
-									if(step2>10) {
-										step2=0;
-										step=(step+1)%4;
-										draw_update=true;
-									}
-									
-									if(w.is_press(KeyEvent.VK_DOWN)) {
-										w.se[0].play(0);
-										menu_x++;
-										while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-										draw_update=true;
-									}
-									if(w.is_press(KeyEvent.VK_UP)) {
-										w.se[0].play(0);
-										menu_x--;
-										if(menu_x<-1)menu_x=-1;
-										while(w.is_press(KeyEvent.VK_UP))w.wait(33);
-										draw_update=true;
-									}
-									
-									if(menu_x>=g.getHost().length)menu_x=g.getHost().length-1;
-									
-									if(g.getStatus()==false) {
-										w.myCanvas.Dialog("ネットワークエラー");
-										menu_x=-1;
-										break;
-									}
-									if(draw_update)w.myCanvas.drawMenu7(menu_x,step,g.getHost());
-									
-									w.wait(33);
-								}
-								w.se[0].play(0);
-								while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-								g.close();
-								
-								if(menu_x>=0) {
-									w.cc=new ClientConnect(w,g.getHost()[menu_x]);
-									
-									String name="";
-									boolean str=false;
-									
-									name="ホストをまっています";
-									w.myCanvas.drawDialog2(name, PL2RPG.DIALOG_ANIMATION_TIME);
-
-									while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+								if(menu_x==0) {
+									//HOST
+									w.b=new BroadCastIP();
+									w.wc=new waitConnect(w);
+									menu_x=0;
+									my_host_name=BroadCastIP.getName(w.b.my_ip);
+									w.myCanvas.drawMenu8(menu_x,step,my_host_name,new String[0],PL2RPG.DIALOG_ANIMATION_TIME);
+	
+									while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 									while(w.is_press(KeyEvent.VK_ENTER)==false) {
 										draw_update=false;
 										step2++;
@@ -437,37 +347,167 @@ class GameLoop extends Thread{
 											step2=0;
 											step=(step+1)%4;
 											draw_update=true;
-											name="ホストをまっています";
-											for(int j=0;j<step;j++) {
-												name+=".";
-											}
 										}
 										
-										if(!w.cc.getStatus())break;
+										if(w.is_press(KeyEvent.VK_DOWN)) {
+											w.se[0].play(0);
+											menu_x++;
+											if(menu_x>1)menu_x=1;
+											while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+											draw_update=true;
+										}
+										if(w.is_press(KeyEvent.VK_UP)) {
+											w.se[0].play(0);
+											menu_x--;
+											if(menu_x<0)menu_x=0;
+											while(w.is_press(KeyEvent.VK_UP))w.wait(33);
+											draw_update=true;
+										}
 										
-										if(w.cc.fifo.getSize()>0) {
-											InfoS is=w.cc.fifo.bufRead();
-											System.out.println(is.info.ctr);
-											System.out.println(is.info.i[0]);
-											if(is.info.i[0]==0)str=true;											
+										
+										if(!w.b.getStatus() || !w.wc.getStatus()) {
+											w.myCanvas.Dialog("ネットワークエラー");
+											menu_x=0;
 											break;
 										}
-
-										if(draw_update)w.myCanvas.drawDialog2(name);
+										if(draw_update)w.myCanvas.drawMenu8(menu_x,step,my_host_name,new String[0]);
+										
 										w.wait(33);
 									}
-									while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-									
 									w.se[0].play(0);
-									System.out.println(str);
-									if(str) {
-										w.myCanvas.Dialog(w.cc.ip);
-										w.cc.close();//これいらない
+									while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+									w.b.close();
+									
+									if(menu_x==0) {
+										//開始
+										Info inf=new Info();
+										inf.i=new int[1];
+										inf.i[0]=0;
+										inf.ctr=3;
+										for(int j=0;j<3;j++) {
+											if(w.clientRecv[j]!=null)w.clientRecv[j].send(inf);
+										}
+										w.online_mode=1;
+
+										w.myCanvas.Dialog("MULTI PLAY START！");
 									}else {
-										w.cc.close();
-										w.myCanvas.Dialog("とりけされました。");										
+										//取り消し
+										for(int j=0;j<3;j++) {
+											if(w.clientRecv[j]!=null)w.clientRecv[j].close();
+										}
+										w.wc.close();
 									}
-									//切断時はccをクローズ
+									//切断時はwc,recvをクローズ
+								}else if(menu_x==1) {
+									//CLIENT
+									GetHost g=new GetHost();
+									menu_x=-1;
+									w.myCanvas.drawMenu7(menu_x,step,new String[0],PL2RPG.DIALOG_ANIMATION_TIME);
+	
+									while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+									while(w.is_press(KeyEvent.VK_ENTER)==false) {
+										draw_update=false;
+										step2++;
+										if(step2>10) {
+											step2=0;
+											step=(step+1)%4;
+											draw_update=true;
+										}
+										
+										if(w.is_press(KeyEvent.VK_DOWN)) {
+											w.se[0].play(0);
+											menu_x++;
+											while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+											draw_update=true;
+										}
+										if(w.is_press(KeyEvent.VK_UP)) {
+											w.se[0].play(0);
+											menu_x--;
+											if(menu_x<-1)menu_x=-1;
+											while(w.is_press(KeyEvent.VK_UP))w.wait(33);
+											draw_update=true;
+										}
+										
+										if(menu_x>=g.getHost().length)menu_x=g.getHost().length-1;
+										
+										if(g.getStatus()==false) {
+											w.myCanvas.Dialog("ネットワークエラー");
+											menu_x=-1;
+											break;
+										}
+										if(draw_update)w.myCanvas.drawMenu7(menu_x,step,g.getHost());
+										
+										w.wait(33);
+									}
+									w.se[0].play(0);
+									while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+									g.close();
+									
+									if(menu_x>=0) {
+										w.cc=new ClientConnect(w,g.getHost()[menu_x]);
+										
+										String name="";
+										boolean str=false;
+										InfoS is;
+										
+										name="ホストをまっています";
+										w.myCanvas.drawDialog2(name, PL2RPG.DIALOG_ANIMATION_TIME);
+	
+										while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+										while(w.is_press(KeyEvent.VK_ENTER)==false) {
+											draw_update=false;
+											step2++;
+											if(step2>10) {
+												step2=0;
+												step=(step+1)%4;
+												draw_update=true;
+												name="ホストをまっています";
+												for(int j=0;j<step;j++) {
+													name+=".";
+												}
+											}
+											
+											if(!w.cc.getStatus())break;
+											
+											if((is=w.cc.fifo.bufRead())!=null) {
+												System.out.println(is.info.ctr);
+												System.out.println(is.info.i[0]);
+												if(is.info.i[0]==0)str=true;											
+												break;
+											}
+	
+											if(draw_update)w.myCanvas.drawDialog2(name);
+											w.wait(33);
+										}
+										while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+										
+										w.se[0].play(0);
+										System.out.println(str);
+										if(str) {
+											w.online_mode=2;
+											w.myCanvas.Dialog(w.cc.ip);
+											
+										}else {
+											w.cc.close();
+											w.myCanvas.Dialog("とりけされました。");										
+										}
+										//切断時はccをクローズ
+									}
+								}
+							}else if(w.online_mode==1) {
+								//ホスト切断
+								if(w.myCanvas.DialogYesNo("マルチプレイをしゅうりょうしますか？", true)) {
+									for(int j=0;j<3;j++) {
+										if(w.clientRecv[j]!=null)w.clientRecv[j].close();
+									}
+									w.wc.close();
+									w.online_mode=0;
+								}
+							}else if(w.online_mode==2) {
+								//クライアント切断
+								if(w.myCanvas.DialogYesNo("マルチプレイをしゅうりょうしますか？", true)) {
+									w.cc.close();
+									w.online_mode=0;
 								}
 							}
 

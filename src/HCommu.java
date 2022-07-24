@@ -227,7 +227,6 @@ class Recv extends Thread{
 	public Window w;
 	public String ip;
 	public int id;
-	public FIFO fifo;
 	
 	private boolean status;
 	Recv(Socket sk,Window w,int res){
@@ -236,7 +235,6 @@ class Recv extends Thread{
 			sock=sk;
 			this.w=w;
 			this.id=res;
-			fifo=new FIFO();
 			
 			//sock.setSoTimeout( 30000 );
 			sock.setSoTimeout(0);
@@ -294,7 +292,7 @@ class Recv extends Thread{
 					is.ois=ois;
 					is.ip=ip;
 					is.id=id;
-					fifo.bufWrite(is.clone());
+					w.h_fifo.bufWrite(is.clone());
 				}
 			}
 			//接続エラー時

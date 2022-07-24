@@ -43,6 +43,8 @@ public class Window extends JFrame implements KeyListener{
 	public Recv[] clientRecv=new Recv[3];
 	public waitConnect wc;
 	
+	public FIFO h_fifo=new FIFO();
+	
 	public BroadCastIP b;
 	
 	private GameLoop gl;
