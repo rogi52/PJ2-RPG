@@ -244,6 +244,7 @@ public class Window extends JFrame implements KeyListener{
 		case KeyEvent.VK_ESCAPE:
 			res=press_esc;
 			break;
+
 		}
 
 		return res;
@@ -292,6 +293,18 @@ public class Window extends JFrame implements KeyListener{
 			break;
 		case KeyEvent.VK_ESCAPE:
 			press_esc=true;
+			break;
+		case KeyEvent.VK_W:
+			press_up=true;
+			break;
+		case KeyEvent.VK_A:
+			press_le=true;
+			break;
+		case KeyEvent.VK_S:
+			press_dw=true;
+			break;
+		case KeyEvent.VK_D:
+			press_ri=true;
 			break;
 		}
 		if(Animation_Select.on_animate==false && AnimationMove.on_animate==false) {
@@ -380,6 +393,18 @@ public class Window extends JFrame implements KeyListener{
 			break;
 		case KeyEvent.VK_ESCAPE:
 			press_esc=false;
+			break;
+		case KeyEvent.VK_W:
+			press_up=false;
+			break;
+		case KeyEvent.VK_A:
+			press_le=false;
+			break;
+		case KeyEvent.VK_S:
+			press_dw=false;
+			break;
+		case KeyEvent.VK_D:
+			press_ri=false;
 			break;
 		}
 	}
