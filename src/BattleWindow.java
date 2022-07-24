@@ -169,8 +169,22 @@ public class BattleWindow implements KeyListener {
 				mw.buffer = "";
 				mw.buffer += str.charAt(i);
 			}
-			repaint();
+			mw.repaint();
 			try { Thread.sleep(33); } catch (InterruptedException e) {}
+			try {
+				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
+				String signal = in.readLine();
+				if(signal != null) {
+					bos = new ByteArrayOutputStream();
+					out = new PrintWriter(bos);
+					for(int k = i + 1; k < str.length(); k++) {
+						mw.buffer += str.charAt(k);
+						mw.repaint();
+					}
+					break;
+				}
+			} catch(IOException e) {}
 		}
 
 		//repaint();
@@ -343,7 +357,7 @@ public class BattleWindow implements KeyListener {
 		if(STATE == MESSAGE) {
 			switch(e.getKeyCode()) {
 				case KeyEvent.VK_ENTER: {
-					mw.clear();
+					//mw.clear();
 					out.println("ENTER");
 					out.flush();
 				} break;

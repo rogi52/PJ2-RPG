@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -29,6 +30,9 @@ public class MessageWindow {
 	void repaint() {
 		Graphics g = myCanvas.buffer;
 
+		g.setColor(Color.BLACK);
+		g.fillRect(START_X, START_Y, CHARACTER_NUM_WIDTH * CHARACTER_SIZE, CHARACTER_NUM_HEIGHT * CHARACTER_SIZE);
+
 		for(int i = 0, h = 0, w = 0; i < buffer.length(); i++) {
 			char c = buffer.charAt(i);
 			if(c == '\n') { if(w!=0) { h++; w=0; } continue; }
@@ -39,6 +43,8 @@ public class MessageWindow {
 			} catch (IOException e) { System.out.println("error : " + c); }
 			w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; }
 		}
+
+		myCanvas.repaint();
 	}
 
 	int lines() {
