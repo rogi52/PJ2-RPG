@@ -67,7 +67,7 @@ public class MobData {
 		lMob[1][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
 
 		clear();
-		lMob[1][1] = new MobStatus(6, "Aまほ1",50,20,90,91,70,60);
+		lMob[1][1] = new MobStatus(6, "イセッキ",50,20,90,91,70,60);
 		attType[1] = true;
 		attType[3] = true;
 		setRegi(0.9,1.1,1.0,1.2);
@@ -327,7 +327,7 @@ public class MobData {
 		sMob[1][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
 
 		clear();
-		sMob[1][1] = new MobStatus(34, "Bまほ1",100,60,130,91,70,60);
+		sMob[1][1] = new MobStatus(34, "フェアリ",100,60,130,91,70,60);
 		attType[1] = true;
 		attType[3] = true;
 		setRegi(0.9,1.1,1.0,1.2);
@@ -357,7 +357,7 @@ public class MobData {
 		sMob[2][1].setStatus2(80, 30, attType, regi, skill, ai, 1);
 
 		clear();
-		sMob[3][0] = new MobStatus(37, "Bしー1",100,30,110,90,100,110);
+		sMob[3][0] = new MobStatus(37, "イワ",100,30,110,90,100,110);
 		attType[0] = true;
 		attType[3] = true;
 		setRegi(1.1,0.9,1.1,0.9);
@@ -397,7 +397,7 @@ public class MobData {
 		sMob[4][1].setStatus2(50, 50, attType, regi, skill, ai, 1);
 
 		clear();
-		sMob[5][0] = new MobStatus(41, "Bあー1",100,20,120,91,80,70);
+		sMob[5][0] = new MobStatus(41, "キメラ",100,20,120,91,80,70);
 		attType[0] = true;
 		attType[3] = true;
 		setRegi(1.1,1.0,1.0,1.2);
@@ -407,7 +407,7 @@ public class MobData {
 		sMob[5][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
 
 		clear();
-		sMob[5][1] = new MobStatus(42, "Bあー2",120,30,140,100,75,70);
+		sMob[5][1] = new MobStatus(42, "りゅう",120,30,140,100,75,70);
 		attType[0] = true;
 		attType[3] = true;
 		setRegi(1.2,0.9,0.9,1.2);
@@ -448,7 +448,7 @@ public class MobData {
 		bossMob[0].setStatus2(50, 50, attType, regi, skill, ai, 4);
 
 		clear();
-		bossMob[1] = new MobStatus(52, "BOまほ",150,100,160,60,80,50);
+		bossMob[1] = new MobStatus(52, "てんま",150,100,160,60,80,50);
 		attType[1] = true;
 		attType[3] = true;
 		setRegi(0.9,1.1,1.0,1.1);
@@ -490,7 +490,7 @@ public class MobData {
 		bossMob[4].setStatus2(50, 50, attType, regi, skill, ai, 6);
 
 		clear();
-		bossMob[5] = new MobStatus(56, "BOあー",150,35,140,60,120,160);
+		bossMob[5] = new MobStatus(56, "しれい",150,35,140,60,120,160);
 		attType[0] = true;
 		attType[3] = true;
 		setRegi(1.1,1.0,0.9,1.2);
@@ -527,8 +527,8 @@ public class MobData {
 		attType[3] = true;
 		setRegi(1.0,1.0,1.0,1.0);
 		skill = new int[6];
-		skill[0] = 50; skill[1] = 51; skill[2] = 52; skill[3] = 53; skill[4] = 54; skill[5] = 55;
-		setAI(11,2);
+		skill[0] = 50; skill[1] = 51; skill[2] = 52; skill[3] = 53; skill[4] = 55;
+		setAI(8,2);
 		bossMob[9].setStatus2(90, 50, attType, regi, skill, ai, 4);
 		item[0] = 21; item[1] = 22; item[2] = 23;
 		bossMob[9].setStatus3(item);
