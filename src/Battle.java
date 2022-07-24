@@ -157,7 +157,7 @@ class Battle {
 		double lower = 0;
 		for(int i = 0; i < 4; i++) if(Enemy[i].isExist()) lower += 1.0;
 		double ratio = upper / lower;
-		window.print("", BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
+		window.repaint();
 		for(int i = 0; i < 4; i++) if(Enemy[i].isExist()) {
 			Enemy[i].curHP *= ratio;
 			Enemy[i].maxHP *= ratio;
