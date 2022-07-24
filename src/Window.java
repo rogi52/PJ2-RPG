@@ -39,7 +39,11 @@ public class Window extends JFrame implements KeyListener{
 	public int online_mode=0;
 	public MainData m;
 	
-	public String host_ip;
+	public ClientConnect cc;
+	public Recv[] clientRecv=new Recv[3];
+	public waitConnect wc;
+	
+	public BroadCastIP b;
 	
 	private GameLoop gl;
 	private boolean press_up=false,press_dw=false,press_le=false,press_ri=false,pr_enter=false,press_esc=false;
@@ -84,7 +88,6 @@ public class Window extends JFrame implements KeyListener{
 
 
 		bgm[now_playing_bgm].play(-1);
-
 
 
 	}

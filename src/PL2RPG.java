@@ -19,6 +19,9 @@ public class PL2RPG {
 
 	public static final float RANDOM_MATCH_PROB=0.00245f;
 	public static final int RANDOM_MATCH_MIN=30;
+	
+	public static final int CAST_PORT=15224;
+	public static final int CNT_PORT=15225;
 
 	public static final int MAIN_WIN_X=BLOCK_SIZE*MAIN_WIN_X_BOX;
 	public static final int MAIN_WIN_Y=BLOCK_SIZE*MAIN_WIN_Y_BOX;

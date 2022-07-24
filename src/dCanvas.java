@@ -190,6 +190,23 @@ class dCanvas extends Canvas {
 
 	}
 
+
+	//アイテム取得
+	public void drawDialog2(String str) {
+		drawDialog2(str,0);
+	}
+	public void drawDialog2(String str, int ms) {
+		buffer.setColor(new Color(255,255,255,255));
+		buffer.fillRect(97,97,PL2RPG.MAIN_WIN_X-1-97*2,PL2RPG.MAIN_WIN_Y-1-97*2);
+		buffer.setColor(new Color(0,0,0,255));
+		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
+		drawChr(str,104,104,PL2RPG.MAIN_WIN_X-1-100*2-8, ms);
+
+		drawChr("▶キャンセル",104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
+
+		repaint();
+	}
+
 	//アイテム取得
 	public void drawDialog1(String str, int ms) {
 		buffer.setColor(new Color(255,255,255,255));
@@ -221,10 +238,22 @@ class dCanvas extends Canvas {
 		drawChr(name,104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 
 		String name3="キャンセル\nしめきる\n";
+		String name4;
 		for(int i=0;i<list.length;i++) {
 			name3+="\n"+BroadCastIP.getName(list[i]);
 		}
 		
+		int j=0;
+		name4="";
+		for(int i=0;i<3;i++) {
+			if(w.clientRecv[i]!=null) {
+				j++;
+				name4+="\n"+ Integer.toString(j)+"."+BroadCastIP.getName(w.clientRecv[i].ip);
+			}
+		}
+		name3+="\n"+Integer.toString(j)+"／"+Integer.toString(w.clientRecv.length)+name4;
+		
+		w.b.doCast(j<3);
 		
 		drawChr(name3,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*3,PL2RPG.MAIN_WIN_X-1-100*2-8);
 		
@@ -244,7 +273,7 @@ class dCanvas extends Canvas {
 		buffer.setColor(new Color(0,0,0,255));
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		
-		String name="ホストをさがしています";
+		String name="ルームをさがしています";
 		for(int i=0;i<step;i++) {
 			name+=".";
 		}
@@ -277,10 +306,10 @@ class dCanvas extends Canvas {
 		buffer.fillRect(100,100,PL2RPG.MAIN_WIN_X-1-100*2,PL2RPG.MAIN_WIN_Y-1-100*2);
 		
 
-		drawChr("せつぞくモードをえらんでください。",104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
+		drawChr("マルチプレイメニュー",104+PL2RPG.BLOCK_SIZE*1,104,PL2RPG.MAIN_WIN_X-1-100*2-8,ms);
 
 		
-		String name3="ホスト\nクライアント\nキャンセル";
+		String name3="ルームをたてる\nルームをさがす\nキャンセル";
 		
 		
 		drawChr(name3,104+PL2RPG.BLOCK_SIZE*2,104+PL2RPG.BLOCK_SIZE*2,PL2RPG.MAIN_WIN_X-1-100*2-8);

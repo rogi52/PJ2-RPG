@@ -64,6 +64,7 @@ class GameLoop extends Thread{
 							no_event=false;
 
 
+
 							//クエスト完了テスト
 							for(int j=0;j<5;j++) {
 								if(w.m.nowQuestNumber[j]!=-1) {
@@ -310,10 +311,10 @@ class GameLoop extends Thread{
 							
 							if(menu_x==0) {
 								//HOST
-								BroadCastIP b=new BroadCastIP();
-								b.open();
+								w.b=new BroadCastIP();
+								w.wc=new waitConnect(w);
 								menu_x=0;
-								my_host_name=BroadCastIP.getName(b.my_ip);
+								my_host_name=BroadCastIP.getName(w.b.my_ip);
 								w.myCanvas.drawMenu8(menu_x,step,my_host_name,new String[0],PL2RPG.DIALOG_ANIMATION_TIME);
 
 								while(w.is_press(KeyEvent.VK_ESCAPE) || w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_RIGHT) || w.is_press(KeyEvent.VK_LEFT) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN) || w.is_press(KeyEvent.VK_ENTER))w.wait(33);
@@ -342,7 +343,7 @@ class GameLoop extends Thread{
 									}
 									
 									
-									if(b.getStatus()==false) {
+									if(!w.b.getStatus() || !w.wc.getStatus()) {
 										w.myCanvas.Dialog("ネットワークエラー");
 										menu_x=0;
 										break;
@@ -353,18 +354,29 @@ class GameLoop extends Thread{
 								}
 								w.se[0].play(0);
 								while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-								b.close();
+								w.b.close();
 								
 								if(menu_x==1) {
 									//開始
+									Info inf=new Info();
+									inf.i=new int[1];
+									inf.i[0]=0;
+									inf.ctr=3;
+									for(int j=0;j<3;j++) {
+										if(w.clientRecv[j]!=null)w.clientRecv[j].send(inf);
+									}
 									w.myCanvas.Dialog("MULTI PLAY START！");
 								}else {
 									//取り消し
+									for(int j=0;j<3;j++) {
+										if(w.clientRecv[j]!=null)w.clientRecv[j].close();
+									}
 								}
+								//切断時はwc,recvをクローズ
+								w.wc.close();
 							}else if(menu_x==1) {
 								//CLIENT
 								GetHost g=new GetHost();
-								g.open();
 								menu_x=-1;
 								w.myCanvas.drawMenu7(menu_x,step,new String[0],PL2RPG.DIALOG_ANIMATION_TIME);
 
@@ -408,8 +420,52 @@ class GameLoop extends Thread{
 								g.close();
 								
 								if(menu_x>=0) {
-									w.host_ip=g.getHost()[menu_x];
-									w.myCanvas.Dialog(w.host_ip);
+									w.cc=new ClientConnect(w,g.getHost()[menu_x]);
+									
+									String name="";
+									boolean str=false;
+									
+									name="ホストをまっています";
+									w.myCanvas.drawDialog2(name, PL2RPG.DIALOG_ANIMATION_TIME);
+
+									while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+									while(w.is_press(KeyEvent.VK_ENTER)==false) {
+										draw_update=false;
+										step2++;
+										if(step2>10) {
+											step2=0;
+											step=(step+1)%4;
+											draw_update=true;
+											name="ホストをまっています";
+											for(int j=0;j<step;j++) {
+												name+=".";
+											}
+										}
+										
+										if(!w.cc.getStatus())break;
+										
+										if(w.cc.fifo.getSize()>0) {
+											InfoS is=w.cc.fifo.bufRead();
+											System.out.println(is.info.ctr);
+											System.out.println(is.info.i[0]);
+											if(is.info.i[0]==0)str=true;											
+											break;
+										}
+
+										if(draw_update)w.myCanvas.drawDialog2(name);
+										w.wait(33);
+									}
+									while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+									
+									w.se[0].play(0);
+									System.out.println(str);
+									if(str) {
+										w.myCanvas.Dialog(w.cc.ip);
+									}else {
+										w.myCanvas.Dialog("とりけされました。");										
+									}
+									//切断時はccをクローズ
+									w.cc.close();
 								}
 							}
 
@@ -930,7 +986,7 @@ class AnimationMove extends Thread{
 
 			if( ( update || force_update ) && Animation_Select.on_animate==false && w.status==2) {
 				force_update=false;
-				System.out.println(Integer.toString(myCanvas.pos_x/PL2RPG.BLOCK_SIZE) +" , "+Integer.toString(myCanvas.pos_y/PL2RPG.BLOCK_SIZE) +" Matching_Prob="+Float.toString(PL2RPG.RANDOM_MATCH_PROB*(walk_count-PL2RPG.RANDOM_MATCH_MIN)));
+				//System.out.println(Integer.toString(myCanvas.pos_x/PL2RPG.BLOCK_SIZE) +" , "+Integer.toString(myCanvas.pos_y/PL2RPG.BLOCK_SIZE) +" Matching_Prob="+Float.toString(PL2RPG.RANDOM_MATCH_PROB*(walk_count-PL2RPG.RANDOM_MATCH_MIN)));
 				myCanvas.drawMap(0,view_direction,step);
 				on_animate=true;
 			}else {

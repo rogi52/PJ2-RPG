@@ -4,7 +4,6 @@ public abstract class test {
 	public static void main(String[] args) {
 		GetHost g=new GetHost();
 		String[] res;
-		g.open();
 		System.out.println(g.getStatus());
 		
 
