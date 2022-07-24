@@ -169,8 +169,22 @@ public class BattleWindow implements KeyListener {
 				mw.buffer = "";
 				mw.buffer += str.charAt(i);
 			}
-			repaint();
+			mw.repaint();
 			try { Thread.sleep(33); } catch (InterruptedException e) {}
+			try {
+				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
+				String signal = in.readLine();
+				if(signal != null) {
+					bos = new ByteArrayOutputStream();
+					out = new PrintWriter(bos);
+					for(int k = i + 1; k < str.length(); k++) {
+						mw.buffer += str.charAt(k);
+						mw.repaint();
+					}
+					break;
+				}
+			} catch(IOException e) {}
 		}
 
 		//repaint();
@@ -343,7 +357,7 @@ public class BattleWindow implements KeyListener {
 		if(STATE == MESSAGE) {
 			switch(e.getKeyCode()) {
 				case KeyEvent.VK_ENTER: {
-					mw.clear();
+					//mw.clear();
 					out.println("ENTER");
 					out.flush();
 				} break;
@@ -355,7 +369,9 @@ public class BattleWindow implements KeyListener {
 				case CMD_LEFT: {
 					switch(e.getKeyCode()) {
 						case KeyEvent.VK_DOWN:  { posLeft = Math.min(posLeft + 1, cmdsLeft.size() - 1); repaint(); } break;
+						case KeyEvent.VK_S:     { posLeft = Math.min(posLeft + 1, cmdsLeft.size() - 1); repaint(); } break;
 						case KeyEvent.VK_UP:    { posLeft = Math.max(posLeft - 1,                   0); repaint(); } break;
+						case KeyEvent.VK_W:     { posLeft = Math.max(posLeft - 1,                   0); repaint(); } break;
 						case KeyEvent.VK_ENTER: {
 							out.println(posLeft);
 							out.flush();
@@ -371,7 +387,19 @@ public class BattleWindow implements KeyListener {
 							repaint();
 						} break;
 
+						case KeyEvent.VK_S: {
+							pos4I++;
+							if(4 <= pos4I || cmdsBox4.get(posBox4)[pos4I] == null) pos4I--;
+							repaint();
+						} break;
+
 						case KeyEvent.VK_UP: {
+							pos4I--;
+							if(pos4I < 0 || cmdsBox4.get(posBox4)[pos4I] == null) pos4I++;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_W: {
 							pos4I--;
 							if(pos4I < 0 || cmdsBox4.get(posBox4)[pos4I] == null) pos4I++;
 							repaint();
@@ -383,7 +411,19 @@ public class BattleWindow implements KeyListener {
 							repaint();
 						} break;
 
+						case KeyEvent.VK_A: {
+							posBox4--;
+							if(posBox4 < 0) posBox4++;
+							repaint();
+						} break;
+
 						case KeyEvent.VK_RIGHT: {
+							posBox4++;
+							if(cmdsBox4.size() <= posBox4) posBox4--;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_D: {
 							posBox4++;
 							if(cmdsBox4.size() <= posBox4) posBox4--;
 							repaint();
@@ -402,10 +442,21 @@ public class BattleWindow implements KeyListener {
 							pos8I++;
 							if(4 <= pos8I || cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8I--;
 							repaint();
-							/* 左下から右上に飛ぶ処理？ */
+						} break;
+
+						case KeyEvent.VK_S: {
+							pos8I++;
+							if(4 <= pos8I || cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8I--;
+							repaint();
 						} break;
 
 						case KeyEvent.VK_UP: {
+							pos8I--;
+							if(pos8I < 0 || cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8I++;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_W: {
 							pos8I--;
 							if(pos8I < 0 || cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8I++;
 							repaint();
@@ -426,7 +477,37 @@ public class BattleWindow implements KeyListener {
 							repaint();
 						} break;
 
+						case KeyEvent.VK_A: {
+							if(pos8J == 0) {
+								posBox8--;
+								pos8J = 1;
+								if(posBox8 < 0) {
+									posBox8++;
+									pos8J = 0;
+								}
+							} else {
+								pos8J--;
+								if(cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8J++;
+							}
+							repaint();
+						} break;
+
 						case KeyEvent.VK_RIGHT: {
+							if(pos8J == 1) {
+								posBox8++;
+								pos8J = 0;
+								if(cmdsBox8.size() <= posBox8) {
+									posBox8--;
+									pos8J = 1;
+								}
+							} else {
+								pos8J++;
+								if(cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8J--;
+							}
+							repaint();
+						} break;
+
+						case KeyEvent.VK_D: {
 							if(pos8J == 1) {
 								posBox8++;
 								pos8J = 0;
