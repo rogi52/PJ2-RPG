@@ -322,23 +322,21 @@ public class BattleWindow implements KeyListener {
 				mw.buffer += str.charAt(i);
 			}
 			mw.repaint();
-			//try { Thread.sleep(33); } catch (InterruptedException e) {}
-			for(int t = 0; t < 30; t++) {
-				try {
-					ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-					BufferedReader in = new BufferedReader(new InputStreamReader(bis));
-					String signal = in.readLine();
-					if(signal != null) {
-						bos = new ByteArrayOutputStream();
-						out = new PrintWriter(bos);
-						for(int k = i + 1; k < str.length(); k++) {
-							mw.buffer += str.charAt(k);
-							mw.repaint();
-						}
-						break;
+			try { Thread.sleep(33); } catch (InterruptedException e) {}
+			try {
+				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
+				String signal = in.readLine();
+				if(signal != null) {
+					bos = new ByteArrayOutputStream();
+					out = new PrintWriter(bos);
+					for(int k = i + 1; k < str.length(); k++) {
+						mw.buffer += str.charAt(k);
+						mw.repaint();
 					}
-				} catch(IOException e) {}
-			}
+					break;
+				}
+			} catch(IOException e) {}
 		}
 
 		//repaint();
