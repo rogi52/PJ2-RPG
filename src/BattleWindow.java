@@ -78,7 +78,7 @@ public class BattleWindow implements KeyListener {
 		Graphics g = myCanvas.buffer;
 
 		g.setColor(Color.BLACK);
-		g.fillRect(100, 448, 32 * 6, 32 * 4);
+		g.fillRect(100, 448, 32 * 6 + 16, 32 * 4 + 8 + 4);
 
 		if(cmdsLeft.size() > 0) {
 			try {
@@ -164,7 +164,7 @@ public class BattleWindow implements KeyListener {
 		Graphics g = myCanvas.buffer;
 
 		g.setColor(Color.BLACK);
-		g.fillRect(100, 448, 32 * 6 + 16, 32 * 4);
+		g.fillRect(100, 448, 32 * 6 + 16, 32 * 4 + 8 + 4);
 
 		if(optionType == SKILL) {
 			int pos = cmdsBox8ID.get(posBox8)[pos8I][pos8J];
@@ -415,23 +415,19 @@ public class BattleWindow implements KeyListener {
 		myCanvas.repaint();
 	}
 
-	void repaint() {
+	void repaintHero() {
 		Graphics g = myCanvas.buffer;
-
-		/* 背景 */
-		try {
-			BufferedImage background = ImageManager.getImage("battle3");
-			g.drawImage(background, 0, 0, null);
-		} catch (IOException e) { System.out.println("Error : battle.png"); }
-
-		/* 主人公 */
+		g.setColor(Color.BLACK);
 		for(int i = 0; i < 4; i++) {
 			String name = players[i].name;
-			for(int j = 0; j < name.length(); j++) {
-				try {
-					BufferedImage image = ImageManager.getCharImage(name.charAt(j));
-					g.drawImage(image, startX[i] + j * 32, 32, null);
-				} catch (IOException e) { System.out.println("Error : " + name); }
+			for(int j = 0; j < 5; j++) {
+				g.fillRect(startX[i] + j * 32, 32, 32, 32);
+				if(j < name.length()) {
+					try {
+						BufferedImage image = ImageManager.getCharImage(name.charAt(j));
+						g.drawImage(image, startX[i] + j * 32, 32, null);
+					} catch (IOException e) { System.out.println("Error : " + name); }
+				}
 			}
 
 			try {
@@ -440,6 +436,7 @@ public class BattleWindow implements KeyListener {
 				String num = players[i].HP.toString();
 				while(num.length() < 4) num = ' ' + num;
 				for(int j = 0; j < 4; j++) {
+					g.fillRect(startX[i] + (j + 1) * 32, 128, 32, 32);
 					if(num.charAt(j) != ' ') {
 						image = ImageManager.getCharImage(num.charAt(j));
 						g.drawImage(image, startX[i] + (j + 1) * 32, 96, null);
@@ -453,6 +450,7 @@ public class BattleWindow implements KeyListener {
 				String num = players[i].MP.toString();
 				while(num.length() < 4) num = ' ' + num;
 				for(int j = 0; j < 4; j++) {
+					g.fillRect(startX[i] + (j + 1) * 32, 128, 32, 32);
 					if(num.charAt(j) != ' ') {
 						image = ImageManager.getCharImage(num.charAt(j));
 						g.drawImage(image, startX[i] + (j + 1) * 32, 128, null);
@@ -460,6 +458,21 @@ public class BattleWindow implements KeyListener {
 				}
 			} catch (IOException e) { System.out.println("Error : MP"); }
 		}
+
+		myCanvas.repaint();
+	}
+
+	void repaint() {
+		Graphics g = myCanvas.buffer;
+
+		/* 背景 */
+		try {
+			BufferedImage background = ImageManager.getImage("battle3");
+			g.drawImage(background, 0, 0, null);
+		} catch (IOException e) { System.out.println("Error : battle.png"); }
+
+		/* 主人公 */
+		repaintHero();
 
 		/* 敵 */
 		repaintEnemy();
@@ -471,7 +484,7 @@ public class BattleWindow implements KeyListener {
 		if(STATE == COMMAND) {
 			/*  コマンド (左) */
 			g.setColor(Color.BLACK);
-			g.fillRect(128 - 28, 448, 32 * 5 + 32, 32 * 4);
+			g.fillRect(100, 448, 32 * 6 + 16, 32 * 4 + 8 + 4);
 			try {
 				BufferedImage arrow = ImageManager.getCharImage('▶');
 				g.drawImage(arrow, 128 - 32, 448 + posLeft * 32, null);
