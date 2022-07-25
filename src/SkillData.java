@@ -69,7 +69,7 @@ public class SkillData {
 
 			case 7: {
 				skill.name = "ハキ";
-				skill.doc = "ふくすうのてきによわいこうげきをする";
+				skill.doc = "ふくすうによわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 0.8;
 				skill.target = 10;
@@ -78,7 +78,7 @@ public class SkillData {
 
 			case 8: {
 				skill.name = "ハキクロス";
-				skill.doc = "ふくすうのてきにこうげきをする";
+				skill.doc = "ふくすうにこうげきをする";
 				skill.waza = 0;
 				skill.skill = 1.2;
 				skill.target = 10;
@@ -195,7 +195,7 @@ public class SkillData {
 
 			case 20: {
 				skill.name = "クエイク";
-				skill.doc = "ふくすうのてきによわいこうげきをする";
+				skill.doc = "ふくすうによわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 0.7;
 				skill.target = 10;
@@ -204,7 +204,7 @@ public class SkillData {
 
 			case 21: {
 				skill.name = "クエイラ";
-				skill.doc = "ふくすうのてきにこうげきをする";
+				skill.doc = "ふくすうにこうげきをする";
 				skill.waza = 0;
 				skill.skill = 1.1;
 				skill.target = 10;
@@ -240,7 +240,7 @@ public class SkillData {
 
 			case 25: {
 				skill.name = "フルレンジ";
-				skill.doc = "ふくすうのてきによわいこうげきをする";
+				skill.doc = "ふくすうによわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 0.6;
 				skill.target = 10;
