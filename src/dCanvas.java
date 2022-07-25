@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 class dCanvas extends Canvas {
 	public int block_num,teki_num,help_num;
 
-	public BufferedImage bg_img,new_img,con_img,new_act_img,con_act_img,con_dis_img,item_img,save_img;
+	public BufferedImage bg_img,logo_img,new_img,con_img,new_act_img,con_act_img,con_dis_img,item_img,save_img;
 	public BufferedImage[] block;
 	public BufferedImage[] teki;
 	public BufferedImage[] help;
@@ -750,6 +750,7 @@ class dCanvas extends Canvas {
 
 	public void drawSelect(int alpha,int key_y) {
 		buffer.drawImage(bg_img,0,0, null);
+		buffer.drawImage(logo_img,0,0, null);
 
 		for(int i=key_y-5;i<=key_y+5;i++) {
 			if(i>=0 && i<w.save_num) {
@@ -782,6 +783,7 @@ class dCanvas extends Canvas {
 	}
 	public void drawStart(boolean is_new,int alpha) {
 		buffer.drawImage(bg_img,0,0, null);
+		buffer.drawImage(logo_img,0,0, null);
 
 		if(is_new) {
 			buffer.drawImage(new_act_img,PL2RPG.MAIN_WIN_X/2-128-100,450, null);
@@ -834,6 +836,7 @@ class dCanvas extends Canvas {
 
 		try {
 			bg_img = ImageIO.read(new File(PL2RPG.UI_IMG_PATH+"/bg.png"));
+			logo_img = ImageIO.read(new File(PL2RPG.UI_IMG_PATH+"/logo.png"));
 			new_img = ImageIO.read(new File(PL2RPG.UI_IMG_PATH+"/new.png"));
 			con_img = ImageIO.read(new File(PL2RPG.UI_IMG_PATH+"/continue.png"));
 			new_act_img = ImageIO.read(new File(PL2RPG.UI_IMG_PATH+"/new_act.png"));
