@@ -27,6 +27,12 @@ public class Window extends JFrame implements KeyListener{
 	public int key_y=0;
 	public int key_x=0;
 	public String load_name;
+	
+	public String map_name;
+
+	public String host_map_name;
+	public int host_map_def_x;
+	public int host_map_def_y;
 
 	public String[] save_list;
 	public int save_num;
@@ -46,6 +52,18 @@ public class Window extends JFrame implements KeyListener{
 	public FIFO h_fifo=new FIFO();
 	
 	public BroadCastIP b;
+	
+	public int my_online_id;
+	
+	public int[] online_x=new int[4];
+	public int[] online_y=new int[4];
+	public int[] online_dir=new int[4];
+	public int[] online_step=new int[4];
+	public int[] online_chr=new int[4];
+	public String[] online_map=new String[4];
+	
+	public OnlineProcess op;
+	
 	
 	private GameLoop gl;
 	private boolean press_up=false,press_dw=false,press_le=false,press_ri=false,pr_enter=false,press_esc=false;
@@ -90,6 +108,10 @@ public class Window extends JFrame implements KeyListener{
 
 
 		bgm[now_playing_bgm].play(-1);
+		
+		op=new OnlineProcess(this);
+		
+		drawStart(false);
 
 
 	}
@@ -277,39 +299,46 @@ public class Window extends JFrame implements KeyListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		int key=e.getKeyCode();
-		switch(key) {
-		case KeyEvent.VK_UP:
-			press_up=true;
-			break;
-		case KeyEvent.VK_DOWN:
-			press_dw=true;
-			break;
-		case KeyEvent.VK_LEFT:
-			press_le=true;
-			break;
-		case KeyEvent.VK_RIGHT:
-			press_ri=true;
-			break;
-		case KeyEvent.VK_ENTER:
-			pr_enter=true;
-			break;
-		case KeyEvent.VK_ESCAPE:
-			press_esc=true;
-			break;
-		case KeyEvent.VK_W:
-			press_up=true;
-			break;
-		case KeyEvent.VK_A:
-			press_le=true;
-			break;
-		case KeyEvent.VK_S:
-			press_dw=true;
-			break;
-		case KeyEvent.VK_D:
-			press_ri=true;
-			break;
+		
+		if(!Animation_Select.on_animate) {
+			switch(key) {
+			case KeyEvent.VK_UP:
+				press_up=true;
+				break;
+			case KeyEvent.VK_DOWN:
+				press_dw=true;
+				break;
+			case KeyEvent.VK_LEFT:
+				press_le=true;
+				break;
+			case KeyEvent.VK_RIGHT:
+				press_ri=true;
+				break;
+			case KeyEvent.VK_ENTER:
+				pr_enter=true;
+				break;
+			case KeyEvent.VK_ESCAPE:
+				press_esc=true;
+				break;
+			case KeyEvent.VK_W:
+				press_up=true;
+				break;
+			case KeyEvent.VK_A:
+				press_le=true;
+				break;
+			case KeyEvent.VK_S:
+				press_dw=true;
+				break;
+			case KeyEvent.VK_D:
+				press_ri=true;
+				break;
+			}
+			
+		}else {
+			resetKey();
 		}
-		if(Animation_Select.on_animate==false && AnimationMove.on_animate==false) {
+		
+		if(Animation_Select.on_animate==false && (AnimationMove.on_animate==false || status==2)) {
 			switch(key) {
 			case KeyEvent.VK_UP:
 				key_y--;
@@ -324,6 +353,7 @@ public class Window extends JFrame implements KeyListener{
 				key_x--;
 				break;
 			}
+			
 
 			//System.out.println(status);
 			if(status==0) {

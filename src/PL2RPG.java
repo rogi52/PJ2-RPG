@@ -27,7 +27,6 @@ public class PL2RPG {
 	public static final int MAIN_WIN_Y=BLOCK_SIZE*MAIN_WIN_Y_BOX;
 
 	public static void main(String[] args) {
-		Window w=new Window();
-		w.drawStart(false);
+		new Window();
 	}
 }

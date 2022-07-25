@@ -12,44 +12,131 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 //通信用クラス
 //このクラスではデータの通信とその解析、保持を行う。
-public class HCommu {	
-	public static void main(String[] args) {
-		BroadCastIP b=new BroadCastIP();
 
-		System.out.println(b.getStatus());
-		System.out.println(b.my_ip);
-		System.out.println(BroadCastIP.getName(b.my_ip));
-
-		try {
-			Thread.sleep(15000);
-		} catch (InterruptedException e) {}
-
-		b.close();
-
+public class OnlineProcess extends Thread{
+	Window w;
+	OnlineProcess(Window w){
+		this.w=w;
+		for(int i=0;i<4;i++) {
+			w.online_dir[i]=1;
+			w.online_x[i]=0;
+			w.online_y[i]=0;
+			w.online_step[i]=0;
+			w.online_chr[i]=0;
+			w.online_map[i]="";
+		}
+		start();
 	}
-
-	HCommu(){
+	
+	public void sendHostPos(InfoS is) {
+		w.online_x[is.id]=is.info.i[0];
+		w.online_y[is.id]=is.info.i[1];
+		w.online_dir[is.id]=is.info.i[2];
+		w.online_step[is.id]=is.info.i[3];
+		w.online_chr[is.id]=is.info.i[4];
+		w.online_map[is.id]=is.info.s[0];
+		sendHostPos();
 	}
-}
-
-class CCommu {	
-	public static void main(String[] args) {
-		BroadCastIP b=new BroadCastIP();
-
-		System.out.println(b.getStatus());
-		System.out.println(b.my_ip);
-		System.out.println(BroadCastIP.getName(b.my_ip));
-
-		try {
-			Thread.sleep(15000);
-		} catch (InterruptedException e) {}
-
-		b.close();
-
+	
+	public void sendHostPos() {
+		w.online_x[3]=w.myCanvas.pos_x;
+		w.online_y[3]=w.myCanvas.pos_y;
+		w.online_dir[3]=w.myCanvas.pos_dir;
+		w.online_step[3]=w.ma.step;
+		w.online_chr[3]=w.m.partyJob[0];
+		w.online_map[3]=w.map_name;
+		
+		//全体送信
+		Info in=new Info();
+		in.i=new int[20];
+		in.s=new String[4];
+		in.ctr=4;
+		for(int i=0;i<4;i++) {
+			/*
+			System.out.println("--");
+			System.out.println(w.online_x[i]);
+			System.out.println(w.online_y[i]);
+			System.out.println(w.online_dir[i]);
+			System.out.println(w.online_step[i]);
+			System.out.println(w.online_chr[i]);
+			*/
+			if(i<3) {
+				if(w.clientRecv[i]==null) {
+					w.online_chr[i]=-1;
+				}
+			}
+			in.i[i*5]=w.online_x[i];
+			in.i[i*5+1]=w.online_y[i];
+			in.i[i*5+2]=w.online_dir[i];
+			in.i[i*5+3]=w.online_step[i];
+			in.i[i*5+4]=w.online_chr[i];
+			in.s[i]=w.online_map[i];
+		}
+		
+		for(int i=0;i<3;i++) {
+			if(w.clientRecv[i]!=null) {
+				w.clientRecv[i].send(in);
+			}
+		}
+		
 	}
-
-	CCommu(){
+	
+	public void run() {
+		InfoS is;
+		while(true) {
+			if(w.online_mode==0) {
+				w.wait(100);
+			}else if(w.online_mode==1) {
+				if((is=w.h_fifo.bufRead())==null) {
+					w.wait(10);
+				}else {
+					switch(is.info.ctr) {
+					case 1:
+						sendHostPos(is);
+						w.ma.update();
+						break;
+					}
+				}
+			}else if(w.online_mode==2) {
+				if((is=w.cc.fifo.bufRead())==null) {
+					w.wait(10);
+				}else {
+					switch(is.info.ctr) {
+					case 4:
+						for(int i=0;i<4;i++) {
+							w.online_x[i]=is.info.i[i*5];
+							w.online_y[i]=is.info.i[i*5+1];
+							w.online_dir[i]=is.info.i[i*5+2];
+							w.online_step[i]=is.info.i[i*5+3];
+							w.online_chr[i]=is.info.i[i*5+4];
+							w.online_map[i]=is.info.s[i];
+						}
+						/*
+						for(int i=0;i<4;i++) {
+							System.out.println("--");
+							if(is.info.i[i*5+4]==-1 || i==w.my_online_id)System.out.println("HIDE");
+							System.out.println(is.info.i[i*5]);
+							System.out.println(is.info.i[i*5+1]);
+							System.out.println(is.info.i[i*5+2]);
+							System.out.println(is.info.i[i*5+3]);
+							System.out.println(is.info.i[i*5+4]);
+						}
+						*/
+						w.ma.update();
+						break;
+					case 2:
+						w.host_map_name=is.info.s[0];
+						w.host_map_def_x=is.info.i[0];
+						w.host_map_def_y=is.info.i[1];
+						//マップ移動
+						break;
+					}
+				}
+				
+			}
+		}
 	}
+	
 }
 
 class ClientConnect extends Thread{
@@ -93,7 +180,7 @@ class ClientConnect extends Thread{
 		status=false;
 	}
 	
-	public void send(Info i) {
+	public synchronized void send(Info i) {
 		try {
 			oos.writeObject(i.clone());
 		} catch (IOException e) {
@@ -119,7 +206,7 @@ class ClientConnect extends Thread{
 					is.oos=oos;
 					is.ois=ois;
 					is.ip=ip;
-					is.id=-1;
+					is.id=3;
 					fifo.bufWrite(is.clone());
 				}
 			}
@@ -130,6 +217,7 @@ class ClientConnect extends Thread{
 			//System.out.println( "TimeOut" );
 		} catch (Exception e3) {
 			//System.out.println("DisConected2");
+			System.out.println(e3);
 		}
 		close();
 		
@@ -200,7 +288,7 @@ class waitConnect extends Thread{
 
 					Info i=new Info();
 					i.i=new int[1];
-					i.i[0]=1;
+					i.i[0]=-1;
 					i.ctr=3;
 					oos.writeObject(i.clone());
 					
@@ -266,7 +354,7 @@ class Recv extends Thread{
 		w.clientRecv[id]=null;
 	}
 	
-	public void send(Info i) {
+	public synchronized void send(Info i) {
 		try {
 			oos.writeObject(i.clone());
 		} catch (IOException e) {

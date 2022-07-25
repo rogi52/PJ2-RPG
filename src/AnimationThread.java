@@ -36,6 +36,7 @@ class GameLoop extends Thread{
 				if(w.online_mode==2) {
 					if(!w.cc.getStatus()) {
 						w.status=3;
+						w.cc.close();
 						w.myCanvas.Dialog("ホストがせつだんされました。\nマルチプレイをしゅうりょうします。");
 						w.online_mode=0;
 						w.status=2;
@@ -47,6 +48,12 @@ class GameLoop extends Thread{
 					}
 					if(ct==0) {
 						w.status=3;
+						
+						for(int j=0;j<3;j++) {
+							if(w.clientRecv[j]!=null)w.clientRecv[j].close();
+						}
+						w.wc.close();
+						
 						w.myCanvas.Dialog("すべてのプレーヤーがせつだんされました。\nマルチプレイをしゅうりょうします。");
 						w.online_mode=0;
 						w.status=2;
@@ -378,24 +385,33 @@ class GameLoop extends Thread{
 									while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 									w.b.close();
 									
-									if(menu_x==0) {
-										//開始
-										Info inf=new Info();
-										inf.i=new int[1];
-										inf.i[0]=0;
-										inf.ctr=3;
-										for(int j=0;j<3;j++) {
-											if(w.clientRecv[j]!=null)w.clientRecv[j].send(inf);
-										}
-										w.online_mode=1;
-
-										w.myCanvas.Dialog("MULTI PLAY START！");
-									}else {
+									int cnt=0;
+									for(int j=0;j<3;j++) {
+										if(w.clientRecv[j]!=null)cnt++;
+									}
+									
+									if(menu_x==1) {
 										//取り消し
 										for(int j=0;j<3;j++) {
 											if(w.clientRecv[j]!=null)w.clientRecv[j].close();
 										}
 										w.wc.close();
+									}else if(cnt==0) {
+										w.myCanvas.Dialog("プレーヤーがいません。");
+										w.wc.close();
+									}else {
+										//開始
+										Info inf=new Info();
+										inf.i=new int[1];
+										inf.ctr=3;
+										for(int j=0;j<3;j++) {
+											inf.i[0]=j;
+											if(w.clientRecv[j]!=null)w.clientRecv[j].send(inf);
+										}
+										w.online_mode=1;
+										
+										w.my_online_id=3;
+										w.myCanvas.Dialog("MULTI PLAY START！");
 									}
 									//切断時はwc,recvをクローズ
 								}else if(menu_x==1) {
@@ -448,7 +464,7 @@ class GameLoop extends Thread{
 										
 										String name="";
 										boolean str=false;
-										InfoS is;
+										InfoS is2;
 										
 										name="ホストをまっています";
 										w.myCanvas.drawDialog2(name, PL2RPG.DIALOG_ANIMATION_TIME);
@@ -469,10 +485,13 @@ class GameLoop extends Thread{
 											
 											if(!w.cc.getStatus())break;
 											
-											if((is=w.cc.fifo.bufRead())!=null) {
-												System.out.println(is.info.ctr);
-												System.out.println(is.info.i[0]);
-												if(is.info.i[0]==0)str=true;											
+											if((is2=w.cc.fifo.bufRead())!=null) {
+												//System.out.println(is2.info.ctr);
+												//System.out.println(is2.info.i[0]);
+												if(is2.info.i[0]>=0) {
+													str=true;
+													w.my_online_id=is2.info.i[0];
+												}
 												break;
 											}
 	
@@ -482,10 +501,10 @@ class GameLoop extends Thread{
 										while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 										
 										w.se[0].play(0);
-										System.out.println(str);
+
 										if(str) {
 											w.online_mode=2;
-											w.myCanvas.Dialog(w.cc.ip);
+											w.myCanvas.Dialog("MULTI PLAY START！");
 											
 										}else {
 											w.cc.close();
@@ -667,6 +686,7 @@ class AnimationMove extends Thread{
 	int dir_con=0;
 	int direction=0;
 	int view_direction;
+	int step=0;
 	MainData m;
 
 	private boolean update;
@@ -716,7 +736,7 @@ class AnimationMove extends Thread{
 	public void run(){
 		int spd=4;//32の約数・・だけじゃない！？
 		int walk_timer=0;
-		int step=0;
+		step=0;
 		boolean random_match_test=false;
 		boolean any_event_disabled;
 		int enemy_match;
@@ -786,6 +806,7 @@ class AnimationMove extends Thread{
 					switch(myCanvas.en_type[i]) {
 					case 0:
 						w.se[0].play(0);
+						w.status=6;
 
 						is_enter=true;
 						w.myCanvas.drawMenu2(is_enter,"フロアをいどうしますか？", PL2RPG.DIALOG_ANIMATION_TIME);
@@ -806,6 +827,23 @@ class AnimationMove extends Thread{
 						w.ma.update();
 
 						if(is_enter) {
+							
+							if(w.online_mode==1) {
+								Info is=new Info();
+								is.ctr=2;
+								is.i=new int[2];
+								is.s=new String[1];
+								is.i[0]=Integer.parseInt(myCanvas.en_p[i][1]);
+								is.i[1]=Integer.parseInt(myCanvas.en_p[i][2]);
+								is.s[0]=myCanvas.en_p[i][0];
+								for(int j=0;j<w.clientRecv.length;j++) {
+									if(w.clientRecv[j]!=null) {
+										w.clientRecv[j].send(is);
+									}
+								}
+							}
+
+							
 							w.def_dir=view_direction;
 							Animation_Select a=new Animation_Select(w.myCanvas,w);
 							a.mode(2,-1);
@@ -826,6 +864,7 @@ class AnimationMove extends Thread{
 							}
 							dir_con=0;
 							walk_count=0;
+							
 
 						}else {
 							//入らないときは動かない
@@ -839,11 +878,15 @@ class AnimationMove extends Thread{
 								view_direction=direction2;
 							}
 						}
+						w.status=2;
+
 						break;
 
 						//アイテム取得
 					case 3:
 						w.se[0].play(0);
+						w.status=6;
+
 
 						if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
 							w.myCanvas.drawDialog1(ItemData.getItem(Integer.parseInt(w.myCanvas.en_p[i][0])).name+"をひろった!", PL2RPG.DIALOG_ANIMATION_TIME);
@@ -859,21 +902,29 @@ class AnimationMove extends Thread{
 							dir_con=0;
 							w.ma.update();
 						}
+						w.status=2;
+
 
 						break;
 
 						//固定エンカウント
 					case 4:
+						w.status=6;
+
 						if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
 							any_event_disabled=true;
 							enemy_match=2;
 							w.myCanvas.en_used+=w.myCanvas.en_UID[i];
 							enemy_type=Integer.parseInt(w.myCanvas.en_p[i][1]);
 						}
+						w.status=2;
+
 
 						break;
 
 					case 5://ダンジョン選択
+						w.status=6;
+
 						w.se[0].play(0);
 
 						sel=0;
@@ -908,10 +959,27 @@ class AnimationMove extends Thread{
 							w.wait(33);
 						}
 						w.se[0].play(0);
+						while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
 
 						w.ma.update();
 
 						if(sel<selectable) {
+							
+							if(w.online_mode==1) {
+								Info is=new Info();
+								is.ctr=2;
+								is.i=new int[2];
+								is.s=new String[1];
+								is.i[0]=Integer.parseInt(myCanvas.en_p[i][sel*4+2]);
+								is.i[1]=Integer.parseInt(myCanvas.en_p[i][sel*4+3]);
+								is.s[0]=myCanvas.en_p[i][sel*4+1];
+								for(int j=0;j<w.clientRecv.length;j++) {
+									if(w.clientRecv[j]!=null) {
+										w.clientRecv[j].send(is);
+									}
+								}
+							}
+							
 							//取得済みアイテム、マッチ済み固定マッチング解除
 							w.myCanvas.en_used="";
 
@@ -943,6 +1011,8 @@ class AnimationMove extends Thread{
 								view_direction=direction2;
 							}
 						}
+						w.status=2;
+
 						break;
 					}
 				}
@@ -954,7 +1024,7 @@ class AnimationMove extends Thread{
 				}
 			}
 
-			if(enemy_match>0) {
+			if(enemy_match>0 && w.online_mode==0) {
 				walk_count=0;
 
 				System.out.println("ID："+w.now_dangeon_id);
@@ -1029,6 +1099,23 @@ class AnimationMove extends Thread{
 			if( ( update || force_update ) && Animation_Select.on_animate==false && w.status==2) {
 				force_update=false;
 				//System.out.println(Integer.toString(myCanvas.pos_x/PL2RPG.BLOCK_SIZE) +" , "+Integer.toString(myCanvas.pos_y/PL2RPG.BLOCK_SIZE) +" Matching_Prob="+Float.toString(PL2RPG.RANDOM_MATCH_PROB*(walk_count-PL2RPG.RANDOM_MATCH_MIN)));
+				if(w.online_mode==2) {
+					//クライアントは送信
+					Info inf=new Info();
+					inf.ctr=1;
+					inf.i=new int[5];
+					inf.s=new String[1];
+					inf.i[0]=myCanvas.pos_x;
+					inf.i[1]=myCanvas.pos_y;
+					inf.i[2]=view_direction;
+					inf.i[3]=step;
+					inf.i[4]=w.m.partyJob[0];
+					inf.s[0]=w.map_name;
+					w.cc.send(inf);
+				}else if(w.online_mode==1) {
+					//ホスト
+					w.op.sendHostPos();
+				}
 				myCanvas.drawMap(0,view_direction,step);
 				on_animate=true;
 			}else {
@@ -1057,6 +1144,7 @@ class Animation_Select extends Thread{
 		fin=false;
 		key_x=w.key_x;
 		key_y=w.key_y;
+		w.resetKey();
 	}
 	public void run(){
 		on_animate=true;

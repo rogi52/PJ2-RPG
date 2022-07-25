@@ -41,7 +41,7 @@ class dCanvas extends Canvas {
 	public boolean random_match_enable=false;
 
 
-	public int pos_x,pos_y;
+	public int pos_x,pos_y,pos_dir=1;
 
 	Dimension size;
 	
@@ -536,6 +536,8 @@ class dCanvas extends Canvas {
 
 
 	public void loadMap(String fname,int nx,int ny) {
+		
+		w.map_name=fname;
 
 		File f = new File(PL2RPG.MAP_PATH+"/"+fname);
 
@@ -638,6 +640,8 @@ class dCanvas extends Canvas {
 	}
 
 	public void drawMap(int alpha,int view_direction,int step) {
+		
+		pos_dir=view_direction;
 
 		int diff_x,diff_y;
 		int posx_1=pos_x/32;
@@ -696,6 +700,32 @@ class dCanvas extends Canvas {
 		}
 
 		buffer.drawImage(chr[w.m.partyJob[0]][view_direction-1][step],PL2RPG.MAIN_WIN_X/2,PL2RPG.MAIN_WIN_Y/2-PL2RPG.BLOCK_SIZE/2,null);
+		
+		/*
+		if(w.online_mode==1) {
+			if(w.map_name.equals(w.host_map_name)) {
+				
+			}
+			
+		}else if(w.online_mode==2) {
+			 if(w.map_name.equals("")) {
+			 
+				
+			}
+		}
+		*/
+		
+		if(w.online_mode!=0) {
+			int dx,dy;
+
+			for(int i=0;i<4;i++) {
+				if(w.online_chr[i]!=-1 && i!=w.my_online_id && w.online_map[i].equals(w.map_name)) {
+					dx=w.online_x[i]-pos_x;
+					dy=w.online_y[i]-pos_y;
+					buffer.drawImage(chr[w.online_chr[i]][w.online_dir[i]-1][w.online_step[i]],PL2RPG.MAIN_WIN_X/2+dx,PL2RPG.MAIN_WIN_Y/2+dy-PL2RPG.BLOCK_SIZE/2,null);
+				}
+			}
+		}
 
 		blank(alpha);
 
@@ -812,7 +842,7 @@ class dCanvas extends Canvas {
 			item_img = ImageIO.read(new File(PL2RPG.BLOCK_IMG_PATH+"/item.png"));
 			save_img = ImageIO.read(new File(PL2RPG.BLOCK_IMG_PATH+"/save.png"));
 			
-
+			
 			loadBlock("0.home");
 			
 			loadTeki();
