@@ -94,12 +94,8 @@ class Battle {
 			selectEnemy();
 			makeActOrder();
 			doAct();
-			for(int i = 0; i < 4; i++) {
-				window.players[i].HP = hero[i].curHP;
-				window.players[i].MP = hero[i].curMP;
-			}
 			paintEnemy();
-			window.repaint();
+			//window.repaint();
 			turns++;
 		}
 
@@ -1043,6 +1039,7 @@ class Battle {
 								else {
 									System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "はちからつきた");
 									window.println(Enemy[stock[actOrder[n]].target - 4].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+									window.repaintEnemy();
 								}
 								if(judgement() != PENDING) {
 									window.waitEnterKey();
@@ -1087,6 +1084,7 @@ class Battle {
 										if(!changeHP(damage, m + 4)) {
 											System.out.println(Enemy[m].name + "はちからつきた");
 											window.println(Enemy[m].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+											window.repaintEnemy();
 										}
 										continue;
 								}
