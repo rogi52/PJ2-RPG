@@ -49,10 +49,12 @@ public class BattleWindow implements KeyListener {
 	Enemy[] enemies = new Enemy[4];
 
 	dCanvas myCanvas;
-	BattleWindow(dCanvas myCanvas) {
+	Window w;
+	BattleWindow(dCanvas myCanvas, Window w) {
 		this.myCanvas = myCanvas;
+		this.w = w;
 		mw  = new MessageWindow("", 352, 448, 32, 4, 15, myCanvas);
-		doc = new MessageWindow("", 128 - 28, 448 - 5, 32, 4, 6, myCanvas);
+		doc = new MessageWindow("", 128 - 28 + 8, 448 - 5, 32, 4, 6, myCanvas);
 	}
 
 
@@ -229,7 +231,6 @@ public class BattleWindow implements KeyListener {
 				for(int i = 0; i < cmds.size(); i += 4) {
 					String[] box = new String[4];
 					Integer[] boxID = new Integer[4];
-					Integer[] boxArgID = new Integer[4];
 					for(int j = 0; j < 4; j++) if(i + j < cmds.size()) {
 						box[j] = cmds.get(i + j);
 						boxID[j] = i + j;
@@ -321,21 +322,23 @@ public class BattleWindow implements KeyListener {
 				mw.buffer += str.charAt(i);
 			}
 			mw.repaint();
-			try { Thread.sleep(33); } catch (InterruptedException e) {}
-			try {
-				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
-				String signal = in.readLine();
-				if(signal != null) {
-					bos = new ByteArrayOutputStream();
-					out = new PrintWriter(bos);
-					for(int k = i + 1; k < str.length(); k++) {
-						mw.buffer += str.charAt(k);
-						mw.repaint();
+			//try { Thread.sleep(33); } catch (InterruptedException e) {}
+			for(int t = 0; t < 30; t++) {
+				try {
+					ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+					BufferedReader in = new BufferedReader(new InputStreamReader(bis));
+					String signal = in.readLine();
+					if(signal != null) {
+						bos = new ByteArrayOutputStream();
+						out = new PrintWriter(bos);
+						for(int k = i + 1; k < str.length(); k++) {
+							mw.buffer += str.charAt(k);
+							mw.repaint();
+						}
+						break;
 					}
-					break;
-				}
-			} catch(IOException e) {}
+				} catch(IOException e) {}
+			}
 		}
 
 		//repaint();
@@ -386,7 +389,7 @@ public class BattleWindow implements KeyListener {
 
 		/* 主人公 */
 		for(int i = 0; i < 4; i++) {
-			String name = (i + 1) + players[i].name;
+			String name = players[i].name;
 			for(int j = 0; j < name.length(); j++) {
 				try {
 					BufferedImage image = ImageManager.getCharImage(name.charAt(j));
@@ -431,7 +434,7 @@ public class BattleWindow implements KeyListener {
 
 				if(enemies[i].name.equals("墓")) continue;
 
-				String name = (i + 1) + ImageManager.arrange(enemies[i].name);
+				String name = ImageManager.arrange(enemies[i].name);
 				for(int j = 0; j < name.length(); j++) {
 					try {
 						BufferedImage image = ImageManager.getCharImage(name.charAt(j));
@@ -506,7 +509,7 @@ public class BattleWindow implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 
-		Window.se[0].play(0);
+		w.se[0].play(0);
 
 		if(STATE == MESSAGE) {
 			switch(e.getKeyCode()) {
