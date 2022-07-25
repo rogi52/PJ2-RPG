@@ -1,532 +1,720 @@
-public class SkillData {
-	static String getSkillname(int n) {
-		return getSkill(n).name;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
+public class BattleWindow implements KeyListener {
+
+	final int NULL    = 0;
+	final int MESSAGE = 1;
+	final int COMMAND = 2;
+	int STATE = NULL;
+
+	public static final int CMD_LEFT       = 3; // 選択肢は4つまで
+	public static final int CMD_RIGHT_BOX4 = 4; // 選択肢は4つまで
+	public static final int CMD_RIGHT_BOX8 = 5;
+	int CMD_TYPE = NULL;
+
+	static class Player {
+		String name = "";
+		Integer HP = 0, MP = 0;
+		Player(String name, Integer HP, Integer MP) {
+			this.name = name;
+			this.HP = HP;
+			this.MP = MP;
+		}
 	}
 
-	static int getSkillMP(int n) {
-		return getSkill(n).costMP;
+	static class Enemy {
+		String name = "";
+		Integer ID;
+		Enemy(String name, Integer ID) {
+			this.name = name;
+			this.ID = ID;
+		}
 	}
 
-	static Skill getSkill(int n) {
-		Skill skill = new Skill();
-		switch(n) {
-			//以下技はこれ拡張して作成する。なお、targetは-1で相手1人選択, -2で味方1人選択, 8, 9, 10として使用する
-			/* 8, 9, 10 とは？ */
-			case 1: {
-				skill.name = "ふりおろし";
-				skill.doc = "よわいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 1.2;
-				skill.target = -1;
-				skill.costMP = 4;
+	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	PrintWriter out = new PrintWriter(bos);
+
+	Player[] players = new Player[4];
+	Enemy[] enemies = new Enemy[4];
+
+	dCanvas myCanvas;
+	Window w;
+	BattleWindow(dCanvas myCanvas, Window w) {
+		this.myCanvas = myCanvas;
+		this.w = w;
+		mw  = new MessageWindow("", 352, 448, 32, 4, 15, myCanvas);
+		doc = new MessageWindow("", 100 + 16, 448, 32, 4, 6, myCanvas);
+		doc.OFFSET = 16;
+	}
+
+
+	ArrayList<String> cmdsLeft = new ArrayList<>();
+	int posLeft = 0;
+
+	ArrayList<String[]> cmdsBox4 = new ArrayList<>();
+	ArrayList<Integer[]> cmdsBox4ID = new ArrayList<>();
+	ArrayList<Integer[]> cmdsBox4ArgID = new ArrayList<>();
+	int posBox4 = 0;
+	int pos4I = 0;
+
+	ArrayList<String[][]> cmdsBox8 = new ArrayList<>();
+	ArrayList<Integer[][]> cmdsBox8ID = new ArrayList<>();
+	ArrayList<Integer[][]> cmdsBox8ArgID = new ArrayList<>();
+	int posBox8 = 0;
+	int pos8I = 0, pos8J = 0;
+
+	void repaintLeftCmd() {
+		Graphics g = myCanvas.buffer;
+
+		g.setColor(Color.BLACK);
+		g.fillRect(100, 448, 32 * 6, 32 * 4);
+
+		if(cmdsLeft.size() > 0) {
+			try {
+				BufferedImage arrow = ImageManager.getCharImage('▶');
+				g.drawImage(arrow, 128 - 32, 448 + posLeft * 32, null);
+			} catch (IOException e) { System.out.println("Error : arrow"); }
+		}
+
+		for(int i = 0; i < cmdsLeft.size(); i++) {
+			for(int j = 0; j < cmdsLeft.get(i).length(); j++) {
+				try {
+					BufferedImage image = ImageManager.getCharImage(cmdsLeft.get(i).charAt(j));
+					g.drawImage(image, 128 - 32 + (j + 1) * 32, 448 + i * 32, null);
+				} catch (IOException e) { System.out.println("Error : " + cmdsLeft.get(i).charAt(j)); }
+			}
+		}
+		myCanvas.repaint();
+	}
+
+	void repaintRightCmd() {
+		Graphics g = myCanvas.buffer;
+
+		mw.clear();
+
+		if(CMD_TYPE == CMD_RIGHT_BOX4) {
+			String[] box4 = cmdsBox4.get(posBox4);
+			for(int i = 0 ; i < 4; i++) {
+				if(box4[i] != null) {
+					for(int k = 0; k < box4[i].length(); k++) {
+						try {
+							BufferedImage image = ImageManager.getCharImage(box4[i].charAt(k));
+							g.drawImage(image, 352 + 32 + k * 32, 448 + i * 32, null);
+						} catch (IOException e) { System.out.println("Error : " + box4[i].charAt(k)); }
+					}
+				}
+			}
+			try {
+				BufferedImage arrow = ImageManager.getCharImage('▶');
+				g.drawImage(arrow, 352, 448 + pos4I * 32, null);
+			} catch (IOException e) { System.out.println("Error : arrow"); }
+		}
+
+		if(CMD_TYPE == CMD_RIGHT_BOX8) {
+			String[][] box8 = cmdsBox8.get(posBox8);
+			for(int i = 0; i < 4; i++) {
+				for(int j = 0; j < 2; j++) {
+					if(box8[i][j] != null) {
+						for(int k = 0; k < box8[i][j].length(); k++) {
+							try {
+								BufferedImage image = ImageManager.getCharImage(box8[i][j].charAt(k));
+								g.drawImage(image, 352 + 32 + j * 32 * 8 + k * 32, 448 + i * 32, null);
+							} catch (IOException e) { System.out.println("Error : " + box8[i][j].charAt(k)); }
+						}
+					}
+				}
+			}
+			try {
+				BufferedImage arrow = ImageManager.getCharImage('▶');
+				g.drawImage(arrow, 352 + pos8J * 32 * 8, 448 + pos8I * 32, null);
+			} catch (IOException e) { System.out.println("Error : arrow"); }
+		}
+
+		myCanvas.repaint();
+	}
+
+	public static final int TARGET = 10;
+	public static final int SKILL  = 11;
+	public static final int ITEM   = 12;
+	private int OPTION_TYPE = NULL;
+
+	ArrayList<Integer> emptyArray = new ArrayList<>();
+
+	int getOption(ArrayList<String> cmds, int windowType) {
+		return getOption(cmds, windowType, TARGET, emptyArray, emptyArray, emptyArray);
+	}
+
+	MessageWindow doc;
+	ArrayList<Integer> skillID = new ArrayList<>();
+	ArrayList<Integer> itemID = new ArrayList<>();
+	ArrayList<Integer> itemCnt = new ArrayList<>();
+
+	void repaintDoc(int optionType, ArrayList<Integer> skillID, ArrayList<Integer> itemID, ArrayList<Integer> itemCnt) {
+		Graphics g = myCanvas.buffer;
+
+		g.setColor(Color.BLACK);
+		g.fillRect(100, 448, 32 * 6 + 16, 32 * 4);
+
+		if(optionType == SKILL) {
+			int pos = cmdsBox8ID.get(posBox8)[pos8I][pos8J];
+			Integer ID = skillID.get(pos);
+			Skill skill = SkillData.getSkill(ID);
+			doc.clear();
+
+			String MP = "" + skill.costMP;
+			while(MP.length() < 3) MP = " " + MP;
+			doc.buffer += MP + " MP";
+
+			doc.buffer += "      ";
+
+			String str = ImageManager.arrange(skill.doc);
+			doc.buffer += str;
+
+			doc.repaint();
+		}
+
+		if(optionType == ITEM) {
+			int pos = cmdsBox4ID.get(posBox4)[pos4I];
+			Integer ID = itemID.get(pos);
+			Item item = ItemData.getItem(ID);
+			doc.clear();
+
+			String num = "" + itemCnt.get(pos);
+			while(num.length() < 4) num = " " + num;
+			doc.buffer += num + " コ";
+
+			doc.buffer += "      ";
+
+			String str = ImageManager.arrange(item.doc);
+			doc.buffer += str;
+
+			doc.repaint();
+		}
+
+		myCanvas.repaint();
+	}
+
+	int getOption(ArrayList<String> cmds, int windowType, int optionType, ArrayList<Integer> skillID, ArrayList<Integer> itemID, ArrayList<Integer> itemCnt) {
+		for(int i = 0; i < cmds.size(); i++) cmds.set(i, ImageManager.arrange(cmds.get(i)));
+		STATE = COMMAND;
+		CMD_TYPE = windowType;
+		OPTION_TYPE = optionType;
+		this.skillID = skillID;
+		this.itemID = itemID;
+		this.itemCnt = itemCnt;
+		switch(CMD_TYPE) {
+			case CMD_LEFT: {
+				cmdsLeft.clear();
+				posLeft = 0;
+				for(int i = 0; i < cmds.size(); i++) cmdsLeft.add(cmds.get(i));
+				repaintLeftCmd();
 			} break;
 
-			case 2: {
-				skill.name = "スラッシュ";
-				skill.doc = "こうげきする";
-				skill.waza = 0;
-				skill.skill = 1.5;
-				skill.target = -1;
-				skill.costMP = 9;
+			case CMD_RIGHT_BOX4: {
+				cmdsBox4.clear();
+				cmdsBox4ID.clear();
+				posBox4 = 0;
+				pos4I = 0;
+				for(int i = 0; i < cmds.size(); i += 4) {
+					String[] box = new String[4];
+					Integer[] boxID = new Integer[4];
+					for(int j = 0; j < 4; j++) if(i + j < cmds.size()) {
+						box[j] = cmds.get(i + j);
+						boxID[j] = i + j;
+					}
+					cmdsBox4.add(box);
+					cmdsBox4ID.add(boxID);
+				}
+				repaintRightCmd();
+				repaintDoc(optionType, skillID, itemID, itemCnt);
 			} break;
 
-			case 3: {
-				skill.name = "きあいだめ";
-				skill.doc = "こうげきをあげる";
-				skill.waza = 5;
-				skill.skill = 30;
-				skill.target = 8;
-				skill.costMP = 5;
-				skill.turn = 3;
+			case CMD_RIGHT_BOX8: {
+				cmdsBox8.clear();
+				cmdsBox8ID.clear();
+				posBox8 = 0;
+				pos8I = pos8J = 0;
+				for(int i = 0; i < cmds.size(); i += 8) {
+					String[][] box = new String[4][];
+					Integer[][] boxID = new Integer[4][];
+					for(int j = 0; j < 4; j++) {
+						box[j] = new String[2];
+						boxID[j] = new Integer[2];
+					}
+					for(int j = 0; j < 8; j++) if(i + j < cmds.size()) {
+						box[j % 4][j / 4] = cmds.get(i + j);
+						boxID[j % 4][j / 4] = i + j;
+					}
+					cmdsBox8.add(box);
+					cmdsBox8ID.add(boxID);
+				}
+				repaintRightCmd();
+				repaintDoc(optionType, skillID, itemID, itemCnt);
 			} break;
 
-			case 4: {
-				skill.name = "ファイア";
-				skill.doc = "よわいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 1.3;
-				skill.target = -1;
-				skill.costMP = 5;
-			} break;
-
-			case 5: {
-				skill.name = "ファイラ";
-				skill.doc = "こうげきする";
-				skill.waza = 0;
-				skill.skill = 1.7;
-				skill.target = -1;
-				skill.costMP = 10;
-			} break;
-
-			case 6: {
-				skill.name = "ファイガ";
-				skill.doc = "つよいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 2.2;
-				skill.target = -1;
-				skill.costMP = 18;
-			} break;
-
-			case 7: {
-				skill.name = "ハキ";
-				skill.doc = "ふくすうによわいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 0.8;
-				skill.target = 10;
-				skill.costMP = 10;
-			} break;
-
-			case 8: {
-				skill.name = "ハキクロス";
-				skill.doc = "ふくすうにこうげきをする";
-				skill.waza = 0;
-				skill.skill = 1.2;
-				skill.target = 10;
-				skill.costMP = 16;
-			} break;
-
-			case 9: {
-				skill.name = "まほうたて";
-				skill.doc = "まほうにつよくなる";
-				skill.waza = 9;
-				skill.skill = 0.3;
-				skill.target = 8;
-				skill.costMP = 5;
-				skill.turn = 3;
-			} break;
-
-			case 10: {
-				skill.name = "ブレイブ";
-				skill.doc = "こうげきをあげる";
-				skill.waza = 2;
-				skill.skill = 0.3;
-				skill.target = -2;
-				skill.costMP = 5;
-				skill.turn = 4;
-			} break;
-
-			case 11: {
-				skill.name = "バリア";
-				skill.doc = "ぼうぎょをあげる";
-				skill.waza = 3;
-				skill.skill = 0.2;
-				skill.target = -2;
-				skill.costMP = 5;
-				skill.turn = 4;
-			} break;
-
-			case 12: {
-				skill.name = "クイック";
-				skill.doc = "すばやさをあげる";
-				skill.waza = 4;
-				skill.skill = 0.5;
-				skill.target = -2;
-				skill.costMP = 3;
-				skill.turn = 4;
-			} break;
-
-			case 13: {
-				skill.name = "MPセーブ";
-				skill.doc = "MPをせつやくする";
-				skill.waza = 10;
-				skill.skill = 0.7;
-				skill.target = -2;
-				skill.costMP = 10;
-				skill.turn = 3;
-			} break;
-
-			case 14: {
-				skill.name = "ヘナトス";
-				skill.doc = "こうげきをさげる";
-				skill.waza = 2;
-				skill.skill = -0.2;
-				skill.target = -1;
-				skill.costMP = 8;
-				skill.turn = 3;
-			} break;
-
-			case 15: {
-				skill.name = "ウィーク";
-				skill.doc = "ぼうぎょをさげる";
-				skill.waza = 3;
-				skill.skill = -0.2;
-				skill.target = -1;
-				skill.costMP = 8;
-				skill.turn = 3;
-			} break;
-
-			case 16: {
-				skill.name = "スロウ";
-				skill.doc = "すばやさをさげる";
-				skill.waza = 4;
-				skill.skill = -0.3;
-				skill.target = -1;
-				skill.costMP = 5;
-				skill.turn = 3;
-			} break;
-
-			case 17: {
-				skill.name = "オールアクト";
-				skill.doc = "範囲全体化";
-				skill.waza = 8;
-				skill.skill = 0;
-				skill.target = 8;
-				skill.costMP = 15;
-				skill.turn = 4;
-			} break;
-
-			case 18: {
-				skill.name = "ぬすむ";
-				skill.doc = "ぬすむ";
-				skill.waza = 12;
-				skill.skill = 0;
-				skill.target = -1;
-				skill.costMP = 4;
-			} break;
-
-			case 19: {
-				skill.name = "つかう";
-				skill.doc = "アイテムをつかう";
-				skill.waza = 13;
-				skill.skill = 0;
-				skill.target = 11;
-				skill.costMP = 0;
-			} break;
-
-			case 20: {
-				skill.name = "クエイク";
-				skill.doc = "ふくすうによわいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 0.7;
-				skill.target = 10;
-				skill.costMP = 10;
-			} break;
-
-			case 21: {
-				skill.name = "クエイラ";
-				skill.doc = "ふくすうにこうげきをする";
-				skill.waza = 0;
-				skill.skill = 1.1;
-				skill.target = 10;
-				skill.costMP = 16;
-			} break;
-
-			case 22: {
-				skill.name = "まじんきり";
-				skill.doc = "つよいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 2.5;
-				skill.target = -1;
-				skill.costMP = 25;
-			} break;
-
-			case 23: {
-				skill.name = "カース";
-				skill.doc = "こうげきがかんつうする";
-				skill.waza = 15;
-				skill.skill = 1.2;
-				skill.target = -1;
-				skill.costMP = 12;
-			} break;
-
-			case 24: {
-				skill.name = "チャージン";
-				skill.doc = "こうげきする";
-				skill.waza = 0;
-				skill.skill = 1.4;
-				skill.target = -1;
-				skill.costMP = 7;
-			} break;
-
-			case 25: {
-				skill.name = "フルレンジ";
-				skill.doc = "ふくすうによわいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 0.6;
-				skill.target = 10;
-				skill.costMP = 8;
-			} break;
-
-			case 26: {
-				skill.name = "ひっちゅう";
-				skill.doc = "かならずめいちゅうするようになる";
-				skill.waza = 7;
-				skill.skill = 0;
-				skill.target = 8;
-				skill.costMP = 5;
-				skill.turn = 4;
-			} break;
-
-			case 27: {
-				skill.name = "ヒール";
-				skill.doc = "HPをすこしかいふくする";
-				skill.waza = 14;
-				skill.skill = 20;
-				skill.target = -2;
-				skill.costMP = 3;
-			} break;
-
-			case 28: {
-				skill.name = "ヒーラ";
-				skill.doc = "HPをかいふくする";
-				skill.waza = 14;
-				skill.skill = 40;
-				skill.target = -2;
-				skill.costMP = 8;
-			} break;
-
-			case 29: {
-				skill.name = "ヒーレスト";
-				skill.doc = "ぜんたいのHPをおおきくかいふくする";
-				skill.waza = 14;
-				skill.skill = 100;
-				skill.target = -2;
-				skill.costMP = 16;
-			} break;
-
-			case 30: {
-				skill.name = "メディカ";
-				skill.doc = "ぜんたいのHPをすこしかいふくする";
-				skill.waza = 14;
-				skill.skill = 20;
-				skill.target = 9;
-				skill.costMP = 11;
-			} break;
-
-			case 31: {
-				skill.name = "メディラ";
-				skill.doc = "ぜんたいのHPをかいふくする";
-				skill.waza = 14;
-				skill.skill = 40;
-				skill.target = 9;
-				skill.costMP = 22;
-			} break;
-
-			case 32: {
-				skill.name = "エスナ";
-				skill.doc = "デバフをかいじょする";
-				skill.waza = 11;
-				skill.skill = 0;
-				skill.target = -2;
-				skill.costMP = 5;
-			} break;
-
-			case 33: {
-				skill.name = "キアル";
-				skill.doc = "ぜんいんのデバフをかいじょする";
-				skill.waza = 11;
-				skill.skill = 0;
-				skill.target = 9;
-				skill.costMP = 12;
-			} break;
-
-			case 34: {
-				skill.name = "テラファイア";
-				skill.doc = "つよいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 2.0;
-				skill.target = 9;
-				skill.costMP = 10;
-			} break;
-
-			case 35: {
-				skill.name = "ミニファイア";
-				skill.doc = "よわいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 1.4;
-				skill.target = -2;
-				skill.costMP = 3;
-			} break;
-
-			case 50: {
-				skill.name = "ウィーク";
-				skill.doc = "ぼうぎょをさげる";
-				skill.waza = 6;
-				skill.skill = -30;
-				skill.target = 9;
-				skill.costMP = 0;
-				skill.turn = 3;
-			} break;
-
-			case 51: {
-				skill.name = "ヒール";
-				skill.doc = "HPをかいふくする";
-				skill.waza = 14;
-				skill.skill = 50;
-				skill.target = 10;
-				skill.costMP = 0;
-			} break;
-
-			case 52: {
-				skill.doc = "ヘルファイア";
-				skill.waza = 0;
-				skill.skill = 2.0;
-				skill.target = 9;
-				skill.costMP = 0;
-			} break;
-
-			case 53: {
-				skill.doc = "ヘルフォール";
-				skill.waza = 0;
-				skill.skill = 3.0;
-				skill.target = -2;
-				skill.costMP = 0;
-			} break;
-
-			case 54: {
-				skill.doc = "サモン";
-				skill.waza = 16;
-				skill.skill = 3.0;
-				skill.target = 11;
-				skill.costMP = 0;
-			} break;
-
-			case 55: {
-				skill.name = "チャージ";
-				skill.doc = "こうげきをあげる";
-				skill.waza = 5;
-				skill.skill = 20;
-				skill.target = 10;
-				skill.costMP = 0;
-				skill.turn = 5;
-			} break;
-
-			case 56: {
-				skill.name = "ジョブン";
-				skill.doc = "ジョブをチェンジする";
-				skill.waza = 17;
-				skill.skill = 100;
-				skill.target = 9;
-				skill.costMP = 0;
-			} break;
-
-			case 100: {
-				skill.name = "ギラ";
-				skill.doc = "よわいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 1.2;
-				skill.target = -2;
-				skill.costMP = 5;
-			} break;
-
-			case 101: {
-				skill.name = "ヒャダルン";
-				skill.doc = "こうげきする";
-				skill.waza = 0;
-				skill.skill = 1.6;
-				skill.target = -2;
-				skill.costMP = 9;
-			} break;
-
-			case 102: {
-				skill.name = "トルネド";
-				skill.doc = "つよいこうげきをする";
-				skill.waza = 0;
-				skill.skill = 2.0;
-				skill.target = -2;
-				skill.costMP = 17;
-			} break;
-
-			case 103: {
-				skill.name = "ダーク";
-				skill.doc = "ぜんたいにこうげきする";
-				skill.waza = 0;
-				skill.skill = 0.8;
-				skill.target = -2;
-				skill.costMP = 15;
-			} break;
-
-			case 104: {
-				skill.name = "アドパワ";
-				skill.doc = "こうげきをあげる";
-				skill.waza = 2;
-				skill.skill = 0.3;
-				skill.target = 8;
-				skill.costMP = 5;
-			} break;
-
-			case 105: {
-				skill.name = "アドディ";
-				skill.doc = "ぼうぎょをあげる";
-				skill.waza = 3;
-				skill.skill = 0.2;
-				skill.target = 8;
-				skill.costMP = 5;
-			} break;
-
-			case 106: {
-				skill.name = "アドアジ";
-				skill.doc = "すばやさをあげる";
-				skill.waza = 4;
-				skill.skill = 0.5;
-				skill.target = 8;
-				skill.costMP = 5;
-			} break;
-
-			case 107: {
-				skill.name = "ヘナトス";
-				skill.doc = "こうげきをさげる";
-				skill.waza = 2;
-				skill.skill = -0.3;
-				skill.target = -2;
-				skill.costMP = 5;
-			} break;
-
-			case 108: {
-				skill.name = "ウィーク";
-				skill.doc = "ぼうぎょをさげる";
-				skill.waza = 3;
-				skill.skill = -0.2;
-				skill.target = -2;
-				skill.costMP = 5;
-			} break;
-
-			case 109: {
-				skill.name = "スロウ";
-				skill.doc = "すばやさをさげる";
-				skill.waza = 4;
-				skill.skill = -0.3;
-				skill.target = -2;
-				skill.costMP = 5;
-			} break;
-
-			case 110: {
-				skill.name = "デスペル";
-				skill.doc = "デバフをかいじょする";
-				skill.waza = 11;
-				skill.skill = 0;
-				skill.target = -2;
-				skill.costMP = 5;
-			} break;
-
-			case 111: {
-				skill.name = "ヒール";
-				skill.doc = "HPをかいふくする";
-				skill.waza = 14;
-				skill.skill = 200;
-				skill.target = -1;
-				skill.costMP = 10;
-			} break;
-
-			case 112: {
-				skill.name = "ヒーレスト";
-				skill.doc = "おおきくHPをかいふくする";
-				skill.waza = 14;
-				skill.skill = 800;
-				skill.target = -1;
-				skill.costMP = 35;
-			} break;
-
-			case 113: {
-				skill.name = "メディラ";
-				skill.doc = "パーティのHPをかいふくする";
-				skill.waza = 14;
-				skill.skill = 100;
-				skill.target = 10;
-				skill.costMP = 20;
+			default: {
+				System.out.println("ERROR windowType : " + windowType);
 			} break;
 		}
 
-		return skill;
+		try {
+			while(true) {
+				Thread.sleep(20);
+				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
+				String res = in.readLine();
+				if(res != null) {
+					bos = new ByteArrayOutputStream();
+					out = new PrintWriter(bos);
+					STATE = NULL;
+					CMD_TYPE = NULL;
+					OPTION_TYPE = NULL;
+					myCanvas.buffer.setColor(Color.BLACK);
+					myCanvas.buffer.fillRect(100, 448, 32 * 6 + 16, 32 * 4);
+					myCanvas.repaint();
+					return Integer.parseInt(res);
+				}
+			}
+		} catch (IOException | InterruptedException e) {}
+
+		STATE = NULL;
+		CMD_TYPE = NULL;
+		OPTION_TYPE = NULL;
+		myCanvas.buffer.setColor(Color.BLACK);
+		myCanvas.buffer.fillRect(100, 448, 32 * 6 + 16, 32 * 4);
+		myCanvas.repaint();
+		return -1;
 	}
+
+	MessageWindow mw;
+	void println(String str, int newWindow, int waitEnterKey) {
+		print(str + '\n', newWindow, waitEnterKey);
+	}
+
+	void println(String str) {
+		print(str + '\n', CONTINUE, CONTINUE);
+	}
+
+	void print(String str) {
+		print(str, CONTINUE, CONTINUE);
+	}
+
+	public final static int NEW_WINDOW = 0;
+	public final static int WAIT_ENTER_KEY = 1;
+	public final static int CONTINUE = 2;
+
+	void print(String str, int newWindow, int waitEnterKey) {
+
+		myCanvas.buffer.setColor(Color.BLACK);
+		myCanvas.buffer.fillRect(128 - 28, 448 + posLeft * 32, 28, 32);
+		myCanvas.repaint();
+
+		str = ImageManager.arrange(str);
+		STATE = MESSAGE;
+		if(newWindow == NEW_WINDOW) mw.buffer = "";
+		for(int i = 0; i < str.length(); i++) {
+			mw.buffer += str.charAt(i);
+			if(mw.overFlow() && str.charAt(i) != '\n') {
+				waitEnterKey();
+				mw.buffer = "";
+				mw.buffer += str.charAt(i);
+			}
+			mw.repaint();
+			try { Thread.sleep(33); } catch (InterruptedException e) {}
+			try {
+				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
+				String signal = in.readLine();
+				if(signal != null) {
+					bos = new ByteArrayOutputStream();
+					out = new PrintWriter(bos);
+					for(int k = i + 1; k < str.length(); k++) {
+						mw.buffer += str.charAt(k);
+						mw.repaint();
+					}
+					break;
+				}
+			} catch(IOException e) {}
+		}
+
+		//repaint();
+
+		if(waitEnterKey == WAIT_ENTER_KEY) waitEnterKey();
+
+		STATE = NULL;
+	}
+
+	void waitEnterKey() {
+		STATE = MESSAGE;
+
+		myCanvas.buffer.setColor(Color.BLACK);
+		myCanvas.buffer.fillRect(128 - 28, 448 + posLeft * 32, 28, 32);
+		myCanvas.repaint();
+
+		try {
+			while(true) {
+				Thread.sleep(20);
+				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+				BufferedReader in = new BufferedReader(new InputStreamReader(bis));
+				String signal = in.readLine();
+				if(signal != null) {
+					bos = new ByteArrayOutputStream();
+					out = new PrintWriter(bos);
+					mw.clear();
+					break;
+				}
+			}
+		} catch (IOException | InterruptedException e) {}
+		STATE = NULL;
+	}
+
+	int startX[] = {128 - 16, 320 - 16, 512 - 16, 704 - 16};
+
+	int enemySY = 320 - 128 / 2 - 32;
+	// 960 × 640
+	int enemySX[][] = {
+		new int[] {},
+		new int[] {480 - 64},
+		new int[] {320, 512},
+		new int[] {244 - 64, 480 - 64, 716 - 64},
+		new int[] {128, 320, 512, 704}
+	};
+
+	void repaintEnemy() {
+		Graphics g = myCanvas.buffer;
+		int enemyCnt = 0;
+		for(int i = 0; i < 4; i++) if(enemies[i] != null) enemyCnt++;
+
+		for(int i = 0; i < 4; i++) {
+			if(enemies[i] != null) {
+				g.drawImage(myCanvas.teki[enemies[i].ID], enemySX[enemyCnt][i], enemySY, null);
+
+				if(enemies[i].name.equals("墓")) continue;
+
+				String name = ImageManager.arrange(enemies[i].name);
+				for(int j = 0; j < name.length(); j++) {
+					try {
+						BufferedImage image = ImageManager.getCharImage(name.charAt(j));
+						g.drawImage(image, enemySX[enemyCnt][i] + j * 32 - 16, enemySY + 32 * 4, null);
+					} catch (IOException e) { System.out.println("Error : ENEMY"); }
+				}
+			}
+		}
+
+		myCanvas.repaint();
+	}
+
+	void repaint() {
+		Graphics g = myCanvas.buffer;
+
+		/* 背景 */
+		try {
+			BufferedImage background = ImageManager.getImage("battle3");
+			g.drawImage(background, 0, 0, null);
+		} catch (IOException e) { System.out.println("Error : battle.png"); }
+
+		/* 主人公 */
+		for(int i = 0; i < 4; i++) {
+			String name = players[i].name;
+			for(int j = 0; j < name.length(); j++) {
+				try {
+					BufferedImage image = ImageManager.getCharImage(name.charAt(j));
+					g.drawImage(image, startX[i] + j * 32, 32, null);
+				} catch (IOException e) { System.out.println("Error : " + name); }
+			}
+
+			try {
+				BufferedImage image = ImageManager.getCharImage('H');
+				g.drawImage(image, startX[i], 96, null);
+				String num = players[i].HP.toString();
+				while(num.length() < 4) num = ' ' + num;
+				for(int j = 0; j < 4; j++) {
+					if(num.charAt(j) != ' ') {
+						image = ImageManager.getCharImage(num.charAt(j));
+						g.drawImage(image, startX[i] + (j + 1) * 32, 96, null);
+					}
+				}
+			} catch (IOException e) { System.out.println("Error : HP"); }
+
+			try {
+				BufferedImage image = ImageManager.getCharImage('M');
+				g.drawImage(image, startX[i], 128, null);
+				String num = players[i].MP.toString();
+				while(num.length() < 4) num = ' ' + num;
+				for(int j = 0; j < 4; j++) {
+					if(num.charAt(j) != ' ') {
+						image = ImageManager.getCharImage(num.charAt(j));
+						g.drawImage(image, startX[i] + (j + 1) * 32, 128, null);
+					}
+				}
+			} catch (IOException e) { System.out.println("Error : MP"); }
+		}
+
+		/* 敵 */
+		repaintEnemy();
+
+		if(STATE == MESSAGE) {
+			mw.repaint();
+		}
+
+		if(STATE == COMMAND) {
+			/*  コマンド (左) */
+			g.setColor(Color.BLACK);
+			g.fillRect(128 - 28, 448, 32 * 5 + 32, 32 * 4);
+			try {
+				BufferedImage arrow = ImageManager.getCharImage('▶');
+				g.drawImage(arrow, 128 - 32, 448 + posLeft * 32, null);
+			} catch (IOException e) { System.out.println("Error : arrow"); }
+
+			for(int i = 0; i < cmdsLeft.size(); i++) {
+				for(int j = 0; j < cmdsLeft.get(i).length(); j++) {
+					try {
+						BufferedImage image = ImageManager.getCharImage(cmdsLeft.get(i).charAt(j));
+						g.drawImage(image, 128 - 32 + (j + 1) * 32, 448 + i * 32, null);
+					} catch (IOException e) { System.out.println("Error : " + cmdsLeft.get(i).charAt(j)); }
+				}
+			}
+
+			/* コマンド (右4) */
+			if(CMD_TYPE == CMD_RIGHT_BOX4) {
+				String[] box4 = cmdsBox4.get(posBox4);
+				for(int i = 0 ; i < 4; i++) {
+					if(box4[i] != null) {
+						for(int k = 0; k < box4[i].length(); k++) {
+							try {
+								BufferedImage image = ImageManager.getCharImage(box4[i].charAt(k));
+								g.drawImage(image, 352 + 32 + k * 32, 448 + i * 32, null);
+							} catch (IOException e) { System.out.println("Error : " + box4[i].charAt(k)); }
+						}
+					}
+				}
+				try {
+					BufferedImage arrow = ImageManager.getCharImage('▶');
+					g.drawImage(arrow, 352, 448 + pos4I * 32, null);
+				} catch (IOException e) { System.out.println("Error : arrow"); }
+			}
+
+			if(CMD_TYPE == CMD_RIGHT_BOX8) {
+				String[][] box8 = cmdsBox8.get(posBox8);
+				for(int i = 0; i < 4; i++) {
+					for(int j = 0; j < 2; j++) {
+						if(box8[i][j] != null) {
+							for(int k = 0; k < box8[i][j].length(); k++) {
+								try {
+									BufferedImage image = ImageManager.getCharImage(box8[i][j].charAt(k));
+									g.drawImage(image, 352 + 32 + j * 32 * 8 + k * 32, 448 + i * 32, null);
+								} catch (IOException e) { System.out.println("Error : " + box8[i][j].charAt(k)); }
+							}
+						}
+					}
+				}
+				try {
+					BufferedImage arrow = ImageManager.getCharImage('▶');
+					g.drawImage(arrow, 352 + pos8J * 32 * 8, 448 + pos8I * 32, null);
+				} catch (IOException e) { System.out.println("Error : arrow"); }
+			}
+		}
+		myCanvas.repaint();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+
+		w.se[0].play(0);
+
+		if(STATE == MESSAGE) {
+			switch(e.getKeyCode()) {
+				case KeyEvent.VK_ENTER: {
+					out.println("ENTER");
+					out.flush();
+				} break;
+			}
+		}
+
+		if(STATE == COMMAND) {
+			switch(CMD_TYPE) {
+				case CMD_LEFT: {
+					switch(e.getKeyCode()) {
+						case KeyEvent.VK_DOWN:  { posLeft = Math.min(posLeft + 1, cmdsLeft.size() - 1); repaintLeftCmd(); } break;
+						case KeyEvent.VK_S:     { posLeft = Math.min(posLeft + 1, cmdsLeft.size() - 1); repaintLeftCmd(); } break;
+						case KeyEvent.VK_UP:    { posLeft = Math.max(posLeft - 1,                   0); repaintLeftCmd(); } break;
+						case KeyEvent.VK_W:     { posLeft = Math.max(posLeft - 1,                   0); repaintLeftCmd(); } break;
+						case KeyEvent.VK_ENTER: {
+							out.println(posLeft);
+							out.flush();
+						}
+					}
+				} break;
+
+				case CMD_RIGHT_BOX4: {
+					switch(e.getKeyCode()) {
+						case KeyEvent.VK_DOWN: {
+							pos4I++;
+							if(4 <= pos4I || cmdsBox4.get(posBox4)[pos4I] == null) pos4I--;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_S: {
+							pos4I++;
+							if(4 <= pos4I || cmdsBox4.get(posBox4)[pos4I] == null) pos4I--;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_UP: {
+							pos4I--;
+							if(pos4I < 0 || cmdsBox4.get(posBox4)[pos4I] == null) pos4I++;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_W: {
+							pos4I--;
+							if(pos4I < 0 || cmdsBox4.get(posBox4)[pos4I] == null) pos4I++;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_LEFT: {
+							posBox4--;
+							if(posBox4 < 0) posBox4++;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_A: {
+							posBox4--;
+							if(posBox4 < 0) posBox4++;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_RIGHT: {
+							posBox4++;
+							if(cmdsBox4.size() <= posBox4) posBox4--;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_D: {
+							posBox4++;
+							if(cmdsBox4.size() <= posBox4) posBox4--;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_ENTER: {
+							out.println(cmdsBox4ID.get(posBox4)[pos4I]);
+							out.flush();
+						} break;
+					}
+
+					repaintDoc(OPTION_TYPE, skillID, itemID, itemCnt);
+				} break;
+
+				case CMD_RIGHT_BOX8: {
+					switch(e.getKeyCode()) {
+						case KeyEvent.VK_DOWN: {
+							pos8I++;
+							if(4 <= pos8I || cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8I--;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_S: {
+							pos8I++;
+							if(4 <= pos8I || cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8I--;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_UP: {
+							pos8I--;
+							if(pos8I < 0 || cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8I++;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_W: {
+							pos8I--;
+							if(pos8I < 0 || cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8I++;
+							repaint();
+						} break;
+
+						case KeyEvent.VK_LEFT: {
+							if(pos8J == 0) {
+								posBox8--;
+								pos8J = 1;
+								if(posBox8 < 0) {
+									posBox8++;
+									pos8J = 0;
+								}
+							} else {
+								pos8J--;
+								if(cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8J++;
+							}
+							repaint();
+						} break;
+
+						case KeyEvent.VK_A: {
+							if(pos8J == 0) {
+								posBox8--;
+								pos8J = 1;
+								if(posBox8 < 0) {
+									posBox8++;
+									pos8J = 0;
+								}
+							} else {
+								pos8J--;
+								if(cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8J++;
+							}
+							repaint();
+						} break;
+
+						case KeyEvent.VK_RIGHT: {
+							if(pos8J == 1) {
+								posBox8++;
+								pos8J = 0;
+								if(cmdsBox8.size() <= posBox8) {
+									posBox8--;
+									pos8J = 1;
+								}
+							} else {
+								pos8J++;
+								if(cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8J--;
+							}
+							repaint();
+						} break;
+
+						case KeyEvent.VK_D: {
+							if(pos8J == 1) {
+								posBox8++;
+								pos8J = 0;
+								if(cmdsBox8.size() <= posBox8) {
+									posBox8--;
+									pos8J = 1;
+								}
+							} else {
+								pos8J++;
+								if(cmdsBox8.get(posBox8)[pos8I][pos8J] == null) pos8J--;
+							}
+							repaint();
+						} break;
+
+						case KeyEvent.VK_ENTER: {
+							out.println(cmdsBox8ID.get(posBox8)[pos8I][pos8J]);
+							out.flush();
+						} break;
+					}
+
+					repaintDoc(OPTION_TYPE, skillID, itemID, itemCnt);
+				} break;
+			}
+		}
+	}
+	@Override
+	public void keyTyped(KeyEvent e) {}
+	@Override
+	public void keyReleased(KeyEvent e) {}
 }
