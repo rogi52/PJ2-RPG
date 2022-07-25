@@ -382,11 +382,12 @@ public class BattleWindow implements KeyListener {
 	int startX[] = {128 - 16, 320 - 16, 512 - 16, 704 - 16};
 
 	int enemySY = 320 - 128 / 2 - 32;
+	// 960 × 640
 	int enemySX[][] = {
 		new int[] {},
-		new int[] {386},
+		new int[] {480 - 64},
 		new int[] {320, 512},
-		new int[] {180, 386, 592},
+		new int[] {244 - 64, 480 - 64, 716 - 64},
 		new int[] {128, 320, 512, 704}
 	};
 
