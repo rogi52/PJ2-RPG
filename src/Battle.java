@@ -151,6 +151,7 @@ class Battle {
 		Enemy = MobSummon.callEnemies(dungeonID, enemyUnitID);
 
 		paintEnemy();
+		window.repaint();
 
 		double upper = 0;
 		for(int i = 0; i < 4; i++) if(hero[i].isExist()) upper += 1.0;
@@ -187,6 +188,7 @@ class Battle {
 					buf[n][m].turn--;
 					if(buf[n][m].turn <= 0) {
 						System.out.println(buf[n][m].name + "の効果が切れた！");
+						window.println(buf[n][m].name + "のこうかがきれた!");
 						buf[n][m] = null;//この後順列をきれいにする処理を
 					}
 				}
@@ -1105,6 +1107,7 @@ class Battle {
 							System.out.println(hero[stock[actOrder[n]].target].name + "にバフのこうか!");
 							window.println(hero[stock[actOrder[n]].target].name + "にバフのこうか!");
 						}
+						window.waitEnterKey();
 					}else if(4 < actOrder[n] && actOrder[n] < 8 && ((4 < stock[actOrder[n]].target && stock[actOrder[n]].target < 8) || stock[actOrder[n]].target == 10)) {
 						if(stock[actOrder[n]].target == 10) {
 							for(int m = 0; m < 4; m++) {
@@ -1182,11 +1185,17 @@ class Battle {
 				}
             }else if(stock[actOrder[n]].waza == 14) {
             	if(stock[actOrder[n]].target < 8) {
-					if(stock[actOrder[n]].target < 4) System.out.println(hero[stock[actOrder[n]].target].name +"は");
-					else System.out.println(Enemy[stock[actOrder[n]].target - 4].name +"は");
-					damage = calcHeal(stock[actOrder[n]].target, stock[actOrder[n]]);//
-					System.out.println(damage + "かいふくした!");//
-					changeHP(-damage, stock[actOrder[n]].target);//
+					if(stock[actOrder[n]].target < 4) {
+						System.out.println(hero[stock[actOrder[n]].target].name +"は");
+						window.println(hero[stock[actOrder[n]].target].name + "は");
+					}
+					else {
+						System.out.println(Enemy[stock[actOrder[n]].target - 4].name +"は");
+						window.println(Enemy[stock[actOrder[n]].target - 4].name + "は");
+					}
+					damage = calcHeal(stock[actOrder[n]].target, stock[actOrder[n]]);
+					System.out.println(damage + "かいふくした!");
+					changeHP(-damage, stock[actOrder[n]].target);
 					window.println(damage + "かいふくした!");
 					window.waitEnterKey();
 				}else {
@@ -1194,6 +1203,7 @@ class Battle {
 						if(stock[actOrder[n]].target == 9) {
 							if(hero[m].curHP != 0 && hero[m].curHP != -1) {
 								System.out.println(hero[m].name +"は");
+								window.println(hero[m].name + "は");
 								damage = calcHeal(m, stock[actOrder[n]]);
 								System.out.println(damage + "かいふくした!");
 								changeHP(-damage, m);
@@ -1204,7 +1214,8 @@ class Battle {
 						}
 						if(stock[actOrder[n]].target == 10) {
 							if(Enemy[m].curHP != 0 && Enemy[m].curHP != -1) {
-								System.out.println(Enemy[m].name +"は");
+								System.out.println(Enemy[m].name + "は");
+								window.out.println(Enemy[m].name + "は");
 								damage = calcHeal(m + 4, stock[actOrder[n]]);
 								System.out.println(damage + "かいふくした!");
 								changeHP(-damage, m + 4);
@@ -1277,6 +1288,7 @@ class Battle {
             	for(int k = 0; k < 4; k++) {
             		if(hero[k].curHP > 0) {
             			System.out.printf(hero[k].name + "のジョブが");
+            			window.print(hero[k].name + "のジョブが");
             			h = (double)hero[k].curHP / (double)hero[k].maxHP;
             			m = (double)hero[k].curMP / (double)hero[k].maxMP;
             			hero[k] = HeroData.callJob(r.nextInt(7), data.clearQuestFlag);
@@ -1292,11 +1304,17 @@ class Battle {
             	lateflag = false;
             }else if(stock[actOrder[n]].waza == 18) {
             	if(stock[actOrder[n]].target < 8) {
-					if(stock[actOrder[n]].target < 4) System.out.println(hero[stock[actOrder[n]].target].name +"は");
-					else System.out.println(Enemy[stock[actOrder[n]].target - 4].name +"のMPは");
-					damage = calcHeal(stock[actOrder[n]].target, stock[actOrder[n]]);//
-					System.out.println(damage + "かいふくした!");//
-					changeMP(-damage, stock[actOrder[n]].target);//
+					if(stock[actOrder[n]].target < 4) {
+						System.out.println(hero[stock[actOrder[n]].target].name + "は");
+						window.println(hero[stock[actOrder[n]].target].name + "は");
+					}
+					else {
+						System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "のMPは");
+						window.println(Enemy[stock[actOrder[n]].target - 4].name + "のMPは");
+					}
+					damage = calcHeal(stock[actOrder[n]].target, stock[actOrder[n]]);
+					System.out.println(damage + "かいふくした!");
+					changeMP(-damage, stock[actOrder[n]].target);
 					window.println(damage + "かいふくした!");
 				}else {
 					boolean f = false;
@@ -1304,8 +1322,10 @@ class Battle {
 						if(stock[actOrder[n]].target == 9) {
 							if(hero[m].curHP != 0 && hero[m].curHP != -1) {
 								System.out.println(hero[m].name +"のMPは");
+								window.println(hero[m].name + "のMPは");
 								changeMP(-(int)stock[actOrder[n]].skill, stock[actOrder[n]].target);
 								System.out.println(stock[actOrder[n]].skill + "かいふくした!");
+								window.println(stock[actOrder[n]].skill + "かいふくした!");
 								f = true;
 								continue;
 							}
@@ -1313,8 +1333,10 @@ class Battle {
 						if(stock[actOrder[n]].target == 10) {
 							if(Enemy[m].curHP != 0 && Enemy[m].curHP != -1) {
 								System.out.println(Enemy[m].name +"のMPは");
+								window.println(Enemy[m].name + "のMPは");
 								damage = calcHeal(m + 4, stock[actOrder[n]]);
 								System.out.println(damage + "かいふくした!");
+								window.println(damage + "かいふくした!");
 								changeMP(-damage, m + 4);
 								f = true;
 								continue;
