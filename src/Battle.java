@@ -211,6 +211,8 @@ class Battle {
 		}
 	}
 
+	ArrayList<Integer> EMPTY = new ArrayList<>();
+
 	public void selecthero() {
 		ArrayList<String> cmd1 = new ArrayList<String>(Arrays.asList("もどる", "こうげき", "ぼうぎょ", "スキル"));
 		for(int i = 0; i < cmd1.size(); i++) cmd1.set(i, ImageManager.arrange(cmd1.get(i)));
@@ -290,7 +292,7 @@ class Battle {
 						continue;
 					}
 
-					selects = ID.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX8)) - 1;
+					selects = ID.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX8, BattleWindow.SKILL, ID, EMPTY, EMPTY)) - 1;
 
 					if(selects == -1) {
 						n--;
@@ -337,11 +339,13 @@ class Battle {
 	public Item useItem(int k) {
 		ArrayList<String> cmd = new ArrayList<>();
 		ArrayList<Integer> ID = new ArrayList<>();
+		ArrayList<Integer> cnt = new ArrayList<>();
 		for(int n = 1; n < 24; n++) {
 			if(data.checkItem(n)) {
 				System.out.println(n  + ":"+ ItemData.getItemName(n) + "(" + data.itemCnt[n] + ")");
 				cmd.add(ItemData.getItemName(n) + " " + data.itemCnt[n] + "コ");
 				ID.add(n);
+				cnt.add(data.itemCnt[n]);
 			}
 		}
 
@@ -351,7 +355,7 @@ class Battle {
 			return null;
 		}
 
-		int m = ID.get(window.getOption(cmd, BattleWindow.CMD_RIGHT_BOX4));
+		int m = ID.get(window.getOption(cmd, BattleWindow.CMD_RIGHT_BOX4, BattleWindow.ITEM, EMPTY, ID, cnt));
 		itemFlag[k] = m;
 		return ItemData.getItem(m);
 	}
