@@ -195,7 +195,7 @@ class Battle {
 					buf[n][m].turn--;
 					if(buf[n][m].turn <= 0) {
 						System.out.println(buf[n][m].name + "の効果が切れた！");
-						window.println(buf[n][m].name + "のこうかがきれた!");
+						window.println(buf[n][m].name + "のこうかがきれた");
 						buf[n][m] = null;//この後順列をきれいにする処理を
 					}
 				}
@@ -283,6 +283,7 @@ class Battle {
 				}else if(selects == 2){//スキル
 					ArrayList<String> cmd2 = new ArrayList<>();
 					ArrayList<Integer> ID = new ArrayList<>();
+					ArrayList<Integer> argID = new ArrayList<>();
 					String[] skillsname = getSkillname(n);
 					int[] skillsMP = getSkillMP(n);
 					for(int m = 0; m < 10 && skillsname[m] != null; m++)
@@ -290,6 +291,7 @@ class Battle {
 							String name = ImageManager.arrange(skillsname[m]);
 							cmd2.add(name);
 							ID.add(m + 1);
+							argID.add(hero[n].Skill[m]);
 						}
 
 					if(cmd2.size() == 0) {
@@ -299,7 +301,7 @@ class Battle {
 						continue;
 					}
 
-					selects = ID.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX8, BattleWindow.SKILL, ID, EMPTY, EMPTY)) - 1;
+					selects = ID.get(window.getOption(cmd2, BattleWindow.CMD_RIGHT_BOX8, BattleWindow.SKILL, argID, EMPTY, EMPTY)) - 1;
 
 					if(selects == -1) {
 						n--;

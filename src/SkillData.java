@@ -14,7 +14,7 @@ public class SkillData {
 			/* 8, 9, 10 とは？ */
 			case 1: {
 				skill.name = "ふりおろし";
-				skill.doc = "小攻撃";
+				skill.doc = "よわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 1.2;
 				skill.target = -1;
@@ -23,7 +23,7 @@ public class SkillData {
 
 			case 2: {
 				skill.name = "スラッシュ";
-				skill.doc = "中攻撃";
+				skill.doc = "こうげきする";
 				skill.waza = 0;
 				skill.skill = 1.5;
 				skill.target = -1;
@@ -32,7 +32,7 @@ public class SkillData {
 
 			case 3: {
 				skill.name = "きあいだめ";
-				skill.doc = "attバフ";
+				skill.doc = "こうげきをあげる";
 				skill.waza = 5;
 				skill.skill = 30;
 				skill.target = 8;
@@ -42,7 +42,7 @@ public class SkillData {
 
 			case 4: {
 				skill.name = "ファイア";
-				skill.doc = "小攻撃";
+				skill.doc = "よわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 1.3;
 				skill.target = -1;
@@ -51,7 +51,7 @@ public class SkillData {
 
 			case 5: {
 				skill.name = "ファイラ";
-				skill.doc = "中攻撃";
+				skill.doc = "こうげきする";
 				skill.waza = 0;
 				skill.skill = 1.7;
 				skill.target = -1;
@@ -60,7 +60,7 @@ public class SkillData {
 
 			case 6: {
 				skill.name = "ファイガ";
-				skill.doc = "大攻撃";
+				skill.doc = "つよいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 2.2;
 				skill.target = -1;
@@ -69,7 +69,7 @@ public class SkillData {
 
 			case 7: {
 				skill.name = "ハキ";
-				skill.doc = "小範囲";
+				skill.doc = "ふくすうのてきによわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 0.8;
 				skill.target = 10;
@@ -78,7 +78,7 @@ public class SkillData {
 
 			case 8: {
 				skill.name = "ハキクロス";
-				skill.doc = "中範囲";
+				skill.doc = "ふくすうのてきにこうげきをする";
 				skill.waza = 0;
 				skill.skill = 1.2;
 				skill.target = 10;
@@ -87,7 +87,7 @@ public class SkillData {
 
 			case 9: {
 				skill.name = "まほうたて";
-				skill.doc = "魔法耐性";
+				skill.doc = "まほうにつよくなる";
 				skill.waza = 9;
 				skill.skill = 0.3;
 				skill.target = 8;
@@ -97,7 +97,7 @@ public class SkillData {
 
 			case 10: {
 				skill.name = "ブレイブ";
-				skill.doc = "攻撃バフ";
+				skill.doc = "こうげきをあげる";
 				skill.waza = 2;
 				skill.skill = 0.3;
 				skill.target = -2;
@@ -107,7 +107,7 @@ public class SkillData {
 
 			case 11: {
 				skill.name = "バリア";
-				skill.doc = "防御バフ";
+				skill.doc = "ぼうぎょをあげる";
 				skill.waza = 3;
 				skill.skill = 0.2;
 				skill.target = -2;
@@ -117,7 +117,7 @@ public class SkillData {
 
 			case 12: {
 				skill.name = "クイック";
-				skill.doc = "素早さバフ";
+				skill.doc = "すばやさをあげる";
 				skill.waza = 4;
 				skill.skill = 0.5;
 				skill.target = -2;
@@ -127,7 +127,7 @@ public class SkillData {
 
 			case 13: {
 				skill.name = "MPセーブ";
-				skill.doc = "MP節約";
+				skill.doc = "MPをせつやくする";
 				skill.waza = 10;
 				skill.skill = 0.7;
 				skill.target = -2;
@@ -137,7 +137,7 @@ public class SkillData {
 
 			case 14: {
 				skill.name = "ヘナトス";
-				skill.doc = "攻撃デバフ";
+				skill.doc = "こうげきをさげる";
 				skill.waza = 2;
 				skill.skill = -0.2;
 				skill.target = -1;
@@ -147,7 +147,7 @@ public class SkillData {
 
 			case 15: {
 				skill.name = "ウィーク";
-				skill.doc = "防御デバフ";
+				skill.doc = "ぼうぎょをさげる";
 				skill.waza = 3;
 				skill.skill = -0.2;
 				skill.target = -1;
@@ -157,7 +157,7 @@ public class SkillData {
 
 			case 16: {
 				skill.name = "スロウ";
-				skill.doc = "素早さデバフ";
+				skill.doc = "すばやさをさげる";
 				skill.waza = 4;
 				skill.skill = -0.3;
 				skill.target = -1;
@@ -177,7 +177,7 @@ public class SkillData {
 
 			case 18: {
 				skill.name = "ぬすむ";
-				skill.doc = "盗む";
+				skill.doc = "ぬすむ";
 				skill.waza = 12;
 				skill.skill = 0;
 				skill.target = -1;
@@ -186,7 +186,7 @@ public class SkillData {
 
 			case 19: {
 				skill.name = "つかう";
-				skill.doc = "使う";
+				skill.doc = "アイテムをつかう";
 				skill.waza = 13;
 				skill.skill = 0;
 				skill.target = 11;
@@ -195,7 +195,7 @@ public class SkillData {
 
 			case 20: {
 				skill.name = "クエイク";
-				skill.doc = "小範囲";
+				skill.doc = "ふくすうのてきによわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 0.7;
 				skill.target = 10;
@@ -204,7 +204,7 @@ public class SkillData {
 
 			case 21: {
 				skill.name = "クエイラ";
-				skill.doc = "中範囲";
+				skill.doc = "ふくすうのてきにこうげきをする";
 				skill.waza = 0;
 				skill.skill = 1.1;
 				skill.target = 10;
@@ -213,7 +213,7 @@ public class SkillData {
 
 			case 22: {
 				skill.name = "まじんきり";
-				skill.doc = "大攻撃";
+				skill.doc = "つよいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 2.5;
 				skill.target = -1;
@@ -222,7 +222,7 @@ public class SkillData {
 
 			case 23: {
 				skill.name = "カース";
-				skill.doc = "貫通攻撃";
+				skill.doc = "こうげきがかんつうする";
 				skill.waza = 15;
 				skill.skill = 1.2;
 				skill.target = -1;
@@ -231,7 +231,7 @@ public class SkillData {
 
 			case 24: {
 				skill.name = "チャージン";
-				skill.doc = "中攻撃";
+				skill.doc = "こうげきする";
 				skill.waza = 0;
 				skill.skill = 1.4;
 				skill.target = -1;
@@ -240,7 +240,7 @@ public class SkillData {
 
 			case 25: {
 				skill.name = "フルレンジ";
-				skill.doc = "小範囲";
+				skill.doc = "ふくすうのてきによわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 0.6;
 				skill.target = 10;
@@ -249,7 +249,7 @@ public class SkillData {
 
 			case 26: {
 				skill.name = "ひっちゅう";
-				skill.doc = "必中";
+				skill.doc = "かならずめいちゅうするようになる";
 				skill.waza = 7;
 				skill.skill = 0;
 				skill.target = 8;
@@ -259,7 +259,7 @@ public class SkillData {
 
 			case 27: {
 				skill.name = "ヒール";
-				skill.doc = "小回復";
+				skill.doc = "HPをすこしかいふくする";
 				skill.waza = 14;
 				skill.skill = 20;
 				skill.target = -2;
@@ -268,7 +268,7 @@ public class SkillData {
 
 			case 28: {
 				skill.name = "ヒーラ";
-				skill.doc = "中回復";
+				skill.doc = "HPをかいふくする";
 				skill.waza = 14;
 				skill.skill = 40;
 				skill.target = -2;
@@ -277,7 +277,7 @@ public class SkillData {
 
 			case 29: {
 				skill.name = "ヒーレスト";
-				skill.doc = "大回復";
+				skill.doc = "ぜんたいのHPをおおきくかいふくする";
 				skill.waza = 14;
 				skill.skill = 100;
 				skill.target = -2;
@@ -286,7 +286,7 @@ public class SkillData {
 
 			case 30: {
 				skill.name = "メディカ";
-				skill.doc = "全体小回復";
+				skill.doc = "ぜんたいのHPをすこしかいふくする";
 				skill.waza = 14;
 				skill.skill = 20;
 				skill.target = 9;
@@ -295,7 +295,7 @@ public class SkillData {
 
 			case 31: {
 				skill.name = "メディラ";
-				skill.doc = "全体中回復";
+				skill.doc = "ぜんたいのHPをかいふくする";
 				skill.waza = 14;
 				skill.skill = 40;
 				skill.target = 9;
@@ -304,7 +304,7 @@ public class SkillData {
 
 			case 32: {
 				skill.name = "エスナ";
-				skill.doc = "デバフ解除";
+				skill.doc = "デバフをかいじょする";
 				skill.waza = 11;
 				skill.skill = 0;
 				skill.target = -2;
@@ -313,7 +313,7 @@ public class SkillData {
 
 			case 33: {
 				skill.name = "キアル";
-				skill.doc = "全体デバフ解除";
+				skill.doc = "ぜんいんのデバフをかいじょする";
 				skill.waza = 11;
 				skill.skill = 0;
 				skill.target = 9;
@@ -322,7 +322,7 @@ public class SkillData {
 
 			case 34: {
 				skill.name = "テラファイア";
-				skill.doc = "テラファイア";
+				skill.doc = "つよいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 2.0;
 				skill.target = 9;
@@ -331,7 +331,7 @@ public class SkillData {
 
 			case 35: {
 				skill.name = "ミニファイア";
-				skill.doc = "ミニファイア";
+				skill.doc = "よわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 1.4;
 				skill.target = -2;
@@ -340,7 +340,7 @@ public class SkillData {
 
 			case 50: {
 				skill.name = "ウィーク";
-				skill.doc = "防御弱体化";
+				skill.doc = "ぼうぎょをさげる";
 				skill.waza = 6;
 				skill.skill = -30;
 				skill.target = 9;
@@ -350,7 +350,7 @@ public class SkillData {
 
 			case 51: {
 				skill.name = "ヒール";
-				skill.doc = "回復";
+				skill.doc = "HPをかいふくする";
 				skill.waza = 14;
 				skill.skill = 50;
 				skill.target = 10;
@@ -383,7 +383,7 @@ public class SkillData {
 
 			case 55: {
 				skill.name = "チャージ";
-				skill.doc = "攻撃強化";
+				skill.doc = "こうげきをあげる";
 				skill.waza = 5;
 				skill.skill = 20;
 				skill.target = 10;
@@ -393,7 +393,7 @@ public class SkillData {
 
 			case 56: {
 				skill.name = "ジョブン";
-				skill.doc = "ジョブチェンジ";
+				skill.doc = "ジョブをチェンジする";
 				skill.waza = 17;
 				skill.skill = 100;
 				skill.target = 9;
@@ -402,7 +402,7 @@ public class SkillData {
 
 			case 100: {
 				skill.name = "ギラ";
-				skill.doc = "小攻撃";
+				skill.doc = "よわいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 1.2;
 				skill.target = -2;
@@ -411,7 +411,7 @@ public class SkillData {
 
 			case 101: {
 				skill.name = "ヒャダルン";
-				skill.doc = "中攻撃";
+				skill.doc = "こうげきする";
 				skill.waza = 0;
 				skill.skill = 1.6;
 				skill.target = -2;
@@ -420,7 +420,7 @@ public class SkillData {
 
 			case 102: {
 				skill.name = "トルネド";
-				skill.doc = "大攻撃";
+				skill.doc = "つよいこうげきをする";
 				skill.waza = 0;
 				skill.skill = 2.0;
 				skill.target = -2;
@@ -429,7 +429,7 @@ public class SkillData {
 
 			case 103: {
 				skill.name = "ダーク";
-				skill.doc = "全体攻撃";
+				skill.doc = "ぜんたいにこうげきする";
 				skill.waza = 0;
 				skill.skill = 0.8;
 				skill.target = -2;
@@ -438,7 +438,7 @@ public class SkillData {
 
 			case 104: {
 				skill.name = "アドパワ";
-				skill.doc = "attバフ";
+				skill.doc = "こうげきをあげる";
 				skill.waza = 2;
 				skill.skill = 0.3;
 				skill.target = 8;
@@ -447,7 +447,7 @@ public class SkillData {
 
 			case 105: {
 				skill.name = "アドディ";
-				skill.doc = "defバフ";
+				skill.doc = "ぼうぎょをあげる";
 				skill.waza = 3;
 				skill.skill = 0.2;
 				skill.target = 8;
@@ -456,7 +456,7 @@ public class SkillData {
 
 			case 106: {
 				skill.name = "アドアジ";
-				skill.doc = "ageバフ";
+				skill.doc = "すばやさをあげる";
 				skill.waza = 4;
 				skill.skill = 0.5;
 				skill.target = 8;
@@ -465,7 +465,7 @@ public class SkillData {
 
 			case 107: {
 				skill.name = "ヘナトス";
-				skill.doc = "attデバフ";
+				skill.doc = "こうげきをさげる";
 				skill.waza = 2;
 				skill.skill = -0.3;
 				skill.target = -2;
@@ -474,7 +474,7 @@ public class SkillData {
 
 			case 108: {
 				skill.name = "ウィーク";
-				skill.doc = "defデバフ";
+				skill.doc = "ぼうぎょをさげる";
 				skill.waza = 3;
 				skill.skill = -0.2;
 				skill.target = -2;
@@ -483,7 +483,7 @@ public class SkillData {
 
 			case 109: {
 				skill.name = "スロウ";
-				skill.doc = "ageデバフ";
+				skill.doc = "すばやさをさげる";
 				skill.waza = 4;
 				skill.skill = -0.3;
 				skill.target = -2;
@@ -492,7 +492,7 @@ public class SkillData {
 
 			case 110: {
 				skill.name = "デスペル";
-				skill.doc = "デバフ解除";
+				skill.doc = "デバフをかいじょする";
 				skill.waza = 11;
 				skill.skill = 0;
 				skill.target = -2;
@@ -501,7 +501,7 @@ public class SkillData {
 
 			case 111: {
 				skill.name = "ヒール";
-				skill.doc = "回復";
+				skill.doc = "HPをかいふくする";
 				skill.waza = 14;
 				skill.skill = 200;
 				skill.target = -1;
@@ -510,7 +510,7 @@ public class SkillData {
 
 			case 112: {
 				skill.name = "ヒーレスト";
-				skill.doc = "大回復";
+				skill.doc = "おおきくHPをかいふくする";
 				skill.waza = 14;
 				skill.skill = 800;
 				skill.target = -1;
@@ -519,7 +519,7 @@ public class SkillData {
 
 			case 113: {
 				skill.name = "メディラ";
-				skill.doc = "全体回復";
+				skill.doc = "パーティのHPをかいふくする";
 				skill.waza = 14;
 				skill.skill = 100;
 				skill.target = 10;
