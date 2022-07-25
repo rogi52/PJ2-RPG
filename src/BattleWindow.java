@@ -54,7 +54,8 @@ public class BattleWindow implements KeyListener {
 		this.myCanvas = myCanvas;
 		this.w = w;
 		mw  = new MessageWindow("", 352, 448, 32, 4, 15, myCanvas);
-		doc = new MessageWindow("", 128 - 28 + 8, 448 - 5, 32, 4, 6, myCanvas);
+		doc = new MessageWindow("", 100 + 16, 448, 32, 4, 6, myCanvas);
+		doc.OFFSET = 16;
 	}
 
 
@@ -77,7 +78,7 @@ public class BattleWindow implements KeyListener {
 		Graphics g = myCanvas.buffer;
 
 		g.setColor(Color.BLACK);
-		g.fillRect(128 - 28, 448, 32 * 5 + 32, 32 * 4);
+		g.fillRect(100, 448, 32 * 6, 32 * 4);
 
 		if(cmdsLeft.size() > 0) {
 			try {
@@ -100,8 +101,7 @@ public class BattleWindow implements KeyListener {
 	void repaintRightCmd() {
 		Graphics g = myCanvas.buffer;
 
-		g.setColor(Color.BLACK);
-		g.fillRect(mw.START_X, mw.START_Y, mw.CHARACTER_NUM_WIDTH * 32 + mw.OFFSET, mw.CHARACTER_NUM_HEIGHT * 32 + mw.OFFSET);
+		mw.clear();
 
 		if(CMD_TYPE == CMD_RIGHT_BOX4) {
 			String[] box4 = cmdsBox4.get(posBox4);
@@ -164,22 +164,21 @@ public class BattleWindow implements KeyListener {
 		Graphics g = myCanvas.buffer;
 
 		g.setColor(Color.BLACK);
-		g.fillRect(128 - 28, 448, 32 * 5 + 32 + 20, 32 * 4);
+		g.fillRect(100, 448, 32 * 6 + 16, 32 * 4);
 
 		if(optionType == SKILL) {
-			System.out.println(cmdsBox8ID.get(posBox8)[pos8I][pos8J]);
-			Integer ID = skillID.get(cmdsBox8ID.get(posBox8)[pos8I][pos8J]);
+			int pos = cmdsBox8ID.get(posBox8)[pos8I][pos8J];
+			Integer ID = skillID.get(pos);
 			Skill skill = SkillData.getSkill(ID);
 			doc.clear();
 
 			String MP = "" + skill.costMP;
-			while(MP.length() < 6) MP = " " + MP;
-			doc.buffer += "消費MP  ";
-			doc.buffer += MP;
+			while(MP.length() < 3) MP = " " + MP;
+			doc.buffer += MP + " MP";
 
-			String str = skill.doc;
-			while(str.length() < 6) str = " " + str;
-			doc.buffer += "説明    ";
+			doc.buffer += "      ";
+
+			String str = ImageManager.arrange(skill.doc);
 			doc.buffer += str;
 
 			doc.repaint();
@@ -192,13 +191,12 @@ public class BattleWindow implements KeyListener {
 			doc.clear();
 
 			String num = "" + itemCnt.get(pos);
-			while(num.length() < 5) num = " " + num;
-			doc.buffer += "所持数   ";
-			doc.buffer += num + "コ";
+			while(num.length() < 4) num = " " + num;
+			doc.buffer += num + " コ";
 
-			String str = item.doc;
-			while(str.length() < 6) str = " " + str;
-			doc.buffer += "説明    ";
+			doc.buffer += "      ";
+
+			String str = ImageManager.arrange(item.doc);
 			doc.buffer += str;
 
 			doc.repaint();
@@ -282,6 +280,9 @@ public class BattleWindow implements KeyListener {
 					STATE = NULL;
 					CMD_TYPE = NULL;
 					OPTION_TYPE = NULL;
+					myCanvas.buffer.setColor(Color.BLACK);
+					myCanvas.buffer.fillRect(100, 448, 32 * 6 + 16, 32 * 4);
+					myCanvas.repaint();
 					return Integer.parseInt(res);
 				}
 			}
@@ -290,6 +291,9 @@ public class BattleWindow implements KeyListener {
 		STATE = NULL;
 		CMD_TYPE = NULL;
 		OPTION_TYPE = NULL;
+		myCanvas.buffer.setColor(Color.BLACK);
+		myCanvas.buffer.fillRect(100, 448, 32 * 6 + 16, 32 * 4);
+		myCanvas.repaint();
 		return -1;
 	}
 
@@ -311,6 +315,11 @@ public class BattleWindow implements KeyListener {
 	public final static int CONTINUE = 2;
 
 	void print(String str, int newWindow, int waitEnterKey) {
+
+		myCanvas.buffer.setColor(Color.BLACK);
+		myCanvas.buffer.fillRect(128 - 28, 448 + posLeft * 32, 28, 32);
+		myCanvas.repaint();
+
 		str = ImageManager.arrange(str);
 		STATE = MESSAGE;
 		if(newWindow == NEW_WINDOW) mw.buffer = "";
@@ -348,6 +357,11 @@ public class BattleWindow implements KeyListener {
 
 	void waitEnterKey() {
 		STATE = MESSAGE;
+
+		myCanvas.buffer.setColor(Color.BLACK);
+		myCanvas.buffer.fillRect(128 - 28, 448 + posLeft * 32, 28, 32);
+		myCanvas.repaint();
+
 		try {
 			while(true) {
 				Thread.sleep(20);
@@ -448,6 +462,8 @@ public class BattleWindow implements KeyListener {
 
 		if(STATE == COMMAND) {
 			/*  コマンド (左) */
+			g.setColor(Color.BLACK);
+			g.fillRect(128 - 28, 448, 32 * 5 + 32, 32 * 4);
 			try {
 				BufferedImage arrow = ImageManager.getCharImage('▶');
 				g.drawImage(arrow, 128 - 32, 448 + posLeft * 32, null);
@@ -522,10 +538,10 @@ public class BattleWindow implements KeyListener {
 			switch(CMD_TYPE) {
 				case CMD_LEFT: {
 					switch(e.getKeyCode()) {
-						case KeyEvent.VK_DOWN:  { posLeft = Math.min(posLeft + 1, cmdsLeft.size() - 1); repaint(); } break;
-						case KeyEvent.VK_S:     { posLeft = Math.min(posLeft + 1, cmdsLeft.size() - 1); repaint(); } break;
-						case KeyEvent.VK_UP:    { posLeft = Math.max(posLeft - 1,                   0); repaint(); } break;
-						case KeyEvent.VK_W:     { posLeft = Math.max(posLeft - 1,                   0); repaint(); } break;
+						case KeyEvent.VK_DOWN:  { posLeft = Math.min(posLeft + 1, cmdsLeft.size() - 1); repaintLeftCmd(); } break;
+						case KeyEvent.VK_S:     { posLeft = Math.min(posLeft + 1, cmdsLeft.size() - 1); repaintLeftCmd(); } break;
+						case KeyEvent.VK_UP:    { posLeft = Math.max(posLeft - 1,                   0); repaintLeftCmd(); } break;
+						case KeyEvent.VK_W:     { posLeft = Math.max(posLeft - 1,                   0); repaintLeftCmd(); } break;
 						case KeyEvent.VK_ENTER: {
 							out.println(posLeft);
 							out.flush();
