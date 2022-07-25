@@ -154,6 +154,10 @@ public class BattleWindow implements KeyListener {
 		print(str + '\n', CONTINUE, CONTINUE);
 	}
 
+	void print(String str) {
+		print(str, CONTINUE, CONTINUE);
+	}
+
 	public final static int NEW_WINDOW = 0;
 	public final static int WAIT_ENTER_KEY = 1;
 	public final static int CONTINUE = 2;
