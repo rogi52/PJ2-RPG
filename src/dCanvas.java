@@ -91,6 +91,30 @@ class dCanvas extends Canvas {
 		}
 	}
 	
+	
+	public void drawChrB(String str,int x,int y,int width) {
+		str=ImageManager.arrange(str);
+		int x0=x;
+
+		for(int i=0;i<str.length();i++) {
+			if(str.charAt(i)=='\n') {
+				x=x0;
+				y+=PL2RPG.BLOCK_SIZE;
+			}else {
+				try {
+					buffer.drawImage(ImageManager.getCharImageB(str.charAt(i)),x,y,null);
+				} catch (IOException e) {}
+
+				if(x+PL2RPG.BLOCK_SIZE*2>x0+width) {
+					x=x0;
+					y+=PL2RPG.BLOCK_SIZE;
+				}else {
+					x+=PL2RPG.BLOCK_SIZE;
+				}
+			}
+		}
+	}
+	
 	public void Dialog(String str) {
 		w.myCanvas.drawDialog1(str, PL2RPG.DIALOG_ANIMATION_TIME);
 
@@ -740,11 +764,7 @@ class dCanvas extends Canvas {
 			}
 		}
 
-		buffer.setFont(new Font("Yu Gothic UI", Font.BOLD, 25));
-		buffer.setColor(new Color(0,0,0,255));
-		buffer.drawString("[Enter] Select",330, 530);
-		buffer.drawString("[ ESC ] Back",330, 570);
-		buffer.drawString("[ Delete ] Delete",330, 610);
+		drawChrB("[Enter]  Select\n[ ESC ]  Back\n[Delete] Delete",250,530,0xFFFF);
 
 		blank(alpha);
 
@@ -771,9 +791,7 @@ class dCanvas extends Canvas {
 			buffer.drawImage(con_act_img,PL2RPG.MAIN_WIN_X/2+100,450, null);			
 		}
 
-		buffer.setFont(new Font("Yu Gothic UI", Font.BOLD, 32));					
-		buffer.setColor(new Color(0,0,0,255));
-		buffer.drawString("Press Enter to Select",330, 550);
+		drawChrB("Press Enter to Select",150,550,0xFFFF);
 
 		blank(alpha);
 

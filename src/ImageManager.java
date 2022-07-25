@@ -57,15 +57,35 @@ public class ImageManager{
 
 		return back2;
 	}
-	/*
-	static BufferedImage getCharImage(char c) throws IOException {
-		String name = "text/" + c;
-		if(c == '!') name = "text/！";
-		if(c == '▶') name = "text/arrow";
-		if(c == '◀') name = "text/arrow2";
-		return getImage(name);
-	}*/
 
+	static BufferedImage getCharImageB(char c) throws IOException {
+		String name = "black_text/" + c;
+		if(c == '!') name = "black_text/！";
+		if(c == '▶') name = "black_text/arrow";
+		if(c == '◀') name = "black_text/arrow2";
+		try {
+			return getImage(name);
+		}catch(IOException e) {
+		}
+		BufferedImage back,back2;
+		Graphics buffer,buffer2;
+		
+		int size=12;
+		back =  new BufferedImage(size,size,BufferedImage.TYPE_4BYTE_ABGR);//(new Canvas()).createImage(32, 32);
+		buffer = back.getGraphics();
+		back2 =  new BufferedImage(32,32,BufferedImage.TYPE_4BYTE_ABGR);//(new Canvas()).createImage(32, 32);
+		buffer2 = back2.getGraphics();
+		
+		buffer.setColor(new Color(0,0,0,255));
+		buffer.setFont(new Font("Yu Gothic UI", Font.BOLD, 13));
+		buffer.drawString(""+c,0,size-1);
+		
+		buffer2.drawImage(back,0,0,28,28,null);
+
+		return back2;
+	}
+
+	
 	/* name の画像を取得 */
 	static BufferedImage getImage(String name) throws IOException {
 		if(imgBuffer.get(name) == null)
