@@ -391,6 +391,30 @@ public class BattleWindow implements KeyListener {
 		new int[] {128, 320, 512, 704}
 	};
 
+	void repaintEnemy() {
+		Graphics g = myCanvas.buffer;
+		int enemyCnt = 0;
+		for(int i = 0; i < 4; i++) if(enemies[i] != null) enemyCnt++;
+
+		for(int i = 0; i < 4; i++) {
+			if(enemies[i] != null) {
+				g.drawImage(myCanvas.teki[enemies[i].ID], enemySX[enemyCnt][i], enemySY, null);
+
+				if(enemies[i].name.equals("墓")) continue;
+
+				String name = ImageManager.arrange(enemies[i].name);
+				for(int j = 0; j < name.length(); j++) {
+					try {
+						BufferedImage image = ImageManager.getCharImage(name.charAt(j));
+						g.drawImage(image, enemySX[enemyCnt][i] + j * 32 - 16, enemySY + 32 * 4, null);
+					} catch (IOException e) { System.out.println("Error : ENEMY"); }
+				}
+			}
+		}
+
+		myCanvas.repaint();
+	}
+
 	void repaint() {
 		Graphics g = myCanvas.buffer;
 
@@ -438,24 +462,7 @@ public class BattleWindow implements KeyListener {
 		}
 
 		/* 敵 */
-		int enemyCnt = 0;
-		for(int i = 0; i < 4; i++) if(enemies[i] != null) enemyCnt++;
-
-		for(int i = 0; i < 4; i++) {
-			if(enemies[i] != null) {
-				g.drawImage(myCanvas.teki[enemies[i].ID], enemySX[enemyCnt][i], enemySY, null);
-
-				if(enemies[i].name.equals("墓")) continue;
-
-				String name = ImageManager.arrange(enemies[i].name);
-				for(int j = 0; j < name.length(); j++) {
-					try {
-						BufferedImage image = ImageManager.getCharImage(name.charAt(j));
-						g.drawImage(image, enemySX[enemyCnt][i] + j * 32 - 16, enemySY + 32 * 4, null);
-					} catch (IOException e) { System.out.println("Error : ENEMY"); }
-				}
-			}
-		}
+		repaintEnemy();
 
 		if(STATE == MESSAGE) {
 			mw.repaint();

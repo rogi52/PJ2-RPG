@@ -31,7 +31,7 @@ public class MessageWindow {
 		Graphics g = myCanvas.buffer;
 
 		g.setColor(Color.BLACK);
-		g.fillRect(START_X, START_Y, CHARACTER_NUM_WIDTH * CHARACTER_SIZE, CHARACTER_NUM_HEIGHT * CHARACTER_SIZE);
+		g.fillRect(START_X, START_Y, CHARACTER_NUM_WIDTH * CHARACTER_SIZE, CHARACTER_NUM_HEIGHT * CHARACTER_SIZE + OFFSET);
 
 		for(int i = 0, h = 0, w = 0; i < buffer.length(); i++) {
 			char c = buffer.charAt(i);
