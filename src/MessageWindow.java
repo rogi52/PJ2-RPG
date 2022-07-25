@@ -10,8 +10,8 @@ public class MessageWindow {
 	int CHARACTER_NUM_HEIGHT = 5;
 	int CHARACTER_NUM_WIDTH = 10;
 	int CHARACTER_SIZE = 32;
-	int OFFSET = 5;
 	dCanvas myCanvas;
+	int OFFSET = 0;
 
 	MessageWindow(String msg, int START_X, int START_Y, int CHARACTER_SIZE, int CHARACTER_NUM_HEIGHT, int CHARACTER_NUM_WIDTH, dCanvas myCanvas) {
 		this.START_X = START_X;
@@ -31,7 +31,7 @@ public class MessageWindow {
 		Graphics g = myCanvas.buffer;
 
 		g.setColor(Color.BLACK);
-		g.fillRect(START_X, START_Y, CHARACTER_NUM_WIDTH * CHARACTER_SIZE + OFFSET, CHARACTER_NUM_HEIGHT * CHARACTER_SIZE + OFFSET);
+		g.fillRect(START_X, START_Y, CHARACTER_NUM_WIDTH * CHARACTER_SIZE, CHARACTER_NUM_HEIGHT * CHARACTER_SIZE);
 
 		for(int i = 0, h = 0, w = 0; i < buffer.length(); i++) {
 			char c = buffer.charAt(i);
@@ -39,7 +39,7 @@ public class MessageWindow {
 			if(c == ' ' || c == ':') { w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; } continue; }
 			try {
 				BufferedImage I = ImageManager.getCharImage(c);
-				g.drawImage(I, START_X + OFFSET + w * CHARACTER_SIZE, START_Y + OFFSET + h * CHARACTER_SIZE, null);
+				g.drawImage(I, START_X + w * CHARACTER_SIZE, START_Y + h * CHARACTER_SIZE - (h > 0 ? OFFSET : 0), null);
 			} catch (IOException e) { System.out.println("error : " + c); }
 			w++; if(w == CHARACTER_NUM_WIDTH) { h++; w=0; }
 		}
