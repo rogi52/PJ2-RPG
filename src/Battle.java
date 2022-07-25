@@ -1131,7 +1131,7 @@ class Battle {
 							window.println(hero[stock[actOrder[n]].target].name + "にバフのこうか!");
 						}
 						window.waitEnterKey();
-					}else if(4 < actOrder[n] && actOrder[n] < 8 && ((4 < stock[actOrder[n]].target && stock[actOrder[n]].target < 8) || stock[actOrder[n]].target == 10)) {
+					}else if(4 < actOrder[n] && actOrder[n] < 8 && ((3 < stock[actOrder[n]].target && stock[actOrder[n]].target < 8) || stock[actOrder[n]].target == 10)) {
 						if(stock[actOrder[n]].target == 10) {
 							for(int m = 0; m < 4; m++) {
 								if(Enemy[m].curHP != -1) {
