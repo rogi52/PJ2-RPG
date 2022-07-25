@@ -405,6 +405,7 @@ class GetHost extends Thread{
 	public boolean state=false;
 	public String hosts;
 	public String[] reslist = new String[0];
+	public String ip;
 
 	GetHost(){
 		state=false;
@@ -413,12 +414,16 @@ class GetHost extends Thread{
 			dgSocket.setSoTimeout(1000);
 			byte buffer[] = new byte[256];
 			packet = new DatagramPacket(buffer, buffer.length);
+			
+			ip=InetAddress.getLocalHost().getHostAddress();
 
 			state=true;
 			start();
 			tg=new ThreadGetHost(this);
 			tg.start();
-		} catch (SocketException e) {}
+		} catch (SocketException e) {
+		} catch (UnknownHostException e) {
+		}
 	}
 	
 	public void close() {

@@ -466,7 +466,7 @@ class GameLoop extends Thread{
 										boolean str=false;
 										InfoS is2;
 										
-										name="ホストをまっています";
+										name="ホストをまっています\nあなたは"+BroadCastIP.getName(g.ip);
 										w.myCanvas.drawDialog2(name, PL2RPG.DIALOG_ANIMATION_TIME);
 	
 										while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
@@ -481,6 +481,7 @@ class GameLoop extends Thread{
 												for(int j=0;j<step;j++) {
 													name+=".";
 												}
+												name+="\nあなたは"+BroadCastIP.getName(g.ip);
 											}
 											
 											if(!w.cc.getStatus())break;
