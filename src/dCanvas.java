@@ -1,7 +1,6 @@
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
@@ -91,25 +90,28 @@ class dCanvas extends Canvas {
 		}
 	}
 	
-	
 	public void drawChrB(String str,int x,int y,int width) {
+		drawChrB(str,x,y,width,32);
+	}
+	
+	public void drawChrB(String str,int x,int y,int width,int size) {
 		str=ImageManager.arrange(str);
 		int x0=x;
 
 		for(int i=0;i<str.length();i++) {
 			if(str.charAt(i)=='\n') {
 				x=x0;
-				y+=PL2RPG.BLOCK_SIZE;
+				y+=size;
 			}else {
 				try {
-					buffer.drawImage(ImageManager.getCharImageB(str.charAt(i)),x,y,null);
+					buffer.drawImage(ImageManager.getCharImageB(str.charAt(i)),x,y,size,size,null);
 				} catch (IOException e) {}
 
-				if(x+PL2RPG.BLOCK_SIZE*2>x0+width) {
+				if(x+size*2>x0+width) {
 					x=x0;
-					y+=PL2RPG.BLOCK_SIZE;
+					y+=size;
 				}else {
-					x+=PL2RPG.BLOCK_SIZE;
+					x+=size;
 				}
 			}
 		}
@@ -749,19 +751,20 @@ class dCanvas extends Canvas {
 	public void drawSelect(int alpha,int key_y) {
 		buffer.drawImage(bg_img,0,0, null);
 		buffer.drawImage(logo_img,0,0, null);
+		
+		int pos_y=280;
 
 		for(int i=key_y-5;i<=key_y+5;i++) {
 			if(i>=0 && i<w.save_num) {
 				if(i==key_y) {
-					buffer.setColor(new Color(0,0,0,255));
-					buffer.setFont(new Font("Yu Gothic UI", Font.BOLD, 23));
+					drawChrB("▶"+w.save_list[i],230, pos_y,0xFFFF);
+					pos_y+=12;
 				}else {
-					buffer.setColor(new Color(0,0,0,127));
-					buffer.setFont(new Font("Yu Gothic UI", Font.PLAIN, 19));					
+					drawChrB(w.save_list[i],230+32, pos_y,0xFFFF,16);
 				}
 
-				buffer.drawString(w.save_list[i],330, 320+(i-key_y)*25);
 			}
+			pos_y+=20;
 		}
 
 		drawChrB("[Enter]  Select\n[ ESC ]  Back\n[Delete] Delete",250,530,0xFFFF);
