@@ -567,12 +567,6 @@ class dCanvas extends Canvas {
 
 			map_x=csv_raw.get(1).split(",").length;
 
-
-			//System.out.println(lines);
-			//System.out.println(map_y);
-			//System.out.println(map_x);
-			//System.out.println(entities);
-
 			map=new int[map_x][map_y];
 
 			for(int y=0;y<map_y;y++) {
@@ -584,8 +578,6 @@ class dCanvas extends Canvas {
 			}
 
 			csv_arr=csv_raw.get(0).split(",");
-
-			//System.out.println(csv_arr[0]);
 
 			if(nx==-1) {
 				pos_x=PL2RPG.BLOCK_SIZE*Integer.parseInt(csv_arr[0]);
@@ -614,8 +606,7 @@ class dCanvas extends Canvas {
 				en_type[i]=Integer.parseInt(csv_arr[0]);
 				en_x[i]=Integer.parseInt(csv_arr[1]);
 				en_y[i]=Integer.parseInt(csv_arr[2]);
-				en_UID[i]=fname+csv_arr[0]+"L"+Integer.toString(i)+",";
-				//System.out.println(en_UID[i]);
+				en_UID[i]=fname+csv_arr[0]+"L"+Integer.toString(i)+",";				//System.out.println(en_UID[i]);
 				for(int j=0;j<csv_arr.length-3;j++) {
 					en_p[i][j]=csv_arr[j+3];
 				}
@@ -633,10 +624,6 @@ class dCanvas extends Canvas {
 		buffer.setColor(new Color(0,0,0,alpha));
 		buffer.fillRect(0,0,getSize().width,getSize().height);
 		
-		/*
-		buffer.setColor(new Color(0,0,0,255));
-		buffer.fillRect(0,0,getSize().width,(int)(getSize().height*alpha/255));
-		*/
 	}
 
 	public void drawMap(int alpha,int view_direction,int step) {
@@ -701,20 +688,7 @@ class dCanvas extends Canvas {
 
 		buffer.drawImage(chr[w.m.partyJob[0]][view_direction-1][step],PL2RPG.MAIN_WIN_X/2,PL2RPG.MAIN_WIN_Y/2-PL2RPG.BLOCK_SIZE/2,null);
 		
-		/*
-		if(w.online_mode==1) {
-			if(w.map_name.equals(w.host_map_name)) {
-				
-			}
-			
-		}else if(w.online_mode==2) {
-			 if(w.map_name.equals("")) {
-			 
-				
-			}
-		}
-		*/
-		
+
 		if(w.online_mode!=0) {
 			int dx,dy;
 
