@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -67,6 +68,76 @@ public class BattleWindow implements KeyListener {
 	int posBox8 = 0;
 	int pos8I = 0, pos8J = 0;
 
+	void repaintLeftCmd() {
+		Graphics g = myCanvas.buffer;
+
+		g.setColor(Color.BLACK);
+		g.fillRect(128 - 28, 448, 32 * 5, 32 * 4);
+
+		if(cmdsLeft.size() > 0) {
+			try {
+				BufferedImage arrow = ImageManager.getCharImage('▶');
+				g.drawImage(arrow, 128 - 32, 448 + posLeft * 32, null);
+			} catch (IOException e) { System.out.println("Error : arrow"); }
+		}
+
+		for(int i = 0; i < cmdsLeft.size(); i++) {
+			for(int j = 0; j < cmdsLeft.get(i).length(); j++) {
+				try {
+					BufferedImage image = ImageManager.getCharImage(cmdsLeft.get(i).charAt(j));
+					g.drawImage(image, 128 - 32 + (j + 1) * 32, 448 + i * 32, null);
+				} catch (IOException e) { System.out.println("Error : " + cmdsLeft.get(i).charAt(j)); }
+			}
+		}
+		myCanvas.repaint();
+	}
+
+	void repaintRightCmd() {
+		Graphics g = myCanvas.buffer;
+
+		g.setColor(Color.BLACK);
+		g.fillRect(mw.START_X, mw.START_Y, mw.CHARACTER_NUM_WIDTH * 32 + mw.OFFSET, mw.CHARACTER_NUM_HEIGHT * 32 + mw.OFFSET);
+
+		if(CMD_TYPE == CMD_RIGHT_BOX4) {
+			String[] box4 = cmdsBox4.get(posBox4);
+			for(int i = 0 ; i < 4; i++) {
+				if(box4[i] != null) {
+					for(int k = 0; k < box4[i].length(); k++) {
+						try {
+							BufferedImage image = ImageManager.getCharImage(box4[i].charAt(k));
+							g.drawImage(image, 352 + 32 + k * 32, 448 + i * 32, null);
+						} catch (IOException e) { System.out.println("Error : " + box4[i].charAt(k)); }
+					}
+				}
+			}
+			try {
+				BufferedImage arrow = ImageManager.getCharImage('▶');
+				g.drawImage(arrow, 352, 448 + pos4I * 32, null);
+			} catch (IOException e) { System.out.println("Error : arrow"); }
+		}
+
+		if(CMD_TYPE == CMD_RIGHT_BOX8) {
+			String[][] box8 = cmdsBox8.get(posBox8);
+			for(int i = 0; i < 4; i++) {
+				for(int j = 0; j < 2; j++) {
+					if(box8[i][j] != null) {
+						for(int k = 0; k < box8[i][j].length(); k++) {
+							try {
+								BufferedImage image = ImageManager.getCharImage(box8[i][j].charAt(k));
+								g.drawImage(image, 352 + 32 + j * 32 * 8 + k * 32, 448 + i * 32, null);
+							} catch (IOException e) { System.out.println("Error : " + box8[i][j].charAt(k)); }
+						}
+					}
+				}
+			}
+			try {
+				BufferedImage arrow = ImageManager.getCharImage('▶');
+				g.drawImage(arrow, 352 + pos8J * 32 * 8, 448 + pos8I * 32, null);
+			} catch (IOException e) { System.out.println("Error : arrow"); }
+		}
+
+		myCanvas.repaint();
+	}
 
 	int getOption(ArrayList<String> cmds, int windowType) {
 		for(int i = 0; i < cmds.size(); i++) cmds.set(i, ImageManager.arrange(cmds.get(i)));
@@ -77,6 +148,7 @@ public class BattleWindow implements KeyListener {
 				cmdsLeft.clear();
 				posLeft = 0;
 				for(int i = 0; i < cmds.size(); i++) cmdsLeft.add(cmds.get(i));
+				repaintLeftCmd();
 			} break;
 
 			case CMD_RIGHT_BOX4: {
@@ -94,6 +166,7 @@ public class BattleWindow implements KeyListener {
 					cmdsBox4.add(box);
 					cmdsBox4ID.add(boxID);
 				}
+				repaintRightCmd();
 			} break;
 
 			case CMD_RIGHT_BOX8: {
@@ -115,14 +188,13 @@ public class BattleWindow implements KeyListener {
 					cmdsBox8.add(box);
 					cmdsBox8ID.add(boxID);
 				}
+				repaintRightCmd();
 			} break;
 
 			default: {
 				System.out.println("ERROR windowType : " + windowType);
 			} break;
 		}
-
-		repaint();
 
 		try {
 			while(true) {
@@ -209,6 +281,7 @@ public class BattleWindow implements KeyListener {
 				if(signal != null) {
 					bos = new ByteArrayOutputStream();
 					out = new PrintWriter(bos);
+					mw.clear();
 					break;
 				}
 			}
