@@ -52,6 +52,7 @@ public class BattleWindow implements KeyListener {
 	BattleWindow(dCanvas myCanvas) {
 		this.myCanvas = myCanvas;
 		mw  = new MessageWindow("", 352, 448, 32, 4, 15, myCanvas);
+		doc = new MessageWindow("", 128 - 28, 448 - 5, 32, 4, 6, myCanvas);
 	}
 
 
@@ -60,11 +61,13 @@ public class BattleWindow implements KeyListener {
 
 	ArrayList<String[]> cmdsBox4 = new ArrayList<>();
 	ArrayList<Integer[]> cmdsBox4ID = new ArrayList<>();
+	ArrayList<Integer[]> cmdsBox4ArgID = new ArrayList<>();
 	int posBox4 = 0;
 	int pos4I = 0;
 
 	ArrayList<String[][]> cmdsBox8 = new ArrayList<>();
 	ArrayList<Integer[][]> cmdsBox8ID = new ArrayList<>();
+	ArrayList<Integer[][]> cmdsBox8ArgID = new ArrayList<>();
 	int posBox8 = 0;
 	int pos8I = 0, pos8J = 0;
 
@@ -72,7 +75,7 @@ public class BattleWindow implements KeyListener {
 		Graphics g = myCanvas.buffer;
 
 		g.setColor(Color.BLACK);
-		g.fillRect(128 - 28, 448, 32 * 5, 32 * 4);
+		g.fillRect(128 - 28, 448, 32 * 5 + 32, 32 * 4);
 
 		if(cmdsLeft.size() > 0) {
 			try {
@@ -139,10 +142,77 @@ public class BattleWindow implements KeyListener {
 		myCanvas.repaint();
 	}
 
+	public static final int TARGET = 10;
+	public static final int SKILL  = 11;
+	public static final int ITEM   = 12;
+	private int OPTION_TYPE = NULL;
+
+	ArrayList<Integer> emptyArray = new ArrayList<>();
+
 	int getOption(ArrayList<String> cmds, int windowType) {
+		return getOption(cmds, windowType, TARGET, emptyArray, emptyArray, emptyArray);
+	}
+
+	MessageWindow doc;
+	ArrayList<Integer> skillID = new ArrayList<>();
+	ArrayList<Integer> itemID = new ArrayList<>();
+	ArrayList<Integer> itemCnt = new ArrayList<>();
+
+	void repaintDoc(int optionType, ArrayList<Integer> skillID, ArrayList<Integer> itemID, ArrayList<Integer> itemCnt) {
+		Graphics g = myCanvas.buffer;
+
+		g.setColor(Color.BLACK);
+		g.fillRect(128 - 28, 448, 32 * 5 + 32 + 20, 32 * 4);
+
+		if(optionType == SKILL) {
+			System.out.println(cmdsBox8ID.get(posBox8)[pos8I][pos8J]);
+			Integer ID = skillID.get(cmdsBox8ID.get(posBox8)[pos8I][pos8J]);
+			Skill skill = SkillData.getSkill(ID);
+			doc.clear();
+
+			String MP = "" + skill.costMP;
+			while(MP.length() < 6) MP = " " + MP;
+			doc.buffer += "消費MP  ";
+			doc.buffer += MP;
+
+			String str = skill.doc;
+			while(str.length() < 6) str = " " + str;
+			doc.buffer += "説明    ";
+			doc.buffer += str;
+
+			doc.repaint();
+		}
+
+		if(optionType == ITEM) {
+			int pos = cmdsBox4ID.get(posBox4)[pos4I];
+			Integer ID = itemID.get(pos);
+			Item item = ItemData.getItem(ID);
+			doc.clear();
+
+			String num = "" + itemCnt.get(pos);
+			while(num.length() < 5) num = " " + num;
+			doc.buffer += "所持数   ";
+			doc.buffer += num + "コ";
+
+			String str = item.doc;
+			while(str.length() < 6) str = " " + str;
+			doc.buffer += "説明    ";
+			doc.buffer += str;
+
+			doc.repaint();
+		}
+
+		myCanvas.repaint();
+	}
+
+	int getOption(ArrayList<String> cmds, int windowType, int optionType, ArrayList<Integer> skillID, ArrayList<Integer> itemID, ArrayList<Integer> itemCnt) {
 		for(int i = 0; i < cmds.size(); i++) cmds.set(i, ImageManager.arrange(cmds.get(i)));
 		STATE = COMMAND;
 		CMD_TYPE = windowType;
+		OPTION_TYPE = optionType;
+		this.skillID = skillID;
+		this.itemID = itemID;
+		this.itemCnt = itemCnt;
 		switch(CMD_TYPE) {
 			case CMD_LEFT: {
 				cmdsLeft.clear();
@@ -159,6 +229,7 @@ public class BattleWindow implements KeyListener {
 				for(int i = 0; i < cmds.size(); i += 4) {
 					String[] box = new String[4];
 					Integer[] boxID = new Integer[4];
+					Integer[] boxArgID = new Integer[4];
 					for(int j = 0; j < 4; j++) if(i + j < cmds.size()) {
 						box[j] = cmds.get(i + j);
 						boxID[j] = i + j;
@@ -167,6 +238,7 @@ public class BattleWindow implements KeyListener {
 					cmdsBox4ID.add(boxID);
 				}
 				repaintRightCmd();
+				repaintDoc(optionType, skillID, itemID, itemCnt);
 			} break;
 
 			case CMD_RIGHT_BOX8: {
@@ -189,6 +261,7 @@ public class BattleWindow implements KeyListener {
 					cmdsBox8ID.add(boxID);
 				}
 				repaintRightCmd();
+				repaintDoc(optionType, skillID, itemID, itemCnt);
 			} break;
 
 			default: {
@@ -207,6 +280,7 @@ public class BattleWindow implements KeyListener {
 					out = new PrintWriter(bos);
 					STATE = NULL;
 					CMD_TYPE = NULL;
+					OPTION_TYPE = NULL;
 					return Integer.parseInt(res);
 				}
 			}
@@ -214,6 +288,7 @@ public class BattleWindow implements KeyListener {
 
 		STATE = NULL;
 		CMD_TYPE = NULL;
+		OPTION_TYPE = NULL;
 		return -1;
 	}
 
@@ -356,7 +431,7 @@ public class BattleWindow implements KeyListener {
 
 				if(enemies[i].name.equals("墓")) continue;
 
-				String name = (i + 1) + enemies[i].name;
+				String name = (i + 1) + ImageManager.arrange(enemies[i].name);
 				for(int j = 0; j < name.length(); j++) {
 					try {
 						BufferedImage image = ImageManager.getCharImage(name.charAt(j));
@@ -431,10 +506,11 @@ public class BattleWindow implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 
+		Window.se[0].play(0);
+
 		if(STATE == MESSAGE) {
 			switch(e.getKeyCode()) {
 				case KeyEvent.VK_ENTER: {
-					//mw.clear();
 					out.println("ENTER");
 					out.flush();
 				} break;
@@ -511,6 +587,8 @@ public class BattleWindow implements KeyListener {
 							out.flush();
 						} break;
 					}
+
+					repaintDoc(OPTION_TYPE, skillID, itemID, itemCnt);
 				} break;
 
 				case CMD_RIGHT_BOX8: {
@@ -604,6 +682,8 @@ public class BattleWindow implements KeyListener {
 							out.flush();
 						} break;
 					}
+
+					repaintDoc(OPTION_TYPE, skillID, itemID, itemCnt);
 				} break;
 			}
 		}
