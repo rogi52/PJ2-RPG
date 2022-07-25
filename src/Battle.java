@@ -1321,6 +1321,10 @@ class Battle {
             			if(hero[k].curHP == 0) hero[k].curHP++;
             			hero[k].curMP = (int)(m * hero[k].maxMP);
             			if(hero[k].curMP == 0 && m != 0) hero[k].curMP++;
+            			window.players[k].name = hero[k].name;
+            			window.players[k].HP = hero[k].curHP;
+            			window.players[k].MP = hero[k].curMP;
+            			window.repaintHero();
             			System.out.println(hero[k].name + "にかわった!");
             			window.println(hero[k].name + "にかわった!");
             			window.waitEnterKey();
