@@ -14,12 +14,3 @@ public class Quest {
 		this.flag = flag;
 	}
 }
-/*
- * 		MaxHP = 0;
-    	MaxMP = 1;
-    	Att = 2;
-    	Def = 3;
-    	Age = 4;
-    	Luc = 5;
-    	new Skill = 6;
-*/

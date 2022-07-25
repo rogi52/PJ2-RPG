@@ -13,8 +13,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import javax.swing.JFrame;
-
 public class CommandWindow extends Component implements KeyListener {
 
 	int START_X = 0, START_Y = 0;
@@ -22,41 +20,6 @@ public class CommandWindow extends Component implements KeyListener {
 	int CHARACTER_NUM_WIDTH = 0;
 	int CHARACTER_SIZE = 32;
 	int OFFSET = 5;
-
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.setSize(700, 400);
-
-		ArrayList<String> from = new ArrayList<>();
-		ArrayList<ArrayList<String>> to = new ArrayList<>(); {
-			ArrayList<String> ATK = new ArrayList<>();
-			ATK.add("こうげきA");
-			ATK.add("こうげきB");
-			ATK.add("こうげきC");
-			from.add("こうげき"); to.add(ATK);
-
-			ArrayList<String> DEF = new ArrayList<>();
-			DEF.add("ぼうぎょX");
-			DEF.add("ぼうぎょY");
-			DEF.add("ぼうぎょZ");
-			from.add("ぼうぎょ"); to.add(DEF);
-
-			ArrayList<String> ESC = new ArrayList<>();
-			from.add("ニゲル"); to.add(ESC);
-		}
-
-		CommandWindow cs = new CommandWindow(from, to);
-		frame.add(cs);
-		frame.addKeyListener(cs);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-
-		String option = cs.getOption();
-		System.out.println(option);
-
-		option = cs.getOption();
-		System.out.println(option);
-	}
 
 	ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	PrintWriter out = new PrintWriter(bos);

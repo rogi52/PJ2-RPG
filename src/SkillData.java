@@ -295,7 +295,7 @@ public class SkillData {
 
 			case 31: {
 				skill.name = "メディラ";
-				skill.doc = "ぜんたいのHPをかいふくする";
+				skill.doc = "ぜんたいのHPをかいふく";
 				skill.waza = 14;
 				skill.skill = 40;
 				skill.target = 9;
@@ -313,7 +313,7 @@ public class SkillData {
 
 			case 33: {
 				skill.name = "キアル";
-				skill.doc = "ぜんいんのデバフをかいじょする";
+				skill.doc = "ぜんたいのデバフをかいじょ";
 				skill.waza = 11;
 				skill.skill = 0;
 				skill.target = 9;

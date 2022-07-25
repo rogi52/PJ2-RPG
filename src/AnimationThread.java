@@ -485,8 +485,6 @@ class GameLoop extends Thread{
 											if(!w.cc.getStatus())break;
 											
 											if((is2=w.cc.fifo.bufRead())!=null) {
-												//System.out.println(is2.info.ctr);
-												//System.out.println(is2.info.i[0]);
 												if(is2.info.i[0]>=0) {
 													str=true;
 													w.my_online_id=is2.info.i[0];
@@ -543,13 +541,6 @@ class GameLoop extends Thread{
 					int item_num=0;
 					int sel_y=0;
 					boolean draw_update;
-
-/*
-					for(int n = 1; n < 24; n++) {
-						if(ItemData.getItemName(n)!=null)
-							w.m.plusItem(n);
-					}*/
-
 
 					item_list=reCalcItem();
 					item_num=item_list[24];
@@ -629,7 +620,6 @@ class GameLoop extends Thread{
 				}
 				w.status=2;
 			}
-
 
 			w.wait(33);
 		}
@@ -1053,10 +1043,6 @@ class AnimationMove extends Thread{
 			if(enemy_match>0 && w.online_mode==0) {
 				walk_count=0;
 
-				System.out.println("ID："+w.now_dangeon_id);
-				System.out.println("種類："+enemy_type);
-
-
 				w.changeBgm(-1);
 				w.se[1].play(0);
 				//myCanvas.drawMap(0,view_direction,step);
@@ -1088,7 +1074,6 @@ class AnimationMove extends Thread{
 				w.resetKey();
 				w.addKeyListener(w);
 
-				//System.out.println(result);
 				myCanvas.blank(0);
 
 				for(int j=0;j<4;j++) {
@@ -1124,7 +1109,6 @@ class AnimationMove extends Thread{
 
 			if( ( update || force_update ) && Animation_Select.on_animate==false && w.status==2) {
 				force_update=false;
-				//System.out.println(Integer.toString(myCanvas.pos_x/PL2RPG.BLOCK_SIZE) +" , "+Integer.toString(myCanvas.pos_y/PL2RPG.BLOCK_SIZE) +" Matching_Prob="+Float.toString(PL2RPG.RANDOM_MATCH_PROB*(walk_count-PL2RPG.RANDOM_MATCH_MIN)));
 				if(w.online_mode==2) {
 					//クライアントは送信
 					Info inf=new Info();

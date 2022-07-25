@@ -7,33 +7,6 @@ import java.util.Random;
 //アイテム所持の管理
 
 class Battle {
-/*
-	public static void main(String[] args) {
-		MainData data = new MainData();
-		Load Data
-		data.partyJob = new int[] {  0,   1,   2,   3};
-		data.partyHP  = new int[] {100, 200, 300, 400};
-		data.partyMP  = new int[] { 50, 150, 250, 350};
-
-		int dungeonID = 1;
-		int enemyUnitID = MobData.MINION;
-		Battle battle = new Battle(data, dungeonID, enemyUnitID);
-		JFrame frame = new JFrame("Main Window");
-		frame.setSize(960, 640);
-		frame.add(battle.window);
-		frame.addKeyListener(battle.window);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-
-		int result = battle.start();
-		System.out.println(result == 1 ? "WIN" : "LOSE");
-
-		frame.remove(battle.window);
-		frame.removeKeyListener(battle.window);
-		frame.repaint();
-	}
-*/
-
 	int dungeonID = -1;
 
 	int enemyUnitID = -1;
@@ -85,10 +58,6 @@ class Battle {
 		setEnemy();
 		int JUDGE = PENDING;
 		while((JUDGE = judgement()) == PENDING){
-			if(Enemy[0].maxHP >= 0) System.out.println("debug: Enemy1 maxHP = " + Enemy[0].maxHP + "/" + Enemy[0].maxHP);
-			if(Enemy[1].maxHP >= 0) System.out.println("debug: Enemy2 maxHP = " + Enemy[1].maxHP + "/" + Enemy[1].maxHP);
-			if(Enemy[2].maxHP >= 0) System.out.println("debug: Enemy3 maxHP = " + Enemy[2].maxHP + "/" + Enemy[2].maxHP);
-			if(Enemy[3].maxHP >= 0) System.out.println("debug: Enemy4 maxHP = " + Enemy[3].maxHP + "/" + Enemy[3].maxHP);
 			refresh();
 			selecthero();
 			selectEnemy();
@@ -167,7 +136,6 @@ class Battle {
 			Enemy[i].maxHP *= ratio;
 			Enemy[i].curMP *= Math.pow(1.5, ratio - 1.0);
 			Enemy[i].maxMP *= Math.pow(1.5, ratio - 1.0);
-			System.out.println(Enemy[i].name + "があらわれた!!");
 			window.println(Enemy[i].name + "があらわれた!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 		}
 		window.waitEnterKey();
@@ -190,7 +158,6 @@ class Battle {
 				if(buf[n][m] != null) {
 					buf[n][m].turn--;
 					if(buf[n][m].turn <= 0) {
-						System.out.println(buf[n][m].name + "の効果が切れた！");
 						window.println(buf[n][m].name + "のこうかがきれた");
 						buf[n][m] = null;//この後順列をきれいにする処理を
 					}
@@ -228,12 +195,10 @@ class Battle {
 				if(namePrintFlag) {
 					window.posLeft = 0;
 					window.repaintLeftCmd();
-					System.out.println(hero[n].name + "のターン.");
 					window.println(hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
 				}
 				namePrintFlag = true;
 				selects = window.getOption(cmd1, BattleWindow.CMD_LEFT) - 1;
-				System.out.println("DBG : " + cmd1.get(selects + 1) + " " + selects);
 
 				if(selects == -1) {
 					int k = -1;
@@ -347,7 +312,6 @@ class Battle {
 		ArrayList<Integer> cnt = new ArrayList<>();
 		for(int n = 1; n < 24; n++) {
 			if(data.checkItem(n)) {
-				System.out.println(n  + ":"+ ItemData.getItemName(n) + "(" + data.itemCnt[n] + ")");
 				cmd.add(ItemData.getItemName(n) + " " + data.itemCnt[n] + "コ");
 				ID.add(n);
 				cnt.add(data.itemCnt[n]);
@@ -965,37 +929,31 @@ class Battle {
 			if(actOrder[n] < 4) {
 				if(hero[actOrder[n]].curHP == 0) flag = true;
 				else {
-					System.out.printf(hero[actOrder[n]].name);
 					window.print(hero[actOrder[n]].name, BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
 				}
 			}
 			else {
 				if(Enemy[actOrder[n] - 4].curHP == 0) flag = true;
 				else{
-					System.out.printf(Enemy[actOrder[n] - 4].name);
 					window.print(Enemy[actOrder[n] - 4].name, BattleWindow.NEW_WINDOW, BattleWindow.CONTINUE);
 				}
 			}
 			if(flag) continue;
 			if(stock[actOrder[n]].waza == 1) {
-				System.out.println("はぼうぎょした!");
 				window.println("はぼうぎょした!", BattleWindow.CONTINUE, BattleWindow.WAIT_ENTER_KEY);
 			}
 			else {
-				System.out.println("の" + stock[actOrder[n]].name + "!");
 				window.println("の" + stock[actOrder[n]].name + "!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 			}
 			//
 			if(stock[actOrder[n]].target == 8) stock[actOrder[n]].target = actOrder[n];
 			if(stock[actOrder[n]].target < 4) {
 				if(hero[stock[actOrder[n]].target].curHP == 0) {
-					System.out.println("しかしあいてがいなかった!");
 					window.println("しかしあいてがいなかった!", BattleWindow.CONTINUE, BattleWindow.WAIT_ENTER_KEY);
 					continue;
 				}
 			}else if(stock[actOrder[n]].target < 8) {
 				if(Enemy[stock[actOrder[n]].target - 4].curHP == 0) {
-					System.out.println("しかしあいてがいなかった!");
 					window.println("しかしあいてがいなかった!", BattleWindow.CONTINUE, BattleWindow.WAIT_ENTER_KEY);
 					continue;
 				}
@@ -1008,36 +966,29 @@ class Battle {
 							damage = calcDamage(stock[actOrder[n]].target, actOrder[n], x);
 							if(actOrder[n] < 4) {
 								if(r.nextInt(100) < hero[actOrder[n]].LUC / 10) {
-									System.out.println("かいしんのいちげき!!");
 									window.println("かいしんのいちげき!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 									damage *= 1.5;
 								}
 
 							}else {
 								if(r.nextInt(100) < Enemy[actOrder[n] - 4].LUC / 10) {
-									System.out.println("かいしんのいちげき!!");
 									window.println("かいしんのいちげき!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 									damage *= 1.5;
 								}
 							}
 							if(stock[actOrder[n]].target < 4) {
-								System.out.println(hero[stock[actOrder[n]].target].name + "に");
 								window.println(hero[stock[actOrder[n]].target].name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							}
 							else {
-								System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "に");
 								window.println(Enemy[stock[actOrder[n]].target - 4].name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							}
 
-							System.out.println(damage + "のダメージ!");
 							window.println(damage + "のダメージ!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							if(!changeHP(damage, stock[actOrder[n]].target)){
 								if(stock[actOrder[n]].target < 4) {
-									System.out.println(hero[stock[actOrder[n]].target].name + "はちからつきた");
 									window.println(hero[stock[actOrder[n]].target].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 								}
 								else {
-									System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "はちからつきた");
 									window.println(Enemy[stock[actOrder[n]].target - 4].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 									window.repaintEnemy();
 								}
@@ -1049,11 +1000,9 @@ class Battle {
 							window.waitEnterKey();
 						}else {
 							if(stock[actOrder[n]].target < 4) {
-								System.out.println(hero[stock[actOrder[n]].target].name + "はかいひした!");
 								window.println(hero[stock[actOrder[n]].target].name + "はかいひした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							}
 							else {
-								System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "はかいひした!");
 								window.println(Enemy[stock[actOrder[n]].target - 4].name + "はかいひした!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 							}
 							window.waitEnterKey();
@@ -1062,13 +1011,10 @@ class Battle {
 						for(int m = 0; m < 4; m++) {
 							if(stock[actOrder[n]].target == 9) {
 								if(hero[m].curHP != 0 && hero[m].curHP != -1) {
-										System.out.println(hero[m].name + "に");
 										window.println(hero[m].name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										damage = calcDamage(m, actOrder[n], x);
-										System.out.println(damage + "のダメージ!");
 										window.println(damage + "のダメージ!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										if(!changeHP(damage, m)) {
-											System.out.println(hero[m].name + "はちからつきた");
 											window.println(hero[m].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										}
 										continue;
@@ -1076,13 +1022,10 @@ class Battle {
 							}
 							if(stock[actOrder[n]].target == 10) {
 								if(Enemy[m].curHP != 0 && Enemy[m].curHP != -1) {
-										System.out.println(Enemy[m].name + "に");
 										window.println(Enemy[m].name + "に", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										damage = calcDamage(m + 4, actOrder[n], x);
-										System.out.println(damage + "のダメージ!");
 										window.println(damage + "のダメージ!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										if(!changeHP(damage, m + 4)) {
-											System.out.println(Enemy[m].name + "はちからつきた");
 											window.println(Enemy[m].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 											window.repaintEnemy();
 										}
@@ -1120,14 +1063,12 @@ class Battle {
 								if(hero[m].curHP != -1) {
 									k = makeBufSpace(m);
 									buf[k][m] = makeBuf(hero[m].buf, stock[actOrder[n]]);
-									System.out.println(hero[m].name + "にバフのこうか!");
 									window.println(hero[m].name + "にバフのこうか!");
 								}
 							}
 						}else {
 							k = makeBufSpace(stock[actOrder[n]].target);
 							buf[k][stock[actOrder[n]].target] = makeBuf(hero[stock[actOrder[n]].target].buf, stock[actOrder[n]]);
-							System.out.println(hero[stock[actOrder[n]].target].name + "にバフのこうか!");
 							window.println(hero[stock[actOrder[n]].target].name + "にバフのこうか!");
 						}
 						window.waitEnterKey();
@@ -1137,14 +1078,12 @@ class Battle {
 								if(Enemy[m].curHP != -1) {
 									k = makeBufSpace(m + 4);
 									buf[k][m + 4] = makeBuf(Enemy[m].buf, stock[actOrder[n]]);
-									System.out.println(Enemy[m].name + "にバフのこうか!");
 									window.println(Enemy[m].name + "にバフのこうか!");
 								}
 							}
 						}else {
 							k = makeBufSpace(stock[actOrder[n]].target);
 							buf[k][stock[actOrder[n]].target] = makeBuf(Enemy[stock[actOrder[n]].target - 4].buf, stock[actOrder[n]]);
-							System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "にバフのこうか!");
 							window.println(Enemy[stock[actOrder[n]].target - 4].name + "にバフのこうか!");
 						}
 						window.waitEnterKey();
@@ -1156,10 +1095,8 @@ class Battle {
 										if(r.nextInt(100) < (-100 + Enemy[m].debuf + hero[actOrder[n]].buf)) {
 											k = makeBufSpace(m + 4);
 											buf[k][m + 4] = makeBuf(Enemy[m].debuf, stock[actOrder[n]]);
-											System.out.println(Enemy[m].name + "にデバフのこうか!");
 											window.println(Enemy[m].name + "にデバフのこうか!");
 										}else {
-											System.out.println(Enemy[m].name + "にはきかなかった!");
 											window.println(Enemy[m].name + "にはきかなかった!");
 										}
 										window.waitEnterKey();
@@ -1169,10 +1106,8 @@ class Battle {
 										if(r.nextInt(100) < (-100 + hero[m].debuf + Enemy[actOrder[n] - 4].buf)) {
 											k = makeBufSpace(m);
 											buf[k][m] = makeBuf(hero[m].debuf, stock[actOrder[n]]);
-											System.out.println(hero[m].name + "にデバフのこうか!");
 											window.println(hero[m].name + "にデバフのこうか!");
 										}else {
-											System.out.println(hero[m].name + "にはきかなかった!");
 											window.println(hero[m].name + "にはきかなかった!");
 										}
 									}
@@ -1183,10 +1118,8 @@ class Battle {
 								if(r.nextInt(100) < (-50 + Enemy[stock[actOrder[n]].target - 4].debuf + hero[actOrder[n]].buf)) {
 									k = makeBufSpace(stock[actOrder[n]].target);
 									buf[k][stock[actOrder[n]].target] = makeBuf(Enemy[stock[actOrder[n]].target - 4].debuf, stock[actOrder[n]]);
-									System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "にデバフのこうか!");
 									window.println(Enemy[stock[actOrder[n]].target - 4].name + "にデバフのこうか!");
 								}else {
-									System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "にはきかなかった!");
 									window.println(Enemy[stock[actOrder[n]].target - 4].name + "にはきかなかった!");
 								}
 								window.waitEnterKey();
@@ -1194,10 +1127,8 @@ class Battle {
 								if(r.nextInt(100) < (-50 + hero[stock[actOrder[n]].target].debuf + Enemy[actOrder[n] - 4].buf)) {
 									k = makeBufSpace(stock[actOrder[n]].target);
 									buf[k][stock[actOrder[n]].target] = makeBuf(hero[stock[actOrder[n]].target].debuf, stock[actOrder[n]]);
-									System.out.println(hero[stock[actOrder[n]].target - 4].name + "にデバフのこうか!");
 									window.println(hero[stock[actOrder[n]].target - 4].name + "にデバフのこうか!");
 								}else {
-									System.out.println(hero[stock[actOrder[n]].target - 4].name + "にはきかなかった!");
 									window.println(hero[stock[actOrder[n]].target - 4].name + "にはきかなかった!");
 								}
 								window.waitEnterKey();
@@ -1209,15 +1140,12 @@ class Battle {
             }else if(stock[actOrder[n]].waza == 14) {
             	if(stock[actOrder[n]].target < 8) {
 					if(stock[actOrder[n]].target < 4) {
-						System.out.println(hero[stock[actOrder[n]].target].name +"は");
 						window.println(hero[stock[actOrder[n]].target].name + "は");
 					}
 					else {
-						System.out.println(Enemy[stock[actOrder[n]].target - 4].name +"は");
 						window.println(Enemy[stock[actOrder[n]].target - 4].name + "は");
 					}
 					damage = calcHeal(stock[actOrder[n]].target, stock[actOrder[n]]);
-					System.out.println(damage + "かいふくした!");
 					changeHP(-damage, stock[actOrder[n]].target);
 					window.println(damage + "かいふくした!");
 					window.waitEnterKey();
@@ -1225,10 +1153,8 @@ class Battle {
 					for(int m = 0; m < 4; m++) {
 						if(stock[actOrder[n]].target == 9) {
 							if(hero[m].curHP != 0 && hero[m].curHP != -1) {
-								System.out.println(hero[m].name +"は");
 								window.println(hero[m].name + "は");
 								damage = calcHeal(m, stock[actOrder[n]]);
-								System.out.println(damage + "かいふくした!");
 								changeHP(-damage, m);
 								window.println(damage + "かいふくした!");
 								window.waitEnterKey();
@@ -1237,10 +1163,8 @@ class Battle {
 						}
 						if(stock[actOrder[n]].target == 10) {
 							if(Enemy[m].curHP != 0 && Enemy[m].curHP != -1) {
-								System.out.println(Enemy[m].name + "は");
 								window.out.println(Enemy[m].name + "は");
 								damage = calcHeal(m + 4, stock[actOrder[n]]);
-								System.out.println(damage + "かいふくした!");
 								changeHP(-damage, m + 4);
 								window.println(damage + "かいふくした!");
 								window.waitEnterKey();
@@ -1253,11 +1177,9 @@ class Battle {
             	if(stock[actOrder[n]].target < 8) {
             		if(healDebuf(stock[actOrder[n]].target)) {
             			if(stock[actOrder[n]].target < 4) {
-            				System.out.println(hero[stock[actOrder[n]].target].name +"のデバフはかいじょされた！");
             				window.println(hero[stock[actOrder[n]].target].name +"のデバフはかいじょされた！");
             			}
             			else {
-            				System.out.println(hero[stock[actOrder[n]].target].name +"のデバフはかいじょされた！");
             				window.println(hero[stock[actOrder[n]].target].name +"のデバフはかいじょされた！");
             			}
             			window.waitEnterKey();
@@ -1266,13 +1188,11 @@ class Battle {
             		for(int m = 0; m < 4; m++) {
             			if(stock[actOrder[n]].target == 9) {
             				if(healDebuf(m)) {
-            					System.out.println(hero[m].name +"のデバフはかいじょされた！");
             					window.println(hero[m].name +"のデバフはかいじょされた！");
             					window.waitEnterKey();
             				}
             			}else {
             				if(healDebuf(m + 4)) {
-            					System.out.println(Enemy[m].name +"のデバフはかいじょされた！");
             					window.println(Enemy[m].name +"のデバフはかいじょされた！");
             					window.waitEnterKey();
             				}
@@ -1282,11 +1202,9 @@ class Battle {
 				}
             }else if(stock[actOrder[n]].waza == 12) {
             	if(!steal(actOrder[n], stock[actOrder[n]].target)) {
-            		System.out.println(Enemy[stock[actOrder[n]].target - 4].name +"から" +ItemData.getItemName(addItem(stock[actOrder[n]].target)) + "を盗んだ!");
             		window.println(Enemy[stock[actOrder[n]].target - 4].name +"から" +ItemData.getItemName(addItem(stock[actOrder[n]].target)) + "を盗んだ!");
             	}
             	else {
-            		System.out.println("アイテムはぬすめなかった!");
             		window.println("アイテムはぬすめなかった!");
             	}
             	window.waitEnterKey();
@@ -1295,14 +1213,12 @@ class Battle {
             	if(Enemy[1].curHP <= 0) {
             		Enemy[1] = MobSummon.callEnemy(9, MobSummon.BOSS_3RD_FLOOR);
             		Enemy[1].name = (1 + 1) + Enemy[1].name;
-            		System.out.println(Enemy[1].name + "があらわれた!");
             		window.println(Enemy[1].name + "があらわれた!");
             		f = true;
             	}
             	if(Enemy[2].curHP <= 0) {
             		Enemy[2] = MobSummon.callEnemy(9, MobSummon.BOSS_3RD_FLOOR);
             		Enemy[2].name = (2 + 1) + Enemy[2].name;
-            		System.out.println(Enemy[2].name + "があらわれた!");
             		window.println(Enemy[2].name + "があらわれた!");
             		f = true;
             	}
@@ -1312,7 +1228,6 @@ class Battle {
             	double h, m;
             	for(int k = 0; k < 4; k++) {
             		if(hero[k].curHP > 0) {
-            			System.out.printf(hero[k].name + "のジョブが");
             			window.print(hero[k].name + "のジョブが");
             			h = (double)hero[k].curHP / (double)hero[k].maxHP;
             			m = (double)hero[k].curMP / (double)hero[k].maxMP;
@@ -1325,7 +1240,6 @@ class Battle {
             			window.players[k].HP = hero[k].curHP;
             			window.players[k].MP = hero[k].curMP;
             			window.repaintHero();
-            			System.out.println(hero[k].name + "にかわった!");
             			window.println(hero[k].name + "にかわった!");
             			window.waitEnterKey();
             		}
@@ -1334,15 +1248,12 @@ class Battle {
             }else if(stock[actOrder[n]].waza == 18) {
             	if(stock[actOrder[n]].target < 8) {
 					if(stock[actOrder[n]].target < 4) {
-						System.out.println(hero[stock[actOrder[n]].target].name + "は");
 						window.println(hero[stock[actOrder[n]].target].name + "は");
 					}
 					else {
-						System.out.println(Enemy[stock[actOrder[n]].target - 4].name + "のMPは");
 						window.println(Enemy[stock[actOrder[n]].target - 4].name + "のMPは");
 					}
 					damage = calcHeal(stock[actOrder[n]].target, stock[actOrder[n]]);
-					System.out.println(damage + "かいふくした!");
 					changeMP(-damage, stock[actOrder[n]].target);
 					window.println(damage + "かいふくした!");
 				}else {
@@ -1350,10 +1261,8 @@ class Battle {
 					for(int m = 0; m < 4; m++) {
 						if(stock[actOrder[n]].target == 9) {
 							if(hero[m].curHP != 0 && hero[m].curHP != -1) {
-								System.out.println(hero[m].name +"のMPは");
 								window.println(hero[m].name + "のMPは");
 								changeMP(-(int)stock[actOrder[n]].skill, stock[actOrder[n]].target);
-								System.out.println(stock[actOrder[n]].skill + "かいふくした!");
 								window.println(stock[actOrder[n]].skill + "かいふくした!");
 								f = true;
 								continue;
@@ -1361,10 +1270,8 @@ class Battle {
 						}
 						if(stock[actOrder[n]].target == 10) {
 							if(Enemy[m].curHP != 0 && Enemy[m].curHP != -1) {
-								System.out.println(Enemy[m].name +"のMPは");
 								window.println(Enemy[m].name + "のMPは");
 								damage = calcHeal(m + 4, stock[actOrder[n]]);
-								System.out.println(damage + "かいふくした!");
 								window.println(damage + "かいふくした!");
 								changeMP(-damage, m + 4);
 								f = true;
@@ -1377,7 +1284,6 @@ class Battle {
             }
 			changeMP(stock[actOrder[n]].costMP, actOrder[n]);
 		}
-		System.out.println();
 	}
 
 	public boolean steal(int from, int to) {

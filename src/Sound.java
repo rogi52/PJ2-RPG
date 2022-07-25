@@ -30,20 +30,6 @@ public class Sound {
 		}
 		
 	}
-	
-	/*
-	public static void main(String[] args) throws InterruptedException 
-	{ 
-			Sound s=new Sound("./se/popi.wav");
-			s.play(-1);
-			Thread.sleep(5000);
-			s.stop();
-			Thread.sleep(5000);
-			s.play(0);
-			while(true)Thread.sleep(50);
-	}
-	*/
-
 
 	public void play(int loop){
 		if(loaded) {

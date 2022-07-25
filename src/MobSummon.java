@@ -62,7 +62,6 @@ public class MobSummon{
 				x.ID = data.bossMob[type2].ID;
 			} break;
 		}
-		System.out.println(x.AIpattern[0]);
 		return x;
 	}
 }

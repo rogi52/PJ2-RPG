@@ -52,14 +52,6 @@ public class OnlineProcess extends Thread{
 		in.s=new String[4];
 		in.ctr=4;
 		for(int i=0;i<4;i++) {
-			/*
-			System.out.println("--");
-			System.out.println(w.online_x[i]);
-			System.out.println(w.online_y[i]);
-			System.out.println(w.online_dir[i]);
-			System.out.println(w.online_step[i]);
-			System.out.println(w.online_chr[i]);
-			*/
 			if(i<3) {
 				if(w.clientRecv[i]==null) {
 					w.online_chr[i]=-1;
@@ -111,17 +103,6 @@ public class OnlineProcess extends Thread{
 							w.online_chr[i]=is.info.i[i*5+4];
 							w.online_map[i]=is.info.s[i];
 						}
-						/*
-						for(int i=0;i<4;i++) {
-							System.out.println("--");
-							if(is.info.i[i*5+4]==-1 || i==w.my_online_id)System.out.println("HIDE");
-							System.out.println(is.info.i[i*5]);
-							System.out.println(is.info.i[i*5+1]);
-							System.out.println(is.info.i[i*5+2]);
-							System.out.println(is.info.i[i*5+3]);
-							System.out.println(is.info.i[i*5+4]);
-						}
-						*/
 						w.ma.update();
 						break;
 					case 2:
@@ -217,7 +198,6 @@ class ClientConnect extends Thread{
 			//System.out.println( "TimeOut" );
 		} catch (Exception e3) {
 			//System.out.println("DisConected2");
-			System.out.println(e3);
 		}
 		close();
 		
