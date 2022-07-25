@@ -352,7 +352,7 @@ public class SkillData {
 				skill.name = "ヒール";
 				skill.doc = "HPをかいふくする";
 				skill.waza = 14;
-				skill.skill = 50;
+				skill.skill = 30;
 				skill.target = 10;
 				skill.costMP = 0;
 			} break;
