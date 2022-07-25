@@ -164,8 +164,8 @@ class Battle {
 			Enemy[i].maxHP *= ratio;
 			Enemy[i].curMP *= Math.pow(1.5, ratio - 1.0);
 			Enemy[i].maxMP *= Math.pow(1.5, ratio - 1.0);
-			System.out.println(Enemy[i].name + "があらわれた!!");
-			window.println(Enemy[i].name + "があらわれた!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+			System.out.println((i + 1) + Enemy[i].name + "があらわれた!!");
+			window.println((i + 1) + Enemy[i].name + "があらわれた!!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 		}
 		window.waitEnterKey();
 	}
@@ -221,16 +221,28 @@ class Battle {
 				itemFlag[n] = -1;
 				stock[n] = new Skill();
 				if(namePrintFlag) {
-					System.out.println(hero[n].name + "のターン.");
-					window.println(hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
+					window.posLeft = 0;
+					window.repaintLeftCmd();
+					System.out.println((n+1) + hero[n].name + "のターン.");
+					window.println((n+1) + hero[n].name + "のターン", BattleWindow.NEW_WINDOW, BattleWindow.WAIT_ENTER_KEY);
 				}
 				namePrintFlag = true;
 				selects = window.getOption(cmd1, BattleWindow.CMD_LEFT) - 1;
 				System.out.println("DBG : " + cmd1.get(selects + 1) + " " + selects);
 
 				if(selects == -1) {
-					n -= 2;
-					if(n == -2) n++;
+					int k = -1;
+					for(int i = n - 1; i >= 0; i--) {
+						if(hero[i].curHP > 0) {
+							k = i;
+							break;
+						}
+					}
+					if(k == -1) {
+						n = n - 1;
+					} else {
+						n = k - 1;
+					}
 					continue;
 				}else if(selects == 0){//攻撃
 					stock[n].name = "こうげき";
@@ -239,7 +251,7 @@ class Battle {
 					ArrayList<Integer> ID = new ArrayList<>();
 					for(int m = 0; m < 4; m++) {
 						if(Enemy[m].curHP > 0) {
-							String name = ImageManager.arrange(Enemy[m].name);
+							String name = (m+1) + ImageManager.arrange(Enemy[m].name);
 							cmd3.add(name);
 							ID.add(m + 5);
 						}
@@ -299,7 +311,7 @@ class Battle {
 						for(int m = 0; m < 4; m++) {
 							if(stock[n].target == -1) {
 								if(Enemy[m].curHP > 0) {
-									String name = Enemy[m].name;
+									String name = (m+1) + Enemy[m].name;
 									cmd3.add(name);
 									cmd3ID.add(m + 5);
 								}
@@ -311,7 +323,7 @@ class Battle {
 								}
 							}
 						}
-						stock[n].target = cmd3ID.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX4)) - 1;
+						stock[n].target = cmd3ID.get(window.getOption(cmd3, BattleWindow.CMD_RIGHT_BOX8)) - 1;
 						if(stock[n].target == -1) {
 							n--;
 							continue;
@@ -937,7 +949,7 @@ class Battle {
 				window.players[i].MP = hero[i].curMP;
 			}
 			paintEnemy();
-			window.repaint();
+			//window.repaint();
 
 			flag = false;
 			x = false;
@@ -1079,7 +1091,7 @@ class Battle {
 					k = makeBufSpace(actOrder[n]);
 					buf[k][actOrder[n]] = new Buffer();
 					buf[k][actOrder[n]].effect = 0.5;
-					buf[k][actOrder[n]].name = "Defence";
+					buf[k][actOrder[n]].name = "ぼうぎょ";
 					buf[k][actOrder[n]].turn = 1;
 					buf[k][actOrder[n]].pattern = Buffer.DEF;
 					changeMP(-5, actOrder[n]);
@@ -1108,7 +1120,7 @@ class Battle {
 							window.println(hero[stock[actOrder[n]].target].name + "にバフのこうか!");
 						}
 						window.waitEnterKey();
-					}else if(4 < actOrder[n] && actOrder[n] < 8 && ((3 < stock[actOrder[n]].target && stock[actOrder[n]].target < 8) || stock[actOrder[n]].target == 10)) {
+					}else if(4 < actOrder[n] && actOrder[n] < 8 && ((4 < stock[actOrder[n]].target && stock[actOrder[n]].target < 8) || stock[actOrder[n]].target == 10)) {
 						if(stock[actOrder[n]].target == 10) {
 							for(int m = 0; m < 4; m++) {
 								if(Enemy[m].curHP != -1) {
@@ -1271,14 +1283,14 @@ class Battle {
             	boolean f = false;
             	if(Enemy[1].curHP <= 0) {
             		Enemy[1] = MobSummon.callEnemy(9, MobSummon.BOSS_3RD_FLOOR);
-            		System.out.println(Enemy[1].name + "があらわれた!");
-            		window.println(Enemy[1].name + "があらわれた!");
+            		System.out.println((1 + 1) + Enemy[1].name + "があらわれた!");
+            		window.println((1 + 1) + Enemy[1].name + "があらわれた!");
             		f = true;
             	}
             	if(Enemy[2].curHP <= 0) {
             		Enemy[2] = MobSummon.callEnemy(9, MobSummon.BOSS_3RD_FLOOR);
-            		System.out.println(Enemy[2].name + "があらわれた!");
-            		window.println(Enemy[2].name + "があらわれた!");
+            		System.out.println((2 + 1) + Enemy[2].name + "があらわれた!");
+            		window.println((2 + 1) + Enemy[2].name + "があらわれた!");
             		f = true;
             	}
             	if(f) window.waitEnterKey();
