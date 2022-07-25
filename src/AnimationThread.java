@@ -91,9 +91,6 @@ class GameLoop extends Thread{
 						case 1://クエスト選択
 							no_event=false;
 
-							w.m.setQuest(50);
-							w.m.goalQuest(50);
-
 							//クエスト完了テスト
 							for(int j=0;j<5;j++) {
 								if(w.m.nowQuestNumber[j]!=-1) {
