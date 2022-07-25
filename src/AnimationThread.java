@@ -504,6 +504,7 @@ class GameLoop extends Thread{
 
 										if(str) {
 											w.online_mode=2;
+											w.host_map_name=w.map_name;
 											w.myCanvas.Dialog("MULTI PLAY START！");
 											
 										}else {
@@ -805,81 +806,80 @@ class AnimationMove extends Thread{
 
 					switch(myCanvas.en_type[i]) {
 					case 0:
-						w.se[0].play(0);
-						w.status=6;
-
-						is_enter=true;
-						w.myCanvas.drawMenu2(is_enter,"フロアをいどうしますか？", PL2RPG.DIALOG_ANIMATION_TIME);
-						direction2=direction;
-
-						while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-						while(w.is_press(KeyEvent.VK_ENTER)==false) {
-							if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
-								w.se[0].play(0);
-								is_enter=!is_enter;
-								while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-								w.myCanvas.drawMenu2(is_enter,"フロアをいどうしますか？");
+						
+						if(w.online_mode!=2) {
+							w.se[0].play(0);
+							w.status=6;
+	
+							is_enter=true;
+							w.myCanvas.drawMenu2(is_enter,"フロアをいどうしますか？", PL2RPG.DIALOG_ANIMATION_TIME);
+							direction2=direction;
+	
+							while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+							while(w.is_press(KeyEvent.VK_ENTER)==false) {
+								if(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN)) {
+									w.se[0].play(0);
+									is_enter=!is_enter;
+									while(w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+									w.myCanvas.drawMenu2(is_enter,"フロアをいどうしますか？");
+								}
+								w.wait(33);
 							}
-							w.wait(33);
-						}
-						w.se[0].play(0);
-
-						w.ma.update();
-
-						if(is_enter) {
-							
-							if(w.online_mode==1) {
-								Info is=new Info();
-								is.ctr=2;
-								is.i=new int[2];
-								is.s=new String[1];
-								is.i[0]=Integer.parseInt(myCanvas.en_p[i][1]);
-								is.i[1]=Integer.parseInt(myCanvas.en_p[i][2]);
-								is.s[0]=myCanvas.en_p[i][0];
-								for(int j=0;j<w.clientRecv.length;j++) {
-									if(w.clientRecv[j]!=null) {
-										w.clientRecv[j].send(is);
+							w.se[0].play(0);
+	
+							w.ma.update();
+	
+							if(is_enter) {
+								
+								if(w.online_mode==1) {
+									Info is=new Info();
+									is.ctr=2;
+									is.i=new int[2];
+									is.s=new String[1];
+									is.i[0]=Integer.parseInt(myCanvas.en_p[i][1]);
+									is.i[1]=Integer.parseInt(myCanvas.en_p[i][2]);
+									is.s[0]=myCanvas.en_p[i][0];
+									for(int j=0;j<w.clientRecv.length;j++) {
+										if(w.clientRecv[j]!=null) {
+											w.clientRecv[j].send(is);
+										}
 									}
 								}
+	
+								
+								w.def_dir=view_direction;
+								Animation_Select a=new Animation_Select(w.myCanvas,w);
+								a.mode(2,-1);
+								a.start();
+								while(Animation_Select.fin==false) {
+									w.wait(33);
+								}
+								myCanvas.loadMap(myCanvas.en_p[i][0],Integer.parseInt(myCanvas.en_p[i][1]),Integer.parseInt(myCanvas.en_p[i][2]));
+								a=new Animation_Select(w.myCanvas,w);
+								a.mode(-1,2);
+								a.start();
+								while(Animation_Select.fin==false) {
+									w.wait(33);
+								}
+								dir_con=0;
+								walk_count=0;
+								
+	
+							}else {
+								//入らないときは動かない
+								dir_con=0;
+								if(direction2==1)myCanvas.pos_y+=PL2RPG.BLOCK_SIZE;
+								if(direction2==2)myCanvas.pos_x-=PL2RPG.BLOCK_SIZE;
+								if(direction2==3)myCanvas.pos_y-=PL2RPG.BLOCK_SIZE;
+								if(direction2==4)myCanvas.pos_x+=PL2RPG.BLOCK_SIZE;
+	
+								if(direction2!=0) {
+									view_direction=direction2;
+								}
 							}
+							w.status=2;
 
-							
-							w.def_dir=view_direction;
-							Animation_Select a=new Animation_Select(w.myCanvas,w);
-							a.mode(2,-1);
-							a.start();
-							while(Animation_Select.fin==false) {
-								try {
-									sleep(33);
-								} catch (InterruptedException e) {}
-							}
-							myCanvas.loadMap(myCanvas.en_p[i][0],Integer.parseInt(myCanvas.en_p[i][1]),Integer.parseInt(myCanvas.en_p[i][2]));
-							a=new Animation_Select(w.myCanvas,w);
-							a.mode(-1,2);
-							a.start();
-							while(Animation_Select.fin==false) {
-								try {
-									sleep(33);
-								} catch (InterruptedException e) {}
-							}
-							dir_con=0;
-							walk_count=0;
-							
-
-						}else {
-							//入らないときは動かない
-							dir_con=0;
-							if(direction2==1)myCanvas.pos_y+=PL2RPG.BLOCK_SIZE;
-							if(direction2==2)myCanvas.pos_x-=PL2RPG.BLOCK_SIZE;
-							if(direction2==3)myCanvas.pos_y-=PL2RPG.BLOCK_SIZE;
-							if(direction2==4)myCanvas.pos_x+=PL2RPG.BLOCK_SIZE;
-
-							if(direction2!=0) {
-								view_direction=direction2;
-							}
 						}
-						w.status=2;
-
 						break;
 
 						//アイテム取得
@@ -923,100 +923,127 @@ class AnimationMove extends Thread{
 						break;
 
 					case 5://ダンジョン選択
-						w.status=6;
-
-						w.se[0].play(0);
-
-						sel=0;
-						moji="";
-						selectable=0;
-						for(int j=0;j<myCanvas.en_pc[i];j+=4) {
-							if(!myCanvas.en_p[i][j+1].equals("last.1.csv") || w.m.clearQuestFlag[50]) {
-								moji+=myCanvas.en_p[i][j]+"\n";
-								selectable++;
-							}
-						}
-						moji+="キャンセル";
-						w.myCanvas.drawMenu3(moji,sel, PL2RPG.DIALOG_ANIMATION_TIME);
-						direction2=direction;
-
-						while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-						while(w.is_press(KeyEvent.VK_ENTER)==false) {
-							if(w.is_press(KeyEvent.VK_DOWN)) {
-								w.se[0].play(0);
-								sel++;
-								if(sel>selectable)sel=selectable;
-								while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
-								w.myCanvas.drawMenu3(moji,sel);
-							}
-							if(w.is_press(KeyEvent.VK_UP)) {
-								w.se[0].play(0);
-								sel--;
-								if(sel<0)sel=0;
-								while(w.is_press(KeyEvent.VK_UP))w.wait(33);
-								w.myCanvas.drawMenu3(moji,sel);
-							}
-							w.wait(33);
-						}
-						w.se[0].play(0);
-						while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
-
-						w.ma.update();
-
-						if(sel<selectable) {
-							
-							if(w.online_mode==1) {
-								Info is=new Info();
-								is.ctr=2;
-								is.i=new int[2];
-								is.s=new String[1];
-								is.i[0]=Integer.parseInt(myCanvas.en_p[i][sel*4+2]);
-								is.i[1]=Integer.parseInt(myCanvas.en_p[i][sel*4+3]);
-								is.s[0]=myCanvas.en_p[i][sel*4+1];
-								for(int j=0;j<w.clientRecv.length;j++) {
-									if(w.clientRecv[j]!=null) {
-										w.clientRecv[j].send(is);
-									}
+						if(w.online_mode!=2) {
+							w.status=6;
+	
+							w.se[0].play(0);
+	
+							sel=0;
+							moji="";
+							selectable=0;
+							for(int j=0;j<myCanvas.en_pc[i];j+=4) {
+								if(!myCanvas.en_p[i][j+1].equals("last.1.csv") || w.m.clearQuestFlag[50]) {
+									moji+=myCanvas.en_p[i][j]+"\n";
+									selectable++;
 								}
 							}
-							
-							//取得済みアイテム、マッチ済み固定マッチング解除
-							w.myCanvas.en_used="";
-
-							w.def_dir=view_direction;
-							Animation_Select a=new Animation_Select(w.myCanvas,w);
-							a.mode(2,-1);
-							a.start();
-							while(Animation_Select.fin==false) {
+							moji+="キャンセル";
+							w.myCanvas.drawMenu3(moji,sel, PL2RPG.DIALOG_ANIMATION_TIME);
+							direction2=direction;
+	
+							while(w.is_press(KeyEvent.VK_ENTER) || w.is_press(KeyEvent.VK_UP) || w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+							while(w.is_press(KeyEvent.VK_ENTER)==false) {
+								if(w.is_press(KeyEvent.VK_DOWN)) {
+									w.se[0].play(0);
+									sel++;
+									if(sel>selectable)sel=selectable;
+									while(w.is_press(KeyEvent.VK_DOWN))w.wait(33);
+									w.myCanvas.drawMenu3(moji,sel);
+								}
+								if(w.is_press(KeyEvent.VK_UP)) {
+									w.se[0].play(0);
+									sel--;
+									if(sel<0)sel=0;
+									while(w.is_press(KeyEvent.VK_UP))w.wait(33);
+									w.myCanvas.drawMenu3(moji,sel);
+								}
 								w.wait(33);
 							}
-							myCanvas.loadMap(myCanvas.en_p[i][sel*4+1],Integer.parseInt(myCanvas.en_p[i][sel*4+2]),Integer.parseInt(myCanvas.en_p[i][sel*4+3]));
-							a=new Animation_Select(w.myCanvas,w);
-							a.mode(-1,2);
-							a.start();
-							while(Animation_Select.fin==false) {
-								w.wait(33);
+							w.se[0].play(0);
+							while(w.is_press(KeyEvent.VK_ENTER))w.wait(33);
+	
+							w.ma.update();
+	
+							if(sel<selectable) {
+								
+								if(w.online_mode==1) {
+									Info is=new Info();
+									is.ctr=2;
+									is.i=new int[2];
+									is.s=new String[1];
+									is.i[0]=Integer.parseInt(myCanvas.en_p[i][sel*4+2]);
+									is.i[1]=Integer.parseInt(myCanvas.en_p[i][sel*4+3]);
+									is.s[0]=myCanvas.en_p[i][sel*4+1];
+									for(int j=0;j<w.clientRecv.length;j++) {
+										if(w.clientRecv[j]!=null) {
+											w.clientRecv[j].send(is);
+										}
+									}
+								}
+								
+								//取得済みアイテム、マッチ済み固定マッチング解除
+								w.myCanvas.en_used="";
+	
+								w.def_dir=view_direction;
+								Animation_Select a=new Animation_Select(w.myCanvas,w);
+								a.mode(2,-1);
+								a.start();
+								while(Animation_Select.fin==false) {
+									w.wait(33);
+								}
+								myCanvas.loadMap(myCanvas.en_p[i][sel*4+1],Integer.parseInt(myCanvas.en_p[i][sel*4+2]),Integer.parseInt(myCanvas.en_p[i][sel*4+3]));
+								a=new Animation_Select(w.myCanvas,w);
+								a.mode(-1,2);
+								a.start();
+								while(Animation_Select.fin==false) {
+									w.wait(33);
+								}
+								dir_con=0;
+								walk_count=0;
+							}else {
+								//入らないときは動かない
+								dir_con=0;
+								if(direction2==1)myCanvas.pos_y+=PL2RPG.BLOCK_SIZE;
+								if(direction2==2)myCanvas.pos_x-=PL2RPG.BLOCK_SIZE;
+								if(direction2==3)myCanvas.pos_y-=PL2RPG.BLOCK_SIZE;
+								if(direction2==4)myCanvas.pos_x+=PL2RPG.BLOCK_SIZE;
+	
+								if(direction2!=0) {
+									view_direction=direction2;
+								}
 							}
-							dir_con=0;
-							walk_count=0;
-						}else {
-							//入らないときは動かない
-							dir_con=0;
-							if(direction2==1)myCanvas.pos_y+=PL2RPG.BLOCK_SIZE;
-							if(direction2==2)myCanvas.pos_x-=PL2RPG.BLOCK_SIZE;
-							if(direction2==3)myCanvas.pos_y-=PL2RPG.BLOCK_SIZE;
-							if(direction2==4)myCanvas.pos_x+=PL2RPG.BLOCK_SIZE;
-
-							if(direction2!=0) {
-								view_direction=direction2;
-							}
+							w.status=2;
 						}
-						w.status=2;
 
 						break;
 					}
 				}
 			}
+			
+			//マルチ強制移動
+			if(w.online_mode==2) {
+				if(!w.map_name.equals(w.host_map_name)) {
+					w.def_dir=view_direction;
+					Animation_Select a=new Animation_Select(w.myCanvas,w);
+					a.mode(2,-1);
+					a.start();
+					while(Animation_Select.fin==false) {
+						w.wait(33);
+					}
+					myCanvas.loadMap(w.host_map_name,w.host_map_def_x,w.host_map_def_y);
+					a=new Animation_Select(w.myCanvas,w);
+					a.mode(-1,2);
+					a.start();
+					while(Animation_Select.fin==false) {
+						w.wait(33);
+					}
+					dir_con=0;
+					walk_count=0;
+					update=true;
+	
+				}
+			}
+
 
 			if(random_match_test) {
 				if( w.myCanvas.random_match_enable && Math.random()<PL2RPG.RANDOM_MATCH_PROB*(walk_count-PL2RPG.RANDOM_MATCH_MIN) && !any_event_disabled ) {
