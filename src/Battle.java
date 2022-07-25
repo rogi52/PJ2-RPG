@@ -188,7 +188,7 @@ class Battle {
 					buf[n][m].turn--;
 					if(buf[n][m].turn <= 0) {
 						System.out.println(buf[n][m].name + "の効果が切れた！");
-						window.println(buf[n][m].name + "のこうかがきれた!");
+						window.println(buf[n][m].name + "のこうかがきれた");
 						buf[n][m] = null;//この後順列をきれいにする処理を
 					}
 				}
