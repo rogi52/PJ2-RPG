@@ -500,7 +500,7 @@ public class MobData {
 		bossMob[5].setStatus2(50, 50, attType, regi, skill, ai, 3);
 
 		clear();
-		bossMob[6] = new MobStatus(57, "フラワー",450,50,130,100,40,80);
+		bossMob[6] = new MobStatus(57, "フラワー",400,50,130,80,40,80);
 		attType[0] = true;
 		attType[2] = true;
 		setRegi(0.9,1.0,1.0,1.0);
