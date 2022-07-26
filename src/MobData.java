@@ -510,7 +510,7 @@ public class MobData {
 		bossMob[6].setStatus2(50, 50, attType, regi, skill, ai, 4);
 
 		clear();
-		bossMob[7] = new MobStatus(58, "ドラゴン",300,100,100,80,90,70);
+		bossMob[7] = new MobStatus(58, "マスター",300,100,100,80,90,70);
 		attType[1] = true;
 		attType[2] = true;
 		setRegi(1.0,1.0,1.0,1.0);
@@ -522,7 +522,7 @@ public class MobData {
 		bossMob[7].setStatus3(item);
 
 		clear();
-		bossMob[9] = new MobStatus(58, "デーモン",30,10,100,30,100,30);
+		bossMob[9] = new MobStatus(58, "やみ",30,10,100,30,100,30);
 		attType[0] = true;
 		attType[3] = true;
 		setRegi(1.0,1.0,1.0,1.0);
