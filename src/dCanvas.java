@@ -66,8 +66,12 @@ class dCanvas extends Canvas {
 	public void drawChr(String str,int x,int y,int width, int ms) {
 		str=ImageManager.arrange(str);
 		int x0=x;
+		boolean skip_enable=false;
 
 		for(int i=0;i<str.length();i++) {
+			if(skip_enable && w.is_press(KeyEvent.VK_ENTER))ms=0;
+			
+			if(!w.is_press(KeyEvent.VK_ENTER))skip_enable=true;
 			if(str.charAt(i)=='\n') {
 				x=x0;
 				y+=PL2RPG.BLOCK_SIZE;
@@ -895,8 +899,6 @@ class dCanvas extends Canvas {
 				s=f.getName();
 				s2=s.substring(0,s.lastIndexOf('.'));
 				iden=Integer.parseInt(s2.substring(0,s2.lastIndexOf('.')));
-				//System.out.println(s2.substring(0,s2.lastIndexOf('.')));
-				//System.out.println(s2.substring(1+s2.lastIndexOf('.')));
 				path_temp=PL2RPG.HELP_PATH+"/"+f.getName();
 				try {
 					help[iden]=ImageIO.read(new File(path_temp));
@@ -935,8 +937,6 @@ class dCanvas extends Canvas {
 				s=f.getName();
 				s2=s.substring(0,s.lastIndexOf('.'));
 				iden=Integer.parseInt(s2.substring(0,s2.lastIndexOf('.')));
-				//System.out.println(s2.substring(0,s2.lastIndexOf('.')));
-				//System.out.println(s2.substring(1+s2.lastIndexOf('.')));
 				path_temp=PL2RPG.TEKI_PATH+"/"+f.getName();
 				try {
 					teki[iden]=ImageIO.read(new File(path_temp));
@@ -976,8 +976,6 @@ class dCanvas extends Canvas {
 				s=f.getName();
 				s2=s.substring(0,s.lastIndexOf('.'));
 				iden=Integer.parseInt(s2.substring(0,s2.lastIndexOf('.')));
-				//System.out.println(s2.substring(0,s2.lastIndexOf('.')));
-				//System.out.println(s2.substring(1+s2.lastIndexOf('.')));
 				path_temp=PL2RPG.BLOCK_IMG_PATH+"/"+pn+"/"+f.getName();
 				try {
 					block[iden]=ImageIO.read(new File(path_temp));
