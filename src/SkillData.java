@@ -277,7 +277,7 @@ public class SkillData {
 
 			case 29: {
 				skill.name = "ヒーレスト";
-				skill.doc = "ぜんたいのHPをおおきくかいふくする";
+				skill.doc = "HPをおおきくかいふくする";
 				skill.waza = 14;
 				skill.skill = 100;
 				skill.target = -2;
