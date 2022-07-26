@@ -522,7 +522,7 @@ public class MobData {
 		bossMob[7].setStatus3(item);
 
 		clear();
-		bossMob[9] = new MobStatus(58, "やみ",30,10,100,30,100,30);
+		bossMob[9] = new MobStatus(59, "やみ",30,10,100,30,100,30);
 		attType[0] = true;
 		attType[3] = true;
 		setRegi(1.0,1.0,1.0,1.0);
