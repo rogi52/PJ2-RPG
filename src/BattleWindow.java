@@ -398,7 +398,16 @@ public class BattleWindow implements KeyListener {
 
 		for(int i = 0; i < 4; i++) {
 			if(enemies[i] != null) {
+
+				g.setColor(Color.BLACK);
+				g.fillRect(enemySX[enemyCnt][i], enemySY, 128, 128);
+
 				g.drawImage(myCanvas.teki[enemies[i].ID], enemySX[enemyCnt][i], enemySY, null);
+
+				for(int j = 0; j < 5; j++) {
+					g.setColor(Color.BLACK);
+					g.fillRect(enemySX[enemyCnt][i] + j * 32 - 16, enemySY + 32 * 4, 32, 32);
+				}
 
 				if(enemies[i].name.equals("墓")) continue;
 
@@ -417,10 +426,11 @@ public class BattleWindow implements KeyListener {
 
 	void repaintHero() {
 		Graphics g = myCanvas.buffer;
-		g.setColor(Color.BLACK);
+
 		for(int i = 0; i < 4; i++) {
 			String name = players[i].name;
 			for(int j = 0; j < 5; j++) {
+				g.setColor(Color.BLACK);
 				g.fillRect(startX[i] + j * 32, 32, 32, 32);
 				if(j < name.length()) {
 					try {
@@ -436,7 +446,8 @@ public class BattleWindow implements KeyListener {
 				String num = players[i].HP.toString();
 				while(num.length() < 4) num = ' ' + num;
 				for(int j = 0; j < 4; j++) {
-					g.fillRect(startX[i] + (j + 1) * 32, 128, 32, 32);
+					g.setColor(Color.BLACK);
+					g.fillRect(startX[i] + (j + 1) * 32, 96, 32, 32);
 					if(num.charAt(j) != ' ') {
 						image = ImageManager.getCharImage(num.charAt(j));
 						g.drawImage(image, startX[i] + (j + 1) * 32, 96, null);
@@ -450,6 +461,7 @@ public class BattleWindow implements KeyListener {
 				String num = players[i].MP.toString();
 				while(num.length() < 4) num = ' ' + num;
 				for(int j = 0; j < 4; j++) {
+					g.setColor(Color.BLACK);
 					g.fillRect(startX[i] + (j + 1) * 32, 128, 32, 32);
 					if(num.charAt(j) != ' ') {
 						image = ImageManager.getCharImage(num.charAt(j));
