@@ -36,6 +36,7 @@ class GameLoop extends Thread{
 				if(w.online_mode==2) {
 					if(!w.cc.getStatus()) {
 						w.status=3;
+						w.se[0].play(0);
 						w.cc.close();
 						w.myCanvas.Dialog("ホストがせつだんされました。\nマルチプレイをしゅうりょうします。");
 						w.online_mode=0;
@@ -54,6 +55,7 @@ class GameLoop extends Thread{
 						}
 						w.wc.close();
 						
+						w.se[0].play(0);
 						w.myCanvas.Dialog("すべてのプレーヤーがせつだんされました。\nマルチプレイをしゅうりょうします。");
 						w.online_mode=0;
 						w.status=2;
@@ -900,11 +902,13 @@ class AnimationMove extends Thread{
 					case 4:
 						w.status=6;
 
-						if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
-							any_event_disabled=true;
-							enemy_match=2;
-							w.myCanvas.en_used+=w.myCanvas.en_UID[i];
-							enemy_type=Integer.parseInt(w.myCanvas.en_p[i][1]);
+						if(w.online_mode==0) {
+							if(w.myCanvas.en_used.indexOf(w.myCanvas.en_UID[i])==-1) {
+								any_event_disabled=true;
+								enemy_match=2;
+								w.myCanvas.en_used+=w.myCanvas.en_UID[i];
+								enemy_type=Integer.parseInt(w.myCanvas.en_p[i][1]);
+							}
 						}
 						w.status=2;
 

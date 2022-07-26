@@ -687,11 +687,13 @@ class dCanvas extends Canvas {
 						}
 						break;
 					case 4:
-						int_temp=Integer.parseInt(en_p[i][0]);
-						if(int_temp>=0) {
-							if(en_x[i]==diff_x && en_y[i]==diff_y) {
-								if(en_used.indexOf(en_UID[i])==-1)
-									buffer.drawImage(teki[int_temp],dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
+						if(w.online_mode==0) {
+							int_temp=Integer.parseInt(en_p[i][0]);
+							if(int_temp>=0) {
+								if(en_x[i]==diff_x && en_y[i]==diff_y) {
+									if(en_used.indexOf(en_UID[i])==-1)
+										buffer.drawImage(teki[int_temp],dx*PL2RPG.BLOCK_SIZE-posx_2,dy*PL2RPG.BLOCK_SIZE-posy_2-PL2RPG.BLOCK_SIZE/2,null);							
+								}
 							}
 						}
 						break;
