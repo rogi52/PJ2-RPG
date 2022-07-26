@@ -63,10 +63,17 @@ class Battle {
 			selectEnemy();
 			makeActOrder();
 			doAct();
+			updateHero();
+			window.repaintHero();
 			paintEnemy();
-			//window.repaint();
+			window.repaintEnemy();
 			turns++;
 		}
+
+		updateHero();
+		window.repaintHero();
+		paintEnemy();
+		window.repaintEnemy();
 
 		for(int i = 0; i < 4; i++) {
 			data.partyHP[i] = hero[i].curHP;
@@ -84,6 +91,13 @@ class Battle {
 		return result;
 	}
 
+	void updateHero() {
+		for(int i = 0; i < 4; i++) {
+			window.players[i].name = hero[i].name;
+			window.players[i].HP = hero[i].curHP;
+			window.players[i].MP = hero[i].curMP;
+		}
+	}
 
 
 	void changeJobCharacter(int i, int job) {
@@ -990,6 +1004,7 @@ class Battle {
 								}
 								else {
 									window.println(Enemy[stock[actOrder[n]].target - 4].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+									paintEnemy();
 									window.repaintEnemy();
 								}
 								if(judgement() != PENDING) {
@@ -1027,6 +1042,7 @@ class Battle {
 										window.println(damage + "のダメージ!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 										if(!changeHP(damage, m + 4)) {
 											window.println(Enemy[m].name + "はちからつきた", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
+											paintEnemy();
 											window.repaintEnemy();
 										}
 										continue;
@@ -1449,17 +1465,31 @@ class Battle {
 			hero[n].curHP -= damage;
 			if(hero[n].curHP < 0) {
 				hero[n].curHP = 0;
+				updateHero();
+				window.repaintHero();
+				paintEnemy();
+				window.repaintEnemy();
 				return false;
 			}
 			if(hero[n].curHP > hero[n].maxHP) hero[n].curHP = hero[n].maxHP;
+
 		}else {
 			Enemy[n - 4].curHP -= damage;
 			if(Enemy[n - 4].curHP < 0) {
 				Enemy[n - 4].curHP = 0;
+				updateHero();
+				window.repaintHero();
+				paintEnemy();
+				window.repaintEnemy();
 				return false;
 			}
 			if(Enemy[n - 4].curHP > Enemy[n - 4].maxHP) Enemy[n - 4].curHP = Enemy[n - 4].maxHP;
 		}
+
+		updateHero();
+		window.repaintHero();
+		paintEnemy();
+		window.repaintEnemy();
 		return true;
 	}
 
