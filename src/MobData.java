@@ -53,7 +53,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 100; skill[1] = 101;
 		setAI(3,1);
-		lMob[0][3].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		lMob[0][3].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		lMob[1][0] = new MobStatus(5, "カビィ",30,20,120,100,35,60);
@@ -64,7 +64,7 @@ public class MobData {
 		skill[0] = 100; skill[1] = 103;
 		setAI(1,1);
 
-		lMob[1][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		lMob[1][0].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		lMob[1][1] = new MobStatus(6, "イセッキ",50,20,90,91,70,60);
@@ -74,7 +74,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 100; skill[1] = 103;
 		setAI(1,1);
-		lMob[1][1].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		lMob[1][1].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		lMob[1][2] = new MobStatus(7, "にんじ",35,20,110,100,35,60);
@@ -84,7 +84,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 100; skill[1] = 103;
 		setAI(1,1);
-		lMob[1][2].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		lMob[1][2].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		lMob[1][3] = new MobStatus(8, "りんご",65,20,80,91,70,60);
@@ -94,7 +94,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 100; skill[1] = 103;
 		setAI(1,1);
-		lMob[1][3].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		lMob[1][3].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		lMob[2][0] = new MobStatus(9, "AYE",40,20,90,90,50,40);
@@ -104,7 +104,7 @@ public class MobData {
 		skill = new int[4];
 		skill[0] = 104; skill[1] = 107; skill[2] = 108; skill[3] = 109;
 		setAI(8,1);
-		lMob[2][0].setStatus2(50, 30, attType, regi, skill, ai, 1);
+		lMob[2][0].setStatus2(50, 30, attType, regi, skill, ai, 4);
 
 		clear();
 		lMob[2][1] = new MobStatus(10, "おばけ",40,20,90,90,50,40);
@@ -114,7 +114,7 @@ public class MobData {
 		skill = new int[4];
 		skill[0] = 104; skill[1] = 107; skill[2] = 108; skill[3] = 109;
 		setAI(8,1);
-		lMob[2][1].setStatus2(50, 30, attType, regi, skill, ai, 1);
+		lMob[2][1].setStatus2(50, 30, attType, regi, skill, ai, 4);
 
 		clear();
 		lMob[2][2] = new MobStatus(11, "ベトン",50,20,90,90,50,40);
@@ -124,7 +124,7 @@ public class MobData {
 		skill = new int[4];
 		skill[0] = 104; skill[1] = 107; skill[2] = 108; skill[3] = 109;
 		setAI(8,1);
-		lMob[2][2].setStatus2(50, 30, attType, regi, skill, ai, 1);
+		lMob[2][2].setStatus2(50, 30, attType, regi, skill, ai, 4);
 
 		clear();
 		lMob[2][3] = new MobStatus(12, "ベトソ",50,20,90,90,50,40);
@@ -134,7 +134,7 @@ public class MobData {
 		skill = new int[4];
 		skill[0] = 104; skill[1] = 107; skill[2] = 108; skill[3] = 109;
 		setAI(8,1);
-		lMob[2][3].setStatus2(50, 30, attType, regi, skill, ai, 1);
+		lMob[2][3].setStatus2(50, 30, attType, regi, skill, ai, 4);
 
 		clear();
 		lMob[3][0] = new MobStatus(13, "サトウ",50,20,110,90,100,110);
@@ -211,10 +211,10 @@ public class MobData {
 		attType[1] = true;
 		attType[3] = true;
 		setRegi(0.8,1.2,1.2,1.0);
-		skill = new int[1];
-		skill[0] = 100; skill[0] = 101;
+		skill = new int[2];
+		skill[0] = 100; skill[1] = 101;
 		setAI(1,1);
-		lMob[4][3].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		lMob[4][3].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		lMob[5][0] = new MobStatus(21, "モブリ",50,10,90,91,80,70);
@@ -264,7 +264,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 100; skill[1] = 111;
 		setAI(1,1);
-		lMob[6][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		lMob[6][0].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		lMob[6][1] = new MobStatus(26, "アカキノ",35,20,100,100,80,75);
@@ -294,7 +294,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 103; skill[1] = 111;
 		setAI(1,1);
-		lMob[6][3].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		lMob[6][3].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		sMob[0][0] = new MobStatus(31, "オオカミ",100,30,140,90,55,40);
@@ -304,7 +304,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 100; skill[1] = 103;
 		setAI(2,1);
-		sMob[0][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[0][0].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		sMob[0][1] = new MobStatus(32, "イッヌ",130,30,140,100,55,40);
@@ -314,7 +314,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 100; skill[1] = 103;
 		setAI(2,1);
-		sMob[0][1].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[0][1].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		sMob[1][0] = new MobStatus(33, "クリート",80,60,130,100,35,60);
@@ -324,7 +324,7 @@ public class MobData {
 		skill = new int[3];
 		skill[0] = 100; skill[1] = 103; skill[2] = 111;
 		setAI(1,1);
-		sMob[1][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[1][0].setStatus2(50, 50, attType, regi, skill, ai, 3);
 
 		clear();
 		sMob[1][1] = new MobStatus(34, "フェアリ",100,60,130,91,70,60);
@@ -334,7 +334,7 @@ public class MobData {
 		skill = new int[3];
 		skill[0] = 100; skill[1] = 103; skill[2] = 111;
 		setAI(1,1);
-		sMob[1][1].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[1][1].setStatus2(50, 50, attType, regi, skill, ai, 3);
 
 		clear();
 		sMob[2][0] = new MobStatus(35, "コフィン",80,50,90,110,50,40);
@@ -344,7 +344,7 @@ public class MobData {
 		skill = new int[4];
 		skill[0] = 104; skill[1] = 107; skill[2] = 108; skill[3] = 109;
 		setAI(8,1);
-		sMob[2][0].setStatus2(80, 30, attType, regi, skill, ai, 1);
+		sMob[2][0].setStatus2(80, 30, attType, regi, skill, ai, 4);
 
 		clear();
 		sMob[2][1] = new MobStatus(36, "ブッキ",100,50,90,130,50,40);
@@ -354,7 +354,7 @@ public class MobData {
 		skill = new int[4];
 		skill[0] = 104; skill[1] = 107; skill[2] = 108; skill[3] = 109;
 		setAI(8,1);
-		sMob[2][1].setStatus2(80, 30, attType, regi, skill, ai, 1);
+		sMob[2][1].setStatus2(80, 30, attType, regi, skill, ai, 4);
 
 		clear();
 		sMob[3][0] = new MobStatus(37, "イワ",100,30,110,90,100,110);
@@ -364,7 +364,7 @@ public class MobData {
 		skill = new int[3];
 		skill[0] = 100; skill[1] = 101; skill[2] = 103;
 		setAI(1,1);
-		sMob[3][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[3][0].setStatus2(50, 50, attType, regi, skill, ai, 3);
 
 		clear();
 		sMob[3][1] = new MobStatus(38, "サイコ",120,30,120,90,100,150);
@@ -374,7 +374,7 @@ public class MobData {
 		skill = new int[3];
 		skill[0] = 100; skill[1] = 101; skill[2] = 103;
 		setAI(1,1);
-		sMob[3][1].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[3][1].setStatus2(50, 50, attType, regi, skill, ai, 3);
 
 		clear();
 		sMob[4][0] = new MobStatus(39, "イカくん",80,30,130,100,50,50);
@@ -384,7 +384,7 @@ public class MobData {
 		skill = new int[3];
 		skill[0] = 100; skill[1] = 101; skill[2] = 103;
 		setAI(1,1);
-		sMob[4][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[4][0].setStatus2(50, 50, attType, regi, skill, ai, 3);
 
 		clear();
 		sMob[4][1] = new MobStatus(40, "タコくん",100,50,110,100,50,50);
@@ -394,7 +394,7 @@ public class MobData {
 		skill = new int[3];
 		skill[0] = 100; skill[1] = 101; skill[2] = 103;
 		setAI(1,1);
-		sMob[4][1].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[4][1].setStatus2(50, 50, attType, regi, skill, ai, 3);
 
 		clear();
 		sMob[5][0] = new MobStatus(41, "キメラ",100,20,120,91,80,70);
@@ -404,7 +404,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 100; skill[1] = 101;
 		setAI(1,1);
-		sMob[5][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[5][0].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		sMob[5][1] = new MobStatus(42, "りゅう",120,30,140,100,75,70);
@@ -414,7 +414,7 @@ public class MobData {
 		skill = new int[2];
 		skill[0] = 100; skill[1] = 101;
 		setAI(1,1);
-		sMob[5][1].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[5][1].setStatus2(50, 50, attType, regi, skill, ai, 2);
 
 		clear();
 		sMob[6][0] = new MobStatus(43, "KUMA",100,80,90,130,80,75);
@@ -424,7 +424,7 @@ public class MobData {
 		skill = new int[3];
 		skill[0] = 100; skill[1] = 101; skill[2] = 111;
 		setAI(1,1);
-		sMob[6][0].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[6][0].setStatus2(50, 50, attType, regi, skill, ai, 3);
 
 		clear();
 		sMob[6][1] = new MobStatus(44, "クマ",120,80,120,130,80,75);
@@ -434,7 +434,7 @@ public class MobData {
 		skill = new int[3];
 		skill[0] = 100; skill[1] = 101; skill[2] = 111;
 		setAI(1,1);
-		sMob[6][1].setStatus2(50, 50, attType, regi, skill, ai, 1);
+		sMob[6][1].setStatus2(50, 50, attType, regi, skill, ai, 3);
 
 
 		clear();
@@ -475,7 +475,7 @@ public class MobData {
 		skill = new int[4];
 		skill[0] = 101; skill[1] = 102; skill[2] = 103; skill[3] = 106;
 		setAI(4,1);
-
+		bossMob[3].setStatus2(50, 50, attType, regi, skill, ai, 4);
 		item[0] = 21; item[1] = 22; item[2] = 23;
 		bossMob[3].setStatus3(item);
 
