@@ -93,9 +93,15 @@ class Battle {
 
 	void updateHero() {
 		for(int i = 0; i < 4; i++) {
-			window.players[i].name = hero[i].name;
-			window.players[i].HP = hero[i].curHP;
-			window.players[i].MP = hero[i].curMP;
+			if(hero[i].curHP != -1) {
+				window.players[i].name = hero[i].name;
+				window.players[i].HP = hero[i].curHP;
+				window.players[i].MP = hero[i].curMP;
+			}else {
+				window.players[i].name = "";
+				window.players[i].HP = 0;
+				window.players[i].MP = 0;
+			}
 		}
 	}
 
@@ -110,7 +116,8 @@ class Battle {
 			hero[i].curHP = data.partyHP[i];
 			hero[i].curMP = data.partyMP[i];
 			hero[i].name = (i + 1) + hero[i].name;
-			window.players[i] = new BattleWindow.Player(hero[i].name, hero[i].curHP, hero[i].curMP);
+			if(hero[i].curHP > 0) window.players[i] = new BattleWindow.Player(hero[i].name, hero[i].curHP, hero[i].curMP);
+			else window.players[i] = new BattleWindow.Player("", 0, 0);
 		}
 	}
 
@@ -960,6 +967,14 @@ class Battle {
 				window.println("の" + stock[actOrder[n]].name + "!", BattleWindow.CONTINUE, BattleWindow.CONTINUE);
 			}
 			//
+			if(actOrder[n] < 4) {
+				if(itemFlag[actOrder[n]] > 0) {
+					if(!data.checkItem(itemFlag[actOrder[n]])) {
+						window.println("しかしアイテムがなかった!", BattleWindow.CONTINUE, BattleWindow.WAIT_ENTER_KEY);
+						continue;
+					}
+				}
+			}
 			if(stock[actOrder[n]].target == 8) stock[actOrder[n]].target = actOrder[n];
 			if(stock[actOrder[n]].target < 4) {
 				if(hero[stock[actOrder[n]].target].curHP == 0) {

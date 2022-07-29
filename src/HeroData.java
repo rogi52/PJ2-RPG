@@ -55,7 +55,7 @@ public class HeroData {
 				if(flag[7 * (m + 1)])
 					skill = new int[] {18, 19};
 				else
-					skill = new int[] {    19};
+					skill = new int[] {   18, 19};
 
 				type[0] = true;
 				type[2] = true;

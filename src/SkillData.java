@@ -277,7 +277,7 @@ public class SkillData {
 
 			case 29: {
 				skill.name = "ヒーレスト";
-				skill.doc = "HPをおおきくかいふくする";
+				skill.doc = "ぜんたいのHPをおおきくかいふくする";
 				skill.waza = 14;
 				skill.skill = 100;
 				skill.target = -2;
@@ -443,6 +443,7 @@ public class SkillData {
 				skill.skill = 0.3;
 				skill.target = 8;
 				skill.costMP = 5;
+				skill.turn = 3;
 			} break;
 
 			case 105: {
@@ -452,6 +453,7 @@ public class SkillData {
 				skill.skill = 0.2;
 				skill.target = 8;
 				skill.costMP = 5;
+				skill.turn = 3;
 			} break;
 
 			case 106: {
@@ -461,6 +463,7 @@ public class SkillData {
 				skill.skill = 0.5;
 				skill.target = 8;
 				skill.costMP = 5;
+				skill.turn = 3;
 			} break;
 
 			case 107: {
@@ -470,6 +473,7 @@ public class SkillData {
 				skill.skill = -0.3;
 				skill.target = -2;
 				skill.costMP = 5;
+				skill.turn = 5;
 			} break;
 
 			case 108: {
@@ -479,6 +483,7 @@ public class SkillData {
 				skill.skill = -0.2;
 				skill.target = -2;
 				skill.costMP = 5;
+				skill.turn = 5;
 			} break;
 
 			case 109: {
@@ -488,6 +493,7 @@ public class SkillData {
 				skill.skill = -0.3;
 				skill.target = -2;
 				skill.costMP = 5;
+				skill.turn = 5;
 			} break;
 
 			case 110: {
