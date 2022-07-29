@@ -447,6 +447,10 @@ class ThreadGetHost extends Thread{
 		this.g=g;
 	}
 	
+	private int getIpLastNum(String ip) {
+		return Integer.parseInt(ip.substring(ip.lastIndexOf(".")+1));
+	}
+	
 	public void run(){
 		while(g.state) {
 			g.hosts="";
@@ -460,6 +464,20 @@ class ThreadGetHost extends Thread{
 			}else {
 				g.reslist= g.hosts.split(",");
 			}
+			
+			//ソート
+			int len=g.reslist.length;
+			String buf;
+			
+	        for (int i = 0; i < (len - 1); i++) {
+	            for (int j = (len - 1); j > i; j--) {
+	                if (getIpLastNum(g.reslist[j-1]) > getIpLastNum(g.reslist[j])){
+	                    buf=g.reslist[j-1];
+	                    g.reslist[j-1]=g.reslist[j];
+	                    g.reslist[j]=buf;
+	                }
+	            }
+	        }
 		}
 	}
 }
